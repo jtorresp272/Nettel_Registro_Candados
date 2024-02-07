@@ -3,6 +3,7 @@ import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
 import 'package:flutter_application_1/widgets/CustomDrawer.dart';
+import 'package:intl/intl.dart';
 
 class Taller extends StatefulWidget {
   const Taller({super.key});
@@ -21,6 +22,7 @@ class _TallerState extends State<Taller> {
   TextEditingController _textControllerTaller = TextEditingController();
   TextEditingController _textControllerLlegar = TextEditingController();
 
+  String image = 'assets/images/cc_plastico.png';
   @override
   void initState() {
     super.initState();
@@ -176,18 +178,23 @@ class _TallerState extends State<Taller> {
                               switch (listaCandadosTaller[index].lugar) {
                                 case 'I':
                                   colorContenedor = Colors.orange;
+                                  image = 'assets/images/candado_U.png';
                                   break;
                                 case 'M':
                                   colorContenedor = Colors.yellow;
+                                  image = 'assets/images/candado_cable.png';
                                   break;
                                 case 'L':
                                   colorContenedor = Colors.green;
+                                  image = 'assets/images/candado_piston.png';
                                   break;
                                 case 'V':
                                   colorContenedor = Colors.red;
+                                  image = 'assets/images/cc_plastico.png';
                                   break;
                                 default:
                                   colorContenedor = Colors.transparent;
+                                  image = 'assets/images/cc_plastico.png';
                                   break;
                               }
 
@@ -206,17 +213,23 @@ class _TallerState extends State<Taller> {
                                     },
                                     icon: const Icon(Icons.expand_more),
                                   ),
-                                  leading: Text(
+                                  leading: Image.asset(
+                                    image,
+                                    fit: BoxFit.fitHeight,
+                                    width: 60.0,
+                                    height: 80.0,
+                                  ),
+                                  title: Text(
                                     listaFiltradaTaller[index].numero,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18.0,
                                     ),
                                   ),
-                                  title: Text(
-                                    listaFiltradaTaller[index]
-                                        .fechaIngreso
-                                        .toString(), // Puedes cambiar aquí por la fecha que necesites
+                                  subtitle: Text(
+                                    DateFormat('yyyy-MM-dd').format(
+                                        listaFiltradaTaller[index]
+                                            .fechaIngreso), // Puedes cambiar aquí por la fecha que necesites
                                     style: const TextStyle(
                                       fontSize: 12.0,
                                     ),
