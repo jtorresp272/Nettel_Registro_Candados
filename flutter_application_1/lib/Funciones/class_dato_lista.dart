@@ -8,6 +8,7 @@ class Candado {
   final DateTime fechaIngreso;
   final DateTime fechaSalida;
   final String lugar;
+  final String image; // Campo para la ruta de la imagen
 
   Candado({
     required this.numero,
@@ -17,6 +18,7 @@ class Candado {
     required this.fechaIngreso,
     required this.fechaSalida,
     required this.lugar,
+    required this.image, // Incluir el campo de imagen
   });
 }
 
@@ -34,8 +36,8 @@ List<Candado> generarCandadosAleatoriosTaller() {
   List<Candado> listaCandadosTaller = [];
 
   for (int i = 0; i < 50; i++) {
-    String numeroCandado =
-        (93 + random.nextInt(85638 - 93 + 1)).toString().padLeft(4, '0');
+    String numeroCandado = 
+      (93 + random.nextInt(85638 - 93 + 1)).toString().padLeft(4, '0');
     String razonIngreso = 'Razon de ingreso ${random.nextInt(100)}';
     String razonSalida = 'Razon de salida ${random.nextInt(100)}';
     String responsable = responsables[random.nextInt(responsables.length)];
@@ -44,6 +46,7 @@ List<Candado> generarCandadosAleatoriosTaller() {
     DateTime fechaSalida = DateTime(2023 + random.nextInt(2),
         random.nextInt(12) + 1, random.nextInt(28) + 1);
     String lugar = lugares[random.nextInt(lugares.length)];
+    String image = getImagePath(lugar); // Obtener la ruta de la imagen
 
     Candado nuevoCandadoTaller = Candado(
       numero: numeroCandado,
@@ -53,6 +56,7 @@ List<Candado> generarCandadosAleatoriosTaller() {
       fechaIngreso: fechaIngreso,
       fechaSalida: fechaSalida,
       lugar: lugar,
+      image: image, // Asignar la ruta de la imagen
     );
 
     listaCandadosTaller.add(nuevoCandadoTaller);
@@ -93,6 +97,7 @@ List<Candado> generarCandadosAleatoriosLlegar() {
     DateTime fechaSalida = DateTime(2023 + random.nextInt(2),
         random.nextInt(12) + 1, random.nextInt(28) + 1);
     String lugar = lugares[random.nextInt(lugares.length)];
+    String image = getImagePath(lugar); // Obtener la ruta de la imagen
 
     Candado nuevoCandadoLlegar = Candado(
       numero: numeroCandado,
@@ -102,10 +107,26 @@ List<Candado> generarCandadosAleatoriosLlegar() {
       fechaIngreso: fechaIngreso,
       fechaSalida: fechaSalida,
       lugar: lugar,
+      image: image, // Asignar la ruta de la imagen
     );
 
     listaCandadosLlegar.add(nuevoCandadoLlegar);
   }
 
   return listaCandadosLlegar;
+}
+
+String getImagePath(String lugar) {
+  switch (lugar) {
+    case 'I':
+      return 'assets/images/candado_U.png';
+    case 'M':
+      return 'assets/images/candado_cable.png';
+    case 'L':
+      return 'assets/images/candado_piston.png';
+    case 'V':
+      return 'assets/images/cc_plastico.png';
+    default:
+      return 'assets/images/cc_plastico.png';
+  }
 }
