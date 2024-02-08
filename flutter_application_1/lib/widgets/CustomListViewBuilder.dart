@@ -54,7 +54,7 @@ class CustomListViewBuilder extends StatelessWidget {
               ),
               leading: Image.asset(
                 listaFiltrada[index].image,
-                fit: BoxFit.fitHeight,
+                fit: BoxFit.contain,
                 width: 60.0,
                 height: 80.0,
               ),

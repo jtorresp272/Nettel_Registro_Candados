@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
 import 'package:flutter_application_1/widgets/CustomDrawer.dart';
 import 'package:flutter_application_1/widgets/CustomListViewBuilder.dart';
@@ -21,6 +22,21 @@ class _TallerState extends State<Taller> {
   late FocusNode _searchFocusNodeLlegar;
   TextEditingController _textControllerTaller = TextEditingController();
   TextEditingController _textControllerLlegar = TextEditingController();
+
+  late int _selectedIndex = 0; // Definición de _selectedIndex
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    // Realiza las acciones correspondientes a cada índice aquí
+    // Por ejemplo:
+    if (_selectedIndex == 0) {
+      //   // Acciones para el índice 0 (Escanear)
+    } else if (_selectedIndex == 1) {
+      //   // Acciones para el índice 1 (Historial)
+    }
+  }
 
   @override
   void initState() {
@@ -97,10 +113,10 @@ class _TallerState extends State<Taller> {
           children: [
             Container(
               color: Colors.white,
-              child: const TabBar(
-                labelColor: Colors.blue,
-                indicatorColor: Colors.blue,
-                tabs: [
+              child: TabBar(
+                labelColor: getColorAlmostBlue(),
+                indicatorColor: getColorAlmostBlue(),
+                tabs: const [
                   Tab(
                     text: 'Resumen',
                   ),
@@ -126,7 +142,7 @@ class _TallerState extends State<Taller> {
 
                   // Página 2: "En Taller"
                   Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.only(top:20.0,left: 20.0,right: 20.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -149,7 +165,7 @@ class _TallerState extends State<Taller> {
                   ),
                   // Página 3: "Por Llegar"
                   Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.only(top:20.0,left: 20.0,right: 20.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -176,6 +192,33 @@ class _TallerState extends State<Taller> {
           ],
         ),
       ),
+      /*
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){},
+        elevation: 10,
+        shape: const CircleBorder(),
+        backgroundColor: getColorAlmostBlue(),
+        foregroundColor: getBackgroundColor(),
+        child: const Icon(Icons.qr_code_scanner),
+      ),
+      */
+      
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+          icon: Icon(Icons.qr_code_scanner),
+          label: 'Escanear',
+          ),
+          BottomNavigationBarItem(
+          icon: Icon(Icons.edit_document),
+          label: 'Historial',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: getColorAlmostBlue(),
+        unselectedItemColor: Colors.grey,
+        onTap: _onItemTapped,
+      )
     );
   }
 
@@ -188,28 +231,3 @@ class _TallerState extends State<Taller> {
     super.dispose();
   }
 }
-/*
-List<Candado> generarCandadosAleatoriosTaller() {
-  return List.generate(
-    10,
-    (index) => Candado(
-      numero: '00${index + 1}',
-      fechaIngreso: DateTime.now(),
-      lugar: index % 4 == 0 ? 'I' : index % 4 == 1 ? 'M' : index % 4 == 2 ? 'L' : 'V',
-      image: '', razonIngreso: '',razonSalida: '',responsable: '', fechaSalida: DateTime.now(),
-    ),
-  );
-}
-
-List<Candado> generarCandadosAleatoriosLlegar() {
-  return List.generate(
-    10,
-    (index) => Candado(
-      numero: '00${index + 1}',
-      fechaIngreso: DateTime.now(),
-      lugar: index % 4 == 0 ? 'I' : index % 4 == 1 ? 'M' : index % 4 == 2 ? 'L' : 'V',
-      image: '', razonIngreso: '',razonSalida: '',responsable: '', fechaSalida: DateTime.now(),
-    ),
-  );
-}
-*/
