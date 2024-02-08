@@ -143,7 +143,7 @@ class _TallerState extends State<Taller> {
                             });
                           },
                         ),
-                        CustomListViewBuilder(where_became: 'Taller',listaFiltrada: listaFiltradaTaller),
+                        CustomListViewBuilder(where_from: 'Taller',listaFiltrada: listaFiltradaTaller),
                       ],
                     ),
                   ),
@@ -166,7 +166,7 @@ class _TallerState extends State<Taller> {
                             });
                           },
                         ),
-                        CustomListViewBuilder(where_became: 'Llegar',listaFiltrada: listaFiltradaLlegar),
+                        CustomListViewBuilder(where_from: 'Llegar',listaFiltrada: listaFiltradaLlegar),
                       ],
                     ),
                   ),

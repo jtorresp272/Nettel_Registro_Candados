@@ -3,11 +3,11 @@ import 'package:intl/intl.dart';
 import '../Funciones/class_dato_lista.dart';
 
 class CustomListViewBuilder extends StatelessWidget {
-  final String where_became;
+  final String where_from;
   final List<Candado> listaFiltrada;
 
   const CustomListViewBuilder({
-    required this.where_became,
+    required this.where_from,
     required this.listaFiltrada,
   });
 
@@ -18,7 +18,7 @@ class CustomListViewBuilder extends StatelessWidget {
         itemCount: listaFiltrada.length,
         itemBuilder: (BuildContext context, int index) {
           Color colorContenedor = Colors.grey;
-          if(where_became == 'Taller'){
+          if(where_from == 'Taller'){
             switch (listaFiltrada[index].lugar) {
             case 'I':
               colorContenedor = Colors.orange;
