@@ -2,6 +2,7 @@ import 'dart:math';
 
 class Candado {
   final String numero;
+  final String tipo;
   final String razonIngreso;
   final String razonSalida;
   final String responsable;
@@ -12,6 +13,7 @@ class Candado {
 
   Candado({
     required this.numero,
+    required this.tipo,
     required this.razonIngreso,
     required this.razonSalida,
     required this.responsable,
@@ -31,6 +33,13 @@ List<Candado> generarCandadosAleatoriosTaller() {
     'Oswaldo',
     'Fabian'
   ];
+  List<String> tipos = [
+    'CC_Plastico',
+    'Tipo_U',
+    'Tipo_Cable',
+    'Tipo_Piston',
+  ];
+  
   Random random = Random();
 
   List<Candado> listaCandadosTaller = [];
@@ -46,8 +55,9 @@ List<Candado> generarCandadosAleatoriosTaller() {
     DateTime fechaSalida = DateTime(2023 + random.nextInt(2),
         random.nextInt(12) + 1, random.nextInt(28) + 1);
     String lugar = lugares[random.nextInt(lugares.length)];
-    String image = getImagePath(lugar); // Obtener la ruta de la imagen
-
+    String tipo = tipos[random.nextInt(tipos.length)];
+    String image = getImagePath(tipo); // Obtener la ruta de la imagen
+    
     Candado nuevoCandadoTaller = Candado(
       numero: numeroCandado,
       razonIngreso: razonIngreso,
@@ -56,6 +66,7 @@ List<Candado> generarCandadosAleatoriosTaller() {
       fechaIngreso: fechaIngreso,
       fechaSalida: fechaSalida,
       lugar: lugar,
+      tipo: tipo,
       image: image, // Asignar la ruta de la imagen
     );
 
@@ -82,6 +93,12 @@ List<Candado> generarCandadosAleatoriosLlegar() {
     'Oswaldo',
     'Fabian'
   ];
+    List<String> tipos = [
+    'CC_Plastico',
+    'Tipo_U',
+    'Tipo_Cable',
+    'Tipo_Piston',
+  ];
   Random random = Random();
 
   List<Candado> listaCandadosLlegar = [];
@@ -97,7 +114,8 @@ List<Candado> generarCandadosAleatoriosLlegar() {
     DateTime fechaSalida = DateTime(2023 + random.nextInt(2),
         random.nextInt(12) + 1, random.nextInt(28) + 1);
     String lugar = lugares[random.nextInt(lugares.length)];
-    String image = getImagePath(lugar); // Obtener la ruta de la imagen
+    String tipo = tipos[random.nextInt(tipos.length)];
+    String image = getImagePath(tipo); // Obtener la ruta de la imagen
 
     Candado nuevoCandadoLlegar = Candado(
       numero: numeroCandado,
@@ -107,6 +125,7 @@ List<Candado> generarCandadosAleatoriosLlegar() {
       fechaIngreso: fechaIngreso,
       fechaSalida: fechaSalida,
       lugar: lugar,
+      tipo: tipo,
       image: image, // Asignar la ruta de la imagen
     );
 
@@ -116,15 +135,15 @@ List<Candado> generarCandadosAleatoriosLlegar() {
   return listaCandadosLlegar;
 }
 
-String getImagePath(String lugar) {
-  switch (lugar) {
-    case 'I':
+String getImagePath(String tipo) {
+  switch (tipo) {
+    case 'Tipo_U':
       return 'assets/images/candado_U.png';
-    case 'M':
+    case 'Tipo_Cable':
       return 'assets/images/candado_cable.png';
-    case 'L':
+    case 'Tipo_Piston':
       return 'assets/images/candado_piston.png';
-    case 'V':
+    case 'CC_Plastico':
       return 'assets/images/cc_plastico.png';
     default:
       return 'assets/images/cc_plastico.png';

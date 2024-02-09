@@ -53,6 +53,7 @@ class _TallerState extends State<Taller> {
         responsable: candado.responsable,
         razonSalida: candado.razonSalida,
         fechaSalida: candado.fechaSalida,
+        tipo: candado.tipo,
       );
     }).toList();
     listaCandadosLlegar = generarCandadosAleatoriosLlegar().map((candado) {
@@ -65,6 +66,7 @@ class _TallerState extends State<Taller> {
         responsable: candado.responsable,
         razonSalida: candado.razonSalida,
         fechaSalida: candado.fechaSalida,
+        tipo: candado.tipo,
       );
     }).toList();
     listaFiltradaTaller = List.from(listaCandadosTaller);
@@ -112,10 +114,13 @@ class _TallerState extends State<Taller> {
         child: Column(
           children: [
             Container(
-              color: Colors.white,
+              color: Colors.transparent,
               child: TabBar(
-                labelColor: getColorAlmostBlue(),
-                indicatorColor: getColorAlmostBlue(),
+                labelColor: getColorAlmostBlue(), // Color del texto de la pestaña seleccionada
+                unselectedLabelColor: Colors.black38, // Color del texto de las pestañas no seleccionadas
+                indicatorColor: getColorAlmostBlue(), // Color del indicador que resalta la pestaña seleccionada
+                labelStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold), // Estilo del texto de la pestaña seleccionada
+                unselectedLabelStyle: const TextStyle(fontSize: 16), // Estilo del texto de las pestañas no seleccionadas
                 tabs: const [
                   Tab(
                     text: 'Resumen',
@@ -123,7 +128,9 @@ class _TallerState extends State<Taller> {
                   Tab(
                     text: 'En Taller',
                   ),
-                  Tab(text: 'Por Llegar'),
+                  Tab(
+                    text: 'Por Llegar',
+                  ),
                 ],
               ),
             ),
