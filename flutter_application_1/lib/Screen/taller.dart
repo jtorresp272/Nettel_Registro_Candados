@@ -48,7 +48,7 @@ class _TallerState extends State<Taller> {
         numero: candado.numero,
         fechaIngreso: candado.fechaIngreso,
         lugar: candado.lugar,
-        image: candado.image,//getImagePath(candado.lugar),
+        image: candado.image, //getImagePath(candado.lugar),
         razonIngreso: candado.razonIngreso,
         responsable: candado.responsable,
         razonSalida: candado.razonSalida,
@@ -61,7 +61,7 @@ class _TallerState extends State<Taller> {
         numero: candado.numero,
         fechaIngreso: candado.fechaIngreso,
         lugar: candado.lugar,
-        image: candado.image,//getImagePath(candado.lugar),
+        image: candado.image, //getImagePath(candado.lugar),
         razonIngreso: candado.razonIngreso,
         responsable: candado.responsable,
         razonSalida: candado.razonSalida,
@@ -100,133 +100,136 @@ class _TallerState extends State<Taller> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        titulo: 'Consorcio Nettel',
-        subtitulo: 'Taller',
-      ),
-      drawer: const customDrawer(
-        nameUser: "Taller",
-      ),
-      resizeToAvoidBottomInset: false,
-      body: DefaultTabController(
-        initialIndex: 1,
-        length: 3,
-        child: Column(
-          children: [
-            Container(
-              color: Colors.transparent,
-              child: TabBar(
-                labelColor: getColorAlmostBlue(), // Color del texto de la pestaña seleccionada
-                unselectedLabelColor: Colors.black38, // Color del texto de las pestañas no seleccionadas
-                indicatorColor: getColorAlmostBlue(), // Color del indicador que resalta la pestaña seleccionada
-                labelStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold), // Estilo del texto de la pestaña seleccionada
-                unselectedLabelStyle: const TextStyle(fontSize: 16), // Estilo del texto de las pestañas no seleccionadas
-                tabs: const [
-                  Tab(
-                    text: 'Resumen',
-                  ),
-                  Tab(
-                    text: 'En Taller',
-                  ),
-                  Tab(
-                    text: 'Por Llegar',
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  // Página 1: "Resumen"
-                  const Padding(
-                    padding: EdgeInsets.all(20.0),
-                    child: Column(
-                      children: [
-                        Text('data'),
-                      ],
+        appBar: CustomAppBar(
+          titulo: 'Consorcio Nettel',
+          subtitulo: 'Taller',
+        ),
+        drawer: const customDrawer(
+          nameUser: "Taller",
+        ),
+        resizeToAvoidBottomInset: false,
+        body: DefaultTabController(
+          initialIndex: 1,
+          length: 3,
+          child: Column(
+            children: [
+              Container(
+                color: Colors.transparent,
+                child: TabBar(
+                  labelColor:
+                      getColorAlmostBlue(), // Color del texto de la pestaña seleccionada
+                  unselectedLabelColor: Colors
+                      .black38, // Color del texto de las pestañas no seleccionadas
+                  indicatorColor:
+                      getColorAlmostBlue(), // Color del indicador que resalta la pestaña seleccionada
+                  labelStyle: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight
+                          .bold), // Estilo del texto de la pestaña seleccionada
+                  unselectedLabelStyle: const TextStyle(
+                      fontSize:
+                          16), // Estilo del texto de las pestañas no seleccionadas
+                  tabs: const [
+                    Tab(
+                      text: 'Resumen',
                     ),
-                  ),
+                    Tab(
+                      text: 'En Taller',
+                    ),
+                    Tab(
+                      text: 'Por Llegar',
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    // Página 1: "Resumen"
+                    const Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Column(
+                        children: [
+                          Text('data'),
+                        ],
+                      ),
+                    ),
 
-                  // Página 2: "En Taller"
-                  Padding(
-                    padding: const EdgeInsets.only(top:20.0,left: 20.0,right: 20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomSearchField(
-                          controller: _textControllerTaller,
-                          focusNode: _searchFocusNodeTaller,
-                          onChanged: filtrarListaTaller,
-                          onClear: () {
-                            setState(() {
-                              filtrarListaTaller('');
-                              if (_textControllerTaller.text.isEmpty) {
-                              _searchFocusNodeTaller.requestFocus();
-                              }
-                            });
-                          },
-                        ),
-                        CustomListViewBuilder(where_from: 'Taller',listaFiltrada: listaFiltradaTaller),
-                      ],
+                    // Página 2: "En Taller"
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 20.0, left: 20.0, right: 20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CustomSearchField(
+                            controller: _textControllerTaller,
+                            focusNode: _searchFocusNodeTaller,
+                            onChanged: filtrarListaTaller,
+                            onClear: () {
+                              setState(() {
+                                filtrarListaTaller('');
+                                if (_textControllerTaller.text.isEmpty) {
+                                  _searchFocusNodeTaller.requestFocus();
+                                }
+                              });
+                            },
+                          ),
+                          CustomListViewBuilder(
+                              where_from: 'Taller',
+                              listaFiltrada: listaFiltradaTaller),
+                        ],
+                      ),
                     ),
-                  ),
-                  // Página 3: "Por Llegar"
-                  Padding(
-                    padding: const EdgeInsets.only(top:20.0,left: 20.0,right: 20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomSearchField(
-                          controller: _textControllerLlegar,
-                          focusNode: _searchFocusNodeLlegar,
-                          onChanged: filtrarListaLlegar,
-                          onClear: () {
-                            setState(() {
-                              filtrarListaLlegar('');
-                              if (_textControllerLlegar.text.isEmpty) {
-                              _searchFocusNodeLlegar.requestFocus();
-                              }
-                            });
-                          },
-                        ),
-                        CustomListViewBuilder(where_from: 'Llegar',listaFiltrada: listaFiltradaLlegar),
-                      ],
+                    // Página 3: "Por Llegar"
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 20.0, left: 20.0, right: 20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CustomSearchField(
+                            controller: _textControllerLlegar,
+                            focusNode: _searchFocusNodeLlegar,
+                            onChanged: filtrarListaLlegar,
+                            onClear: () {
+                              setState(() {
+                                filtrarListaLlegar('');
+                                if (_textControllerLlegar.text.isEmpty) {
+                                  _searchFocusNodeLlegar.requestFocus();
+                                }
+                              });
+                            },
+                          ),
+                          CustomListViewBuilder(
+                              where_from: 'Llegar',
+                              listaFiltrada: listaFiltradaLlegar),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Colors.white,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.qr_code_scanner),
+              label: 'Escanear',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.edit_document),
+              label: 'Historial',
             ),
           ],
-        ),
-      ),
-      /*
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){},
-        elevation: 10,
-        shape: const CircleBorder(),
-        backgroundColor: getColorAlmostBlue(),
-        foregroundColor: getBackgroundColor(),
-        child: const Icon(Icons.qr_code_scanner),
-      ),
-      */
-      
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-          icon: Icon(Icons.qr_code_scanner),
-          label: 'Escanear',
-          ),
-          BottomNavigationBarItem(
-          icon: Icon(Icons.edit_document),
-          label: 'Historial',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: getColorAlmostBlue(),
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
-      )
-    );
+          currentIndex: _selectedIndex,
+          selectedItemColor: getColorAlmostBlue(),
+          unselectedItemColor: Colors.grey,
+          onTap: _onItemTapped,
+        ));
   }
 
   @override
