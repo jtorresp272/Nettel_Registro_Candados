@@ -17,8 +17,8 @@ class CustomListViewBuilder extends StatefulWidget {
 }
 
 class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
-  Set<int> _expandedGroups = {};
-  bool _tap = true;
+  final Set<int> _expandedGroups = {};
+  
   @override
   Widget build(BuildContext context) {
     Map<String, List<Candado>> candadosPorLugar = {};
@@ -114,11 +114,10 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                                 } else {
                                   _expandedGroups.add(lugares.indexOf(lugar));
                                 }
-                                _tap = !_tap;
                               });
                             },
                             child: Icon(
-                              _tap ? Icons.add : Icons.remove,
+                              _expandedGroups.contains(lugares.indexOf(lugar)) ? Icons.remove : Icons.add,
                               color: Colors.white,
                               size: 25.0,
                             )),
@@ -174,11 +173,11 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                             },
                           ),
                         )
-                      : SizedBox(), // Si no está expandido, no mostrar el ListView.builder
+                      : const SizedBox(), // Si no está expandido, no mostrar el ListView.builder
                 ],
               );
             } else {
-              return SizedBox
+              return const SizedBox
                   .shrink(); // No mostrar la fila si no hay candados en este lugar
             }
           }).toList(),

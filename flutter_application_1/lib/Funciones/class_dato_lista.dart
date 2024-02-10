@@ -78,13 +78,13 @@ List<Candado> generarCandadosAleatoriosTaller() {
 
 List<Candado> generarCandadosAleatoriosLlegar() {
   List<String> lugares = [
-    'NAPORTEC',
+    'Naportec',
     'DPW',
-    'CUENCA',
-    'QUITO',
+    'Cuenca',
+    'Quito',
     'TPG',
-    'INARPI',
-    'MANTA'
+    'Inarpi',
+    'Manta'
   ];
   List<String> responsables = [
     'Joshue',
