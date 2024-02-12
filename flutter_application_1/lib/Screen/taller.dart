@@ -4,6 +4,7 @@ import 'package:flutter_application_1/widgets/CustomAppBar.dart';
 import 'package:flutter_application_1/widgets/CustomDrawer.dart';
 import 'package:flutter_application_1/widgets/CustomListViewBuilder.dart';
 import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
+import 'package:flutter_application_1/widgets/CustomResume.dart';
 import 'package:flutter_application_1/widgets/CustomSearch.dart';
 
 class Taller extends StatefulWidget {
@@ -25,6 +26,8 @@ class _TallerState extends State<Taller> {
 
   late int _selectedIndex = 0; // Definición de _selectedIndex
 
+  late Map<int, Map<int, bool>> _tabExpandedStates; // Definicion de _tabExpandedStates para dejar seteado el ultimo estado de cada tapBar
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -43,6 +46,11 @@ class _TallerState extends State<Taller> {
     super.initState();
     _searchFocusNodeTaller = FocusNode();
     _searchFocusNodeLlegar = FocusNode();
+    _tabExpandedStates = {
+      0:{},
+      1:{},
+      2:{},
+    };
     listaCandadosTaller = generarCandadosAleatoriosTaller().map((candado) {
       return Candado(
         numero: candado.numero,
@@ -146,15 +154,10 @@ class _TallerState extends State<Taller> {
                 child: TabBarView(
                   children: [
                     // Página 1: "Resumen"
-                    const Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Column(
-                        children: [
-                          Text('data'),
-                        ],
-                      ),
+                    CustomResumen(
+                      listaTaller: listaCandadosTaller, 
+                      listaLlegar: listaCandadosLlegar,
                     ),
-
                     // Página 2: "En Taller"
                     Padding(
                       padding: const EdgeInsets.only(
@@ -177,7 +180,15 @@ class _TallerState extends State<Taller> {
                           ),
                           CustomListViewBuilder(
                               where_from: 'Taller',
-                              listaFiltrada: listaFiltradaTaller),
+                              listaFiltrada: listaFiltradaTaller,
+                              expandedState: _tabExpandedStates[1]!,
+                              onExpandedChanged: (index){
+                                setState(() {
+                                  final currentState = _tabExpandedStates[1]![index] ?? false;
+                                  _tabExpandedStates[1]![index] = !currentState;
+                                });
+                              }
+                              ),
                         ],
                       ),
                     ),
@@ -203,7 +214,15 @@ class _TallerState extends State<Taller> {
                           ),
                           CustomListViewBuilder(
                               where_from: 'Llegar',
-                              listaFiltrada: listaFiltradaLlegar),
+                              listaFiltrada: listaFiltradaLlegar,
+                              expandedState: _tabExpandedStates[2]!,
+                              onExpandedChanged: (index){
+                                setState(() {
+                                  final currentState = _tabExpandedStates[2]![index] ?? false;
+                                  _tabExpandedStates[2]![index] = !currentState;
+                                });
+                              }
+                              ,),
                         ],
                       ),
                     ),

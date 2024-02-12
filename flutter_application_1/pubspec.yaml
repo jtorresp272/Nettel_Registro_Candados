@@ -33,6 +33,7 @@ dependencies:
   http: ^1.2.0
   logger: ^2.0.2
   intl: ^0.17.0
+  pie_chart: ^5.1.0
 
 
   # The following adds the Cupertino Icons font to your application.
