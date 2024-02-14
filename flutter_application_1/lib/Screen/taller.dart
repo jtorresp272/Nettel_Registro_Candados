@@ -4,8 +4,17 @@ import 'package:flutter_application_1/widgets/CustomAppBar.dart';
 import 'package:flutter_application_1/widgets/CustomDrawer.dart';
 import 'package:flutter_application_1/widgets/CustomListViewBuilder.dart';
 import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
+import 'package:flutter_application_1/widgets/CustomQrScan.dart';
 import 'package:flutter_application_1/widgets/CustomResume.dart';
 import 'package:flutter_application_1/widgets/CustomSearch.dart';
+import 'package:logger/logger.dart';
+
+enum MenuNavigator{
+  // ignore: constant_identifier_names
+  ESCANER,
+  // ignore: constant_identifier_names
+  HISTORIAL,
+}
 
 class Taller extends StatefulWidget {
   const Taller({Key? key}) : super(key: key);
@@ -15,29 +24,38 @@ class Taller extends StatefulWidget {
 }
 
 class _TallerState extends State<Taller> {
+  var logger = Logger();
   late List<Candado> listaCandadosTaller;
   late List<Candado> listaFiltradaTaller;
   late List<Candado> listaCandadosLlegar;
   late List<Candado> listaFiltradaLlegar;
   late FocusNode _searchFocusNodeTaller;
   late FocusNode _searchFocusNodeLlegar;
-  TextEditingController _textControllerTaller = TextEditingController();
-  TextEditingController _textControllerLlegar = TextEditingController();
+  final TextEditingController _textControllerTaller = TextEditingController();
+  final TextEditingController _textControllerLlegar = TextEditingController();
 
   late int _selectedIndex = 0; // Definición de _selectedIndex
 
   late Map<int, Map<int, bool>> _tabExpandedStates; // Definicion de _tabExpandedStates para dejar seteado el ultimo estado de cada tapBar
 
+// Void para las botones del bottomNavigatorBar
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
-    // Realiza las acciones correspondientes a cada índice aquí
-    // Por ejemplo:
-    if (_selectedIndex == 0) {
-      //   // Acciones para el índice 0 (Escanear)
-    } else if (_selectedIndex == 1) {
-      //   // Acciones para el índice 1 (Historial)
+    // Acciones para el índice 0 (Escanear)
+    if (_selectedIndex == MenuNavigator.ESCANER.index) {
+      Navigator.of(context)
+      .push(MaterialPageRoute(
+      builder: (context) => const CustomQrScan(),
+      ))
+      .then((result) {
+        if (result != null) {
+          logger.i('Codigo QR escaneado: $result');
+        }
+      });
+    } else if (_selectedIndex == MenuNavigator.HISTORIAL.index) {  // Acciones para el índice 1 (Historial)
+
     }
   }
 

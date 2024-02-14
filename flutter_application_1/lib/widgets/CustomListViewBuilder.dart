@@ -1,10 +1,10 @@
-
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/get_color.dart';
+import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
+import 'package:flutter_application_1/widgets/CustomDialog.dart';
+import '../Funciones/get_color.dart';
 import 'package:intl/intl.dart';
-import '../Funciones/class_dato_lista.dart';
 
-class CustomListViewBuilder extends StatefulWidget {
+class CustomListViewBuilder extends StatelessWidget {
   final String where_from;
   final List<Candado> listaFiltrada;
   final Map<int, bool> expandedState;
@@ -18,52 +18,36 @@ class CustomListViewBuilder extends StatefulWidget {
   });
 
   @override
-  _CustomListViewBuilderState createState() => _CustomListViewBuilderState();
-}
-
-class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     Map<String, List<Candado>> candadosPorLugar = {};
 
-    for (var candado in widget.listaFiltrada) {
-      if (!candadosPorLugar.containsKey(candado.lugar)) {
-        candadosPorLugar[candado.lugar] = [];
-      }
+    for (var candado in listaFiltrada) {
+      candadosPorLugar.putIfAbsent(candado.lugar, () => []);
       candadosPorLugar[candado.lugar]!.add(candado);
     }
 
-    List<String> lugares = [];
-    if (widget.where_from == "Taller") {
-      lugares = ['L', 'M', 'I', 'V'];
-    } else if (widget.where_from == "Llegar") {
-      lugares = [
-        'Naportec',
-        'DPW',
-        'Cuenca',
-        'Quito',
-        'TPG',
-        'Inarpi',
-        'Manta'
-      ];
-    }
+    List<String> lugares = where_from == "Taller"
+        ? ['L', 'M', 'I', 'V']
+        : [
+            'Naportec',
+            'DPW',
+            'Cuenca',
+            'Quito',
+            'TPG',
+            'Inarpi',
+            'Manta'
+          ];
 
     return Expanded(
       child: ListView(
-          children: lugares.asMap().entries.map((entry){
-            final index = entry.key;
-            final lugar = entry.value;
+        children: lugares.asMap().entries.map((entry) {
+          final index = entry.key;
+          final lugar = entry.value;
           if (candadosPorLugar.containsKey(lugar) &&
               candadosPorLugar[lugar]!.isNotEmpty) {
             Color colorContenedor = Colors.grey;
             late final String titulo;
-            if (widget.where_from == "Taller") {
+            if (where_from == "Taller") {
               switch (lugar) {
                 case 'I':
                   colorContenedor = Colors.orange;
@@ -86,20 +70,20 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                   titulo = 'Candados Ingresados';
                   break;
               }
-            } else if (widget.where_from == 'Llegar') {
+            } else if (where_from == 'Llegar') {
               colorContenedor = Colors.grey;
               titulo = lugar;
             }
 
-            final isExpanded = widget.expandedState[index] ?? false;
+            final isExpanded = expandedState[index] ?? false;
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.only(
-                      left: 10.0, right: 10.0, top: 8.0, bottom: 8.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10.0, vertical: 8.0),
                   decoration: BoxDecoration(
                     color: getColorAlmostBlue(),
                   ),
@@ -116,13 +100,11 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                       ),
                       const Spacer(),
                       GestureDetector(
-                        onTap: (){
-                          widget.onExpandedChanged?.call(index);
+                        onTap: () {
+                          onExpandedChanged?.call(index);
                         },
                         child: Icon(
-                          isExpanded
-                              ? Icons.remove
-                              : Icons.add,
+                          isExpanded ? Icons.remove : Icons.add,
                           color: Colors.white,
                           size: 25.0,
                         ),
@@ -132,61 +114,69 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                 ),
                 const SizedBox(height: 8.0),
                 isExpanded
-                    ? Container(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        height:
-                            140.0, // Altura fija para las listas de candados
+                    ? SizedBox(
+                        height: 140.0,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           itemCount: candadosPorLugar[lugar]!.length,
                           itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              width: 120.0, // Anchura fija para cada candado
-                              margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: colorContenedor,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    candadosPorLugar[lugar]![index].image,
-                                    fit: BoxFit.contain,
-                                    //width: 50.0,
-                                    height: 70.0,
-                                  ),
-                                  Text(
-                                    candadosPorLugar[lugar]![index].numero,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16.0,
+                            Candado candadoPress = candadosPorLugar[lugar]![index]; // Accede al candado específico en esta posición
+                            return GestureDetector(
+                              onTap: (){
+                                _showCandadoDialog(context, candadoPress);
+                              },
+                              child: Container(
+                                width: 120.0,
+                                margin: const EdgeInsets.only(left: 8.0,right: 8.0, bottom: 8.0),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  color: colorContenedor,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      candadosPorLugar[lugar]![index].image,
+                                      fit: BoxFit.contain,
+                                      height: 70.0,
                                     ),
-                                  ),
-                                  Text(
-                                    DateFormat('yyyy-MM-dd').format(
-                                        candadosPorLugar[lugar]![index]
-                                            .fechaIngreso),
-                                    style: const TextStyle(
-                                      fontSize: 14.0,
+                                    Text(
+                                      candadosPorLugar[lugar]![index].numero,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16.0,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                    Text(
+                                      DateFormat('yyyy-MM-dd').format(
+                                        candadosPorLugar[lugar]![index].fechaIngreso,
+                                      ),
+                                      style: const TextStyle(
+                                        fontSize: 14.0,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             );
                           },
                         ),
                       )
-                    : const SizedBox(), // Si no está expandido, no mostrar el ListView.builder
+                    : const SizedBox(),
               ],
             );
           } else {
-            return const SizedBox
-                .shrink(); // No mostrar la fila si no hay candados en este lugar
+            return const SizedBox.shrink();
           }
         }).toList(),
       ),
     );
+
   }
-}
+  void _showCandadoDialog(BuildContext context, Candado candado) {
+  showDialog(
+    context: context,
+    builder: (context) => CustomCandadoDialog(candado: candado),
+  );
+}}
