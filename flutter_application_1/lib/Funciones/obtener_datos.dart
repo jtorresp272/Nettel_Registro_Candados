@@ -30,7 +30,10 @@ Map<String, int> obtenerDatosTaller(List<Candado> listaTaller) {
     }
   }
 
-  totalCandados = candadosOperativos+candadosIngresados+mecanicasListas+mecanicasDanadas;
+  totalCandados = candadosOperativos +
+      candadosIngresados +
+      mecanicasListas +
+      mecanicasDanadas;
   // Retornar un mapa con los datos contados
   return {
     'Candados Operativos': candadosOperativos,
