@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
+import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:intl/intl.dart';
-import '../Funciones/class_dato_lista.dart';
+//import '../Funciones/class_dato_lista.dart';
 
 class CustomCandadoDialog extends StatefulWidget {
   final Candado candado;
 
-  const CustomCandadoDialog({Key? key, required this.candado}) : super(key: key);
+  const CustomCandadoDialog({Key? key, required this.candado})
+      : super(key: key);
 
   @override
   _CustomCandadoDialogState createState() => _CustomCandadoDialogState();
@@ -19,8 +21,10 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog> {
   @override
   void initState() {
     super.initState();
-    _descripcionIngresoController = TextEditingController(text: widget.candado.razonIngreso);
-    _descripcionSalidaController = TextEditingController(text: widget.candado.razonSalida);
+    _descripcionIngresoController =
+        TextEditingController(text: widget.candado.razonIngreso);
+    _descripcionSalidaController =
+        TextEditingController(text: widget.candado.razonSalida);
   }
 
   @override
@@ -29,7 +33,7 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog> {
       title: Column(
         children: [
           Image.asset(
-            widget.candado.image,
+            widget.candado.imageTipo,
             fit: BoxFit.contain,
             height: 100.0,
             //width: 100.0,
@@ -40,7 +44,8 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog> {
             style: const TextStyle(
               fontSize: 30.0,
               fontWeight: FontWeight.bold,
-            ),),
+            ),
+          ),
         ],
       ),
       content: Column(
@@ -49,11 +54,13 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog> {
         children: [
           TextFormField(
             controller: _descripcionIngresoController,
-            decoration: const InputDecoration(labelText: 'Descripción de ingreso'),
+            decoration:
+                const InputDecoration(labelText: 'Descripción de ingreso'),
           ),
           TextFormField(
             controller: _descripcionSalidaController,
-            decoration: const InputDecoration(labelText: 'Descripción de salida'),
+            decoration:
+                const InputDecoration(labelText: 'Descripción de salida'),
           ),
         ],
       ),
@@ -77,7 +84,8 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog> {
             'Guardar Cambios',
             style: TextStyle(
               color: getColorAlmostBlue(),
-            ),),
+            ),
+          ),
         ),
       ],
     );

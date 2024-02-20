@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
+import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
 import 'package:flutter_application_1/widgets/CustomDrawer.dart';
 import 'package:flutter_application_1/widgets/CustomListViewBuilder.dart';
-import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
 import 'package:flutter_application_1/widgets/CustomQrScan.dart';
 import 'package:flutter_application_1/widgets/CustomResume.dart';
 import 'package:flutter_application_1/widgets/CustomSearch.dart';
 import 'package:logger/logger.dart';
+//import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
 
-enum MenuNavigator{
+enum MenuNavigator {
   // ignore: constant_identifier_names
   ESCANER,
   // ignore: constant_identifier_names
@@ -25,10 +26,10 @@ class Taller extends StatefulWidget {
 
 class _TallerState extends State<Taller> {
   var logger = Logger();
-  late List<Candado> listaCandadosTaller;
-  late List<Candado> listaFiltradaTaller;
-  late List<Candado> listaCandadosLlegar;
-  late List<Candado> listaFiltradaLlegar;
+  List<Candado> listaCandadosTaller = [];
+  List<Candado> listaFiltradaTaller = [];
+  List<Candado> listaCandadosLlegar = [];
+  List<Candado> listaFiltradaLlegar = [];
   late FocusNode _searchFocusNodeTaller;
   late FocusNode _searchFocusNodeLlegar;
   final TextEditingController _textControllerTaller = TextEditingController();
@@ -36,7 +37,8 @@ class _TallerState extends State<Taller> {
 
   late int _selectedIndex = 0; // Definición de _selectedIndex
 
-  late Map<int, Map<int, bool>> _tabExpandedStates; // Definicion de _tabExpandedStates para dejar seteado el ultimo estado de cada tapBar
+  late Map<int, Map<int, bool>>
+      _tabExpandedStates; // Definicion de _tabExpandedStates para dejar seteado el ultimo estado de cada tapBar
 
 // Void para las botones del bottomNavigatorBar
   void _onItemTapped(int index) {
@@ -46,16 +48,16 @@ class _TallerState extends State<Taller> {
     // Acciones para el índice 0 (Escanear)
     if (_selectedIndex == MenuNavigator.ESCANER.index) {
       Navigator.of(context)
-      .push(MaterialPageRoute(
-      builder: (context) => const CustomQrScan(),
+          .push(MaterialPageRoute(
+        builder: (context) => const CustomQrScan(),
       ))
-      .then((result) {
+          .then((result) {
         if (result != null) {
           logger.i('Codigo QR escaneado: $result');
         }
       });
-    } else if (_selectedIndex == MenuNavigator.HISTORIAL.index) {  // Acciones para el índice 1 (Historial)
-
+    } else if (_selectedIndex == MenuNavigator.HISTORIAL.index) {
+      // Acciones para el índice 1 (Historial)
     }
   }
 
@@ -65,38 +67,51 @@ class _TallerState extends State<Taller> {
     _searchFocusNodeTaller = FocusNode();
     _searchFocusNodeLlegar = FocusNode();
     _tabExpandedStates = {
-      0:{},
-      1:{},
-      2:{},
+      0: {},
+      1: {},
+      2: {},
     };
-    listaCandadosTaller = generarCandadosAleatoriosTaller().map((candado) {
-      return Candado(
-        numero: candado.numero,
-        fechaIngreso: candado.fechaIngreso,
-        lugar: candado.lugar,
-        image: candado.image, //getImagePath(candado.lugar),
-        razonIngreso: candado.razonIngreso,
-        responsable: candado.responsable,
-        razonSalida: candado.razonSalida,
-        fechaSalida: candado.fechaSalida,
-        tipo: candado.tipo,
-      );
-    }).toList();
-    listaCandadosLlegar = generarCandadosAleatoriosLlegar().map((candado) {
-      return Candado(
-        numero: candado.numero,
-        fechaIngreso: candado.fechaIngreso,
-        lugar: candado.lugar,
-        image: candado.image, //getImagePath(candado.lugar),
-        razonIngreso: candado.razonIngreso,
-        responsable: candado.responsable,
-        razonSalida: candado.razonSalida,
-        fechaSalida: candado.fechaSalida,
-        tipo: candado.tipo,
-      );
-    }).toList();
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    await getDataGoogleSheet().then((_) {
+      setState(() {
+        listaCandadosTaller = getCandadosTaller().map((candado) {
+          return Candado(
+            numero: candado.numero,
+            fechaIngreso: candado.fechaIngreso,
+            lugar: candado.lugar,
+            imageTipo: candado.imageTipo, //getImagePath(candado.lugar),
+            imageDescripcion: candado.imageDescripcion,
+            razonIngreso: candado.razonIngreso,
+            responsable: candado.responsable,
+            razonSalida: candado.razonSalida,
+            fechaSalida: candado.fechaSalida,
+            tipo: candado.tipo,
+          );
+        }).toList();
+
+        listaCandadosLlegar = getCandadosPuerto().map((candado) {
+          return Candado(
+            numero: candado.numero,
+            fechaIngreso: candado.fechaIngreso,
+            lugar: candado.lugar,
+            imageTipo: candado.imageTipo, //getImagePath(candado.lugar),
+            imageDescripcion: candado.imageDescripcion,
+            razonIngreso: candado.razonIngreso,
+            responsable: candado.responsable,
+            razonSalida: candado.razonSalida,
+            fechaSalida: candado.fechaSalida,
+            tipo: candado.tipo,
+          );
+        }).toList();
+      });
+    });
+
     listaFiltradaTaller = List.from(listaCandadosTaller);
     listaFiltradaLlegar = List.from(listaCandadosLlegar);
+    logger.i("Candados por llegar: $listaCandadosLlegar");
   }
 
   void filtrarListaTaller(String query) {
@@ -173,7 +188,7 @@ class _TallerState extends State<Taller> {
                   children: [
                     // Página 1: "Resumen"
                     CustomResumen(
-                      listaTaller: listaCandadosTaller, 
+                      listaTaller: listaCandadosTaller,
                       listaLlegar: listaCandadosLlegar,
                     ),
                     // Página 2: "En Taller"
@@ -200,13 +215,13 @@ class _TallerState extends State<Taller> {
                               where_from: 'Taller',
                               listaFiltrada: listaFiltradaTaller,
                               expandedState: _tabExpandedStates[1]!,
-                              onExpandedChanged: (index){
+                              onExpandedChanged: (index) {
                                 setState(() {
-                                  final currentState = _tabExpandedStates[1]![index] ?? false;
+                                  final currentState =
+                                      _tabExpandedStates[1]![index] ?? false;
                                   _tabExpandedStates[1]![index] = !currentState;
                                 });
-                              }
-                              ),
+                              }),
                         ],
                       ),
                     ),
@@ -231,16 +246,17 @@ class _TallerState extends State<Taller> {
                             },
                           ),
                           CustomListViewBuilder(
-                              where_from: 'Llegar',
-                              listaFiltrada: listaFiltradaLlegar,
-                              expandedState: _tabExpandedStates[2]!,
-                              onExpandedChanged: (index){
-                                setState(() {
-                                  final currentState = _tabExpandedStates[2]![index] ?? false;
-                                  _tabExpandedStates[2]![index] = !currentState;
-                                });
-                              }
-                              ,),
+                            where_from: 'Llegar',
+                            listaFiltrada: listaFiltradaLlegar,
+                            expandedState: _tabExpandedStates[2]!,
+                            onExpandedChanged: (index) {
+                              setState(() {
+                                final currentState =
+                                    _tabExpandedStates[2]![index] ?? false;
+                                _tabExpandedStates[2]![index] = !currentState;
+                              });
+                            },
+                          ),
                         ],
                       ),
                     ),

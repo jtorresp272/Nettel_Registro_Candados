@@ -3,9 +3,7 @@
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
-String URL =
-    "https://script.google.com/macros/s/AKfycbwwLA26uBvHLJBzdZ_oJAvbwyx21mEZm7U153PcnTQz8YGzl5JYpZTsAVs43-LmA2yB-w/exec?accion=ob_data";
+import 'package:logger/logger.dart';
 
 class Candado {
   final String numero;
@@ -14,9 +12,10 @@ class Candado {
   final String razonSalida;
   final String responsable;
   final DateTime fechaIngreso;
-  final DateTime fechaSalida;
+  final DateTime? fechaSalida;
   final String lugar;
-  final String image; // Campo para la ruta de la imagen
+  final String imageTipo; // Campo para la ruta de la imagen
+  final String imageDescripcion;
 
   Candado({
     required this.numero,
@@ -27,47 +26,87 @@ class Candado {
     required this.fechaIngreso,
     required this.fechaSalida,
     required this.lugar,
-    required this.image, // Incluir el campo de imagen
+    required this.imageTipo, // Incluir el campo de imagen
+    required this.imageDescripcion,
   });
+
+  @override
+  String toString() {
+    return 'Candado{numero: $numero, tipo: $tipo, razonIngreso: $razonIngreso, razonSalida: $razonSalida, responsable: $responsable, fechaIngreso: $fechaIngreso, fechaSalida: $fechaSalida, lugar: $lugar, imageTipo: $imageTipo, imageDescripcion: $imageDescripcion}';
+  }
 }
 
-Future<List<Candado>> obtenerDatosDesdeGoogleSheet() async {
+String URL =
+    "https://script.google.com/macros/s/AKfycbwwLA26uBvHLJBzdZ_oJAvbwyx21mEZm7U153PcnTQz8YGzl5JYpZTsAVs43-LmA2yB-w/exec?accion=ob_data";
+
+final List<Candado> listaCandadosTaller = [];
+final List<Candado> listaCandadosPuerto = [];
+
+var logger = Logger();
+
+Future getDataGoogleSheet() async {
   final response = await http.get(Uri.parse(URL));
 
   if (response.statusCode == 200) {
-    final List<Candado> listaCandados = [];
     final jsonData = json.decode(response.body);
+    for (var item in jsonData) {
+      if (['L', 'M', 'I', 'V'].contains(item['lugar'])) {
+        DateTime? fechaIngreso = parseDateString(item['Fecha Ingreso']);
+        DateTime? fechaSalida = parseDateString(item['Fecha Salida']);
+        final Candado candadoTaller = Candado(
+          numero: item['Numero'],
+          tipo: item['Tipo'],
+          razonIngreso: item['Descripcion Ingreso'],
+          razonSalida: item['Descripcion Salida'],
+          responsable: item['Responsable'],
+          fechaIngreso: fechaIngreso!,
+          fechaSalida: fechaSalida,
+          lugar: item['lugar'],
+          imageDescripcion: item['Imagen'],
+          imageTipo: getImagePath(
+              item['Tipo']), // Obtener la ruta de la imagen según el tipo
+        );
 
-    for (var item in jsonData['items']) {
-      final Candado candado = Candado(
-        numero: item['Numero'],
-        tipo: item['Tipo'],
-        razonIngreso: item['Descripcion Ingreso'],
-        razonSalida: item['Descripcion Salida'],
-        responsable: item['Responsable'],
-        fechaIngreso: DateTime.parse(item['Fecha Ingreso']),
-        fechaSalida: DateTime.parse(item['Fecha Salida']),
-        lugar: item['Lugar'],
-        image: getImagePath(
-            item['Tipo']), // Obtener la ruta de la imagen según el tipo
-      );
-
-      listaCandados.add(candado);
+        listaCandadosTaller.add(candadoTaller);
+      } else if ([
+        'DPW',
+        'NAPORTEC',
+        'OTRO',
+        'QUITO',
+        'CUENCA',
+        'MANTA',
+        'TPG',
+        'CONTECON'
+      ].contains(item['lugar'])) {
+        DateTime? fechaIngreso = parseDateString(item['Fecha Ingreso']);
+        DateTime? fechaSalida = parseDateString(item['Fecha Salida']);
+        final Candado candadoPuerto = Candado(
+          numero: item['Numero'],
+          tipo: item['Tipo'],
+          razonIngreso: item['Descripcion Ingreso'],
+          razonSalida: item['Descripcion Salida'],
+          responsable: item['Responsable'],
+          fechaIngreso: fechaIngreso!,
+          fechaSalida: fechaSalida,
+          lugar: item['lugar'],
+          imageDescripcion: item['Imagen'],
+          imageTipo: getImagePath(
+              item['Tipo']), // Obtener la ruta de la imagen según el tipo
+        );
+        listaCandadosPuerto.add(candadoPuerto);
+      }
     }
-
-    return listaCandados;
   } else {
     throw Exception('Error al cargar los datos desde Google Sheets');
   }
 }
 
-List<Candado> filtrarCandadosPorLugar(List<Candado> candados, String lugar) {
-  return candados.where((candado) => candado.lugar == lugar).toList();
+List<Candado> getCandadosTaller() {
+  return listaCandadosTaller;
 }
 
-List<Candado> filtrarCandadosPorOtrosNombres(
-    List<Candado> candados, String nombre) {
-  return candados.where((candado) => candado.lugar == nombre).toList();
+List<Candado> getCandadosPuerto() {
+  return listaCandadosPuerto;
 }
 
 String getImagePath(String tipo) {
@@ -80,7 +119,30 @@ String getImagePath(String tipo) {
       return 'assets/images/candado_piston.png';
     case 'CC_Plastico':
       return 'assets/images/cc_plastico.png';
+    case 'CC_5':
+      return 'assets/images/CC_5.png';
     default:
-      return 'assets/images/cc_plastico.png';
+      return 'assets/images/CC_5.png';
+  }
+}
+
+DateTime? parseDateString(String dateString) {
+  // Si la cadena de fecha está vacía, retorna null
+  if (dateString.isEmpty) {
+    return null;
+  }
+
+  // Intenta analizar la fecha en diferentes formatos
+  try {
+    // Intenta analizar la fecha en formato "dd/MM/yyyy"
+    return DateTime.parse(dateString);
+  } catch (e) {
+    try {
+      // Si falla, intenta analizar la fecha en formato ISO8601
+      return DateTime.parse(dateString);
+    } catch (e) {
+      // Si no se puede analizar la fecha, retorna null
+      return null;
+    }
   }
 }

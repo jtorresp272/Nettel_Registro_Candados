@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
+import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:flutter_application_1/widgets/CustomDialog.dart';
 import '../Funciones/get_color.dart';
 import 'package:intl/intl.dart';
 
+//import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
 class CustomListViewBuilder extends StatelessWidget {
   final String where_from;
   final List<Candado> listaFiltrada;
@@ -29,13 +30,14 @@ class CustomListViewBuilder extends StatelessWidget {
     List<String> lugares = where_from == "Taller"
         ? ['L', 'M', 'I', 'V']
         : [
-            'Naportec',
+            'NAPORTEC',
             'DPW',
-            'Cuenca',
-            'Quito',
+            'CUENCA',
+            'QUITO',
             'TPG',
-            'Inarpi',
-            'Manta'
+            'CONTECON',
+            'MANTA',
+            'OTRO'
           ];
 
     return Expanded(
@@ -120,14 +122,16 @@ class CustomListViewBuilder extends StatelessWidget {
                           scrollDirection: Axis.horizontal,
                           itemCount: candadosPorLugar[lugar]!.length,
                           itemBuilder: (BuildContext context, int index) {
-                            Candado candadoPress = candadosPorLugar[lugar]![index]; // Accede al candado específico en esta posición
+                            Candado candadoPress = candadosPorLugar[lugar]![
+                                index]; // Accede al candado específico en esta posición
                             return GestureDetector(
-                              onTap: (){
+                              onTap: () {
                                 _showCandadoDialog(context, candadoPress);
                               },
                               child: Container(
                                 width: 120.0,
-                                margin: const EdgeInsets.only(left: 8.0,right: 8.0, bottom: 8.0),
+                                margin: const EdgeInsets.only(
+                                    left: 8.0, right: 8.0, bottom: 8.0),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10.0),
                                   color: colorContenedor,
@@ -137,7 +141,7 @@ class CustomListViewBuilder extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Image.asset(
-                                      candadosPorLugar[lugar]![index].image,
+                                      candadosPorLugar[lugar]![index].imageTipo,
                                       fit: BoxFit.contain,
                                       height: 70.0,
                                     ),
@@ -150,7 +154,8 @@ class CustomListViewBuilder extends StatelessWidget {
                                     ),
                                     Text(
                                       DateFormat('yyyy-MM-dd').format(
-                                        candadosPorLugar[lugar]![index].fechaIngreso,
+                                        candadosPorLugar[lugar]![index]
+                                            .fechaIngreso,
                                       ),
                                       style: const TextStyle(
                                         fontSize: 14.0,
@@ -172,11 +177,12 @@ class CustomListViewBuilder extends StatelessWidget {
         }).toList(),
       ),
     );
-
   }
+
   void _showCandadoDialog(BuildContext context, Candado candado) {
-  showDialog(
-    context: context,
-    builder: (context) => CustomCandadoDialog(candado: candado),
-  );
-}}
+    showDialog(
+      context: context,
+      builder: (context) => CustomCandadoDialog(candado: candado),
+    );
+  }
+}

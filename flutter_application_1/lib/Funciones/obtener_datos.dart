@@ -1,6 +1,7 @@
 // En el directorio otro_directorio/funciones.dart
+//import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
 
-import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
+import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 
 Map<String, int> obtenerDatosTaller(List<Candado> listaTaller) {
   // Lógica para procesar la lista de taller y obtener los datos requeridos
