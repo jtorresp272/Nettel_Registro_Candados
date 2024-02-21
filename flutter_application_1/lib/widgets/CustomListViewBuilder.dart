@@ -134,7 +134,11 @@ class CustomListViewBuilder extends StatelessWidget {
                                     left: 8.0, right: 8.0, bottom: 8.0),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10.0),
-                                  color: colorContenedor,
+                                  color: Colors.white,
+                                  border: Border.all(
+                                    color: colorContenedor,
+                                    width: 4.0,
+                                  ),
                                 ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
