@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Funciones/get_color.dart';
 
 class CustomTextFormField extends StatefulWidget {
   final String hintText;
@@ -33,8 +34,8 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       obscureText: widget.obscureText ? _obscureText : false,
       decoration: InputDecoration(
         focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Color.fromARGB(255, 68, 91, 164),
+          borderSide: BorderSide(
+            color: getColorAlmostBlue(),
             style: BorderStyle.solid,
           ),
           borderRadius: BorderRadius.circular(10),
@@ -50,10 +51,10 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
           color: Colors.black12,
         ),
         labelText: widget.text,
-        labelStyle: const TextStyle(
-          color: Color.fromARGB(255, 68, 91, 164),
+        labelStyle: TextStyle(
+          color: getColorAlmostBlue(),
         ),
-        suffixIconColor: const Color.fromARGB(255, 68, 91, 164),
+        suffixIconColor: getColorAlmostBlue(),
         suffixIcon: widget.obscureText
             ? IconButton(
                 icon: Icon(
@@ -65,7 +66,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                 },
               )
             : null,
-        prefixIconColor: const Color.fromARGB(255, 68, 91, 164),
+        prefixIconColor: getColorAlmostBlue(),
         prefixIcon: Icon(widget.icon),
       ),
       onFieldSubmitted: (value) {

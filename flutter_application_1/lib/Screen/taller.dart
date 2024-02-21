@@ -26,6 +26,7 @@ class Taller extends StatefulWidget {
 
 class _TallerState extends State<Taller> {
   var logger = Logger();
+  bool termino_ob_data = false;
   List<Candado> listaCandadosTaller = [];
   List<Candado> listaFiltradaTaller = [];
   List<Candado> listaCandadosLlegar = [];
@@ -111,7 +112,7 @@ class _TallerState extends State<Taller> {
 
     listaFiltradaTaller = List.from(listaCandadosTaller);
     listaFiltradaLlegar = List.from(listaCandadosLlegar);
-    logger.i("Candados por llegar: $listaCandadosLlegar");
+    termino_ob_data = true;
   }
 
   void filtrarListaTaller(String query) {
@@ -149,7 +150,7 @@ class _TallerState extends State<Taller> {
           nameUser: "Taller",
         ),
         resizeToAvoidBottomInset: false,
-        body: DefaultTabController(
+        body: termino_ob_data ? DefaultTabController(
           initialIndex: 1,
           length: 3,
           child: Column(
@@ -264,6 +265,16 @@ class _TallerState extends State<Taller> {
                 ),
               ),
             ],
+          ),
+        ) : Center(
+          child: SizedBox(
+            height: 100,
+            width: 100,
+            child: CircularProgressIndicator(
+              strokeWidth: 7.0,
+              color: getColorAlmostBlue()
+              ,
+            ),
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
