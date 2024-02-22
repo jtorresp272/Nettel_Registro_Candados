@@ -6,6 +6,7 @@ import 'package:flutter_application_1/widgets/CustomDrawer.dart';
 import 'package:flutter_application_1/widgets/CustomListViewBuilder.dart';
 import 'package:flutter_application_1/widgets/CustomQrScan.dart';
 import 'package:flutter_application_1/widgets/CustomResume.dart';
+import 'package:flutter_application_1/widgets/CustomScanDialog.dart';
 import 'package:flutter_application_1/widgets/CustomSearch.dart';
 import 'package:logger/logger.dart';
 //import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
@@ -50,13 +51,29 @@ class _TallerState extends State<Taller> {
     if (_selectedIndex == MenuNavigator.ESCANER.index) {
       Navigator.of(context)
           .push(MaterialPageRoute(
-        builder: (context) => const CustomQrScan(),
-      ))
+            builder: (context) => const CustomQrScan(),
+          ))
           .then((result) {
-        if (result != null) {
-          logger.i('Codigo QR escaneado: $result');
-        }
-      });
+            if (result != null) {
+              logger.i('Codigo QR escaneado: $result');
+              String scannedNumber = result as String;
+              Candado scannedCandado = listaCandadosTaller.firstWhere(
+                (candado) => candado.numero == scannedNumber,
+                orElse: () => Candado(numero: scannedNumber, tipo: '', razonIngreso: '', razonSalida: '', responsable: '', fechaIngreso: DateTime.now(), fechaSalida: null, lugar: '', imageTipo: '', imageDescripcion: ''), // Valor predeterminado
+              );
+
+              if (scannedCandado.numero.isNotEmpty) {
+                // Candado encontrado en la lista, mostrar el dialogo con la información
+                showDialog(
+                  context: context,
+                  builder: (context) => CustomScanDialog(candado: scannedCandado),
+                );
+              } else {
+                // Candado no encontrado en la lista, manejar el caso aquí
+              }
+            }
+
+          });
     } else if (_selectedIndex == MenuNavigator.HISTORIAL.index) {
       // Acciones para el índice 1 (Historial)
     }
