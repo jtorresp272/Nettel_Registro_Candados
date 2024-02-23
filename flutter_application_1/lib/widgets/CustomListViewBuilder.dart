@@ -133,13 +133,18 @@ class CustomListViewBuilder extends StatelessWidget {
                                 margin: const EdgeInsets.only(
                                     left: 8.0, right: 8.0, bottom: 8.0),
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  color: Colors.white,
-                                  border: Border.all(
-                                    color: colorContenedor,
-                                    width: 4.0,
-                                  ),
-                                ),
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Colors.white,
+                                          Colors.white,
+                                          colorContenedor
+                                        ]),
+                                    border: Border.all(
+                                      color: colorContenedor,
+                                    )),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   mainAxisAlignment: MainAxisAlignment.center,
