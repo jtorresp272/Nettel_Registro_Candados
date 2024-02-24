@@ -68,8 +68,9 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 10.0,),
-                (widget.candado.responsable != '') ? decorationText("Responsable: ${widget.candado.responsable}"):const SizedBox(height: 10.0,),
+                const SizedBox(
+                  height: 10.0,
+                ),
                 TextFormField(
                   maxLines: null,
                   controller: _descripcionIngresoController,

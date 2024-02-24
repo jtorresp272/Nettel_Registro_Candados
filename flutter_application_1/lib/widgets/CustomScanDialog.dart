@@ -20,7 +20,8 @@ class _CustomScanDialogState extends State<CustomScanDialog>
   late Animation<double> _animation;
   bool candadoEnLista = false;
   late String imagen;
-  bool _isSelected = false;
+  List<bool> buttonOnPressed = [false,false,false,false,false];
+  List<String> name = ['Joshue','Oliver','Fabian ','Oswaldo','Jordy'];
 
   @override
   void initState() {
@@ -57,8 +58,7 @@ class _CustomScanDialogState extends State<CustomScanDialog>
 
   @override
   Widget build(BuildContext context) {
-    String? _selectedValue;
-
+  
     return ScaleTransition(
       scale: _animation, // Aplicar escala según la animación
       child: AlertDialog(
@@ -88,7 +88,7 @@ class _CustomScanDialogState extends State<CustomScanDialog>
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 10.0,),
                 (widget.candado.responsable != '') ? decorationText("Responsable: ${widget.candado.responsable}"):const SizedBox(height: 10.0,),
@@ -105,45 +105,71 @@ class _CustomScanDialogState extends State<CustomScanDialog>
                   controller: _descripcionSalidaController,
                   decoration: decorationTextField(text: 'Descripción de salida'),
                 ),
-    
-                InkWell(
-                  onTap: () {
-                    setState(() {
-                      _isSelected = !_isSelected;
-                    });
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
+                const SizedBox(height: 10.0,),
+                Text('Responsable:',style: TextStyle(
+                  color: getColorAlmostBlue(),
+                  fontSize: 15.0,
+                ),),
+                const SizedBox(height: 10.0,),
+                Container(
+                  padding: const EdgeInsets.all(5.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                    border: Border.all(
+                      color: getColorAlmostBlue(),
+                    )
+                  ),
+                  child: Center(
+                    child: Column(
                       children: [
-                        Container(
-                          width: 24,
-                          height: 24,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: getColorAlmostBlue(), width: 2.0),
-                            color: _isSelected ? Colors.green : Colors.transparent,
-                          ),
-                          child: _isSelected
-                              ? const Icon(
-                                  Icons.check,
-                                  size: 16.0,
-                                  color: Colors.white,
-                                )
-                              : null,
+                        RowWithButton(
+                          name: [name[0],name[1]],
+                          onPressed:[
+                            () {
+                              setState(() {
+                                buttonOnPressed[0] = !buttonOnPressed[0];
+                              });
+                            },
+                            () {
+                              setState(() {
+                                buttonOnPressed[1] = !buttonOnPressed[1];
+                              });
+                            },
+                          ],
+                          isPressed: [buttonOnPressed[0],buttonOnPressed[1]],
                         ),
-                        const SizedBox(width: 8.0),
-                        const Text(
-                          'Opción 1',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            color: Colors.black,
-                          ),
+                        RowWithButton(
+                          name: [name[2],name[3]],
+                          onPressed:[
+                            () {
+                              setState(() {
+                                buttonOnPressed[2] = !buttonOnPressed[2];
+                              });
+                            },
+                            () {
+                              setState(() {
+                                buttonOnPressed[3] = !buttonOnPressed[3];
+                              });
+                            },
+                          ],
+                          isPressed: [buttonOnPressed[2],buttonOnPressed[3]],
                         ),
-                      ],
+                        RowWithButton(
+                          name: [name[4]],
+                          onPressed:[
+                            () {
+                              setState(() {
+                                buttonOnPressed[4] = !buttonOnPressed[4];
+                              });
+                            },
+                          ],
+                          isPressed: [buttonOnPressed[4]],
+                        ),
+                      ]
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -198,6 +224,68 @@ class _CustomScanDialogState extends State<CustomScanDialog>
   }
 }
 
+class RowWithButton extends StatelessWidget
+{
+  final List<String> name;
+  final List<VoidCallback> onPressed;
+  final List<bool> isPressed;
+
+  const RowWithButton({
+    Key? key, 
+    required this.name,
+    required this.onPressed,
+    required this.isPressed,
+  }):super (key:key);
+  
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: List.generate(name.length, (index){
+        return InkWell(  
+          onTap: () {
+            onPressed[index]();
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: getColorAlmostBlue(), width: 2.0),
+                  ),
+                  child: Center(
+                    child: Container(
+                      width: 15.0,
+                      height: 15.0,
+                      decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.transparent),
+                      color: isPressed[index] ? getColorAlmostBlue() : getBackgroundColor(),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8.0),
+                Text(
+                  name[index],
+                  style:  TextStyle(
+                    fontSize: 16.0,
+                    color: getColorAlmostBlue(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }),
+    );
+  }
+}
+
 Text  decorationText(String texto)
 {
   return Text(texto,style: const TextStyle(color: Colors.black),);
@@ -227,6 +315,6 @@ InputDecoration decorationTextField({required String text})
         borderRadius: BorderRadius.circular(10.0),  
       ),
       filled: true,
-      fillColor: Colors.white54,
+      fillColor: Colors.white,
   );
 }

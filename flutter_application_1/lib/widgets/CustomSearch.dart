@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Funciones/get_color.dart';
 
 class CustomSearchField extends StatelessWidget {
   final TextEditingController controller;
@@ -26,17 +27,17 @@ class CustomSearchField extends StatelessWidget {
         decoration: InputDecoration(
           labelText: 'Buscar',
           labelStyle: const TextStyle(color: Colors.grey),
-          border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            borderSide: BorderSide(color: Colors.grey),
+          border: OutlineInputBorder(
+            borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+            borderSide: BorderSide(color: getColorAlmostBlue()),
           ),
-          enabledBorder:const  OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            borderSide: BorderSide(color: Colors.grey),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+            borderSide: BorderSide(color: getColorAlmostBlue()),
           ),
-          focusedBorder:const  OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            borderSide: BorderSide(color: Colors.grey),
+          focusedBorder:  OutlineInputBorder(
+            borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+            borderSide: BorderSide(color: getColorAlmostBlue()),
           ),
           suffixIcon: IconButton(
             onPressed: () {
