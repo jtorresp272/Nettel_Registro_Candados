@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
+import 'package:flutter_application_1/Funciones/notification_state.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
 import 'package:flutter_application_1/widgets/CustomDrawer.dart';
@@ -158,10 +159,13 @@ class _TallerState extends State<Taller> {
 
   @override
   Widget build(BuildContext context) {
+    final notify = NotificationState();
+
     return Scaffold(
         appBar: CustomAppBar(
           titulo: 'Consorcio Nettel',
           subtitulo: 'Taller',
+          notificationState: notify,
         ),
         drawer: const customDrawer(
           nameUser: "Taller",
@@ -173,22 +177,20 @@ class _TallerState extends State<Taller> {
           child: Column(
             children: [
               Container(
-                color: Colors.transparent,
-                child: TabBar(
+                color: getColorAlmostBlue(),
+                child: const TabBar(
                   labelColor:
-                      getColorAlmostBlue(), // Color del texto de la pestaña seleccionada
+                      Colors.white, // Color del texto de la pestaña seleccionada
                   unselectedLabelColor: Colors
-                      .black38, // Color del texto de las pestañas no seleccionadas
+                      .black45, // Color del texto de las pestañas no seleccionadas
                   indicatorColor:
-                      getColorAlmostBlue(), // Color del indicador que resalta la pestaña seleccionada
-                  labelStyle: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight
-                          .bold), // Estilo del texto de la pestaña seleccionada
-                  unselectedLabelStyle: const TextStyle(
+                      Colors.white, // Color del indicador que resalta la pestaña seleccionada
+                  labelStyle: TextStyle(
+                      fontSize: 18,), // Estilo del texto de la pestaña seleccionada
+                  unselectedLabelStyle: TextStyle(
                       fontSize:
                           16), // Estilo del texto de las pestañas no seleccionadas
-                  tabs: const [
+                  tabs: [
                     Tab(
                       text: 'Resumen',
                     ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Funciones/notification_state.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
 import 'package:flutter_application_1/widgets/CustomDrawer.dart';
 
@@ -10,10 +11,12 @@ class Monitoreo extends StatefulWidget {
 }
 
 class _MonitoreoState extends State<Monitoreo> {
+  final notify = NotificationState();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(titulo: 'Consorcio Nettel', subtitulo: 'Monitoreo'),
+      appBar: CustomAppBar(titulo: 'Consorcio Nettel', subtitulo: 'Monitoreo',notificationState: notify,),
       drawer: const customDrawer(
         nameUser: "Monitoreo",
       ),

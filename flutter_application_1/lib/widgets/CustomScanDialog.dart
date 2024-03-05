@@ -62,6 +62,7 @@ class _CustomScanDialogState extends State<CustomScanDialog>
     return ScaleTransition(
       scale: _animation, // Aplicar escala según la animación
       child: AlertDialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 25.0,vertical: 10.0),
         title: Column(
           children: [
             Image.asset(
@@ -122,6 +123,7 @@ class _CustomScanDialogState extends State<CustomScanDialog>
                   ),
                   child: Center(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         RowWithButton(
                           name: [name[0],name[1]],
@@ -129,11 +131,19 @@ class _CustomScanDialogState extends State<CustomScanDialog>
                             () {
                               setState(() {
                                 buttonOnPressed[0] = !buttonOnPressed[0];
+                                buttonOnPressed[1] = false;
+                                buttonOnPressed[2] = false;
+                                buttonOnPressed[3] = false;
+                                buttonOnPressed[4] = false;
                               });
                             },
                             () {
                               setState(() {
                                 buttonOnPressed[1] = !buttonOnPressed[1];
+                                buttonOnPressed[0] = false;
+                                buttonOnPressed[2] = false;
+                                buttonOnPressed[3] = false;
+                                buttonOnPressed[4] = false;
                               });
                             },
                           ],
@@ -145,11 +155,19 @@ class _CustomScanDialogState extends State<CustomScanDialog>
                             () {
                               setState(() {
                                 buttonOnPressed[2] = !buttonOnPressed[2];
+                                buttonOnPressed[0] = false;
+                                buttonOnPressed[1] = false;
+                                buttonOnPressed[3] = false;
+                                buttonOnPressed[4] = false;
                               });
                             },
                             () {
                               setState(() {
                                 buttonOnPressed[3] = !buttonOnPressed[3];
+                                buttonOnPressed[0] = false;
+                                buttonOnPressed[1] = false;
+                                buttonOnPressed[2] = false;
+                                buttonOnPressed[4] = false;
                               });
                             },
                           ],
@@ -161,6 +179,10 @@ class _CustomScanDialogState extends State<CustomScanDialog>
                             () {
                               setState(() {
                                 buttonOnPressed[4] = !buttonOnPressed[4];
+                                buttonOnPressed[0] = false;
+                                buttonOnPressed[1] = false;
+                                buttonOnPressed[2] = false;
+                                buttonOnPressed[3] = false;
                               });
                             },
                           ],
@@ -224,25 +246,25 @@ class _CustomScanDialogState extends State<CustomScanDialog>
   }
 }
 
-class RowWithButton extends StatelessWidget
-{
+class RowWithButton extends StatelessWidget {
   final List<String> name;
   final List<VoidCallback> onPressed;
   final List<bool> isPressed;
 
   const RowWithButton({
-    Key? key, 
+    Key? key,
     required this.name,
     required this.onPressed,
     required this.isPressed,
-  }):super (key:key);
-  
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
-      children: List.generate(name.length, (index){
-        return InkWell(  
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: List.generate(name.length, (index) {
+        return InkWell(
           onTap: () {
             onPressed[index]();
           },
@@ -255,16 +277,19 @@ class RowWithButton extends StatelessWidget
                   height: 20,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: getColorAlmostBlue(), width: 2.0),
+                    border: Border.all(
+                        color: getColorAlmostBlue(), width: 2.0),
                   ),
                   child: Center(
                     child: Container(
-                      width: 15.0,
-                      height: 15.0,
+                      width: 12.0,
+                      height: 12.0,
                       decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.transparent),
-                      color: isPressed[index] ? getColorAlmostBlue() : getBackgroundColor(),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.transparent),
+                        color: isPressed[index]
+                            ? getColorAlmostBlue()
+                            : getBackgroundColor(),
                       ),
                     ),
                   ),
@@ -272,7 +297,7 @@ class RowWithButton extends StatelessWidget
                 const SizedBox(width: 8.0),
                 Text(
                   name[index],
-                  style:  TextStyle(
+                  style: TextStyle(
                     fontSize: 16.0,
                     color: getColorAlmostBlue(),
                   ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
+import 'package:flutter_application_1/Funciones/notification_state.dart';
 import 'package:flutter_application_1/widgets/CustomElevatedButton.dart';
 import 'package:flutter_application_1/widgets/CustomQrScan.dart';
 import 'package:logger/logger.dart';
@@ -15,6 +16,7 @@ class Puerto extends StatefulWidget {
 
 class _PuertoState extends State<Puerto> {
   var logger = Logger();
+  final notify = NotificationState();
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,7 @@ class _PuertoState extends State<Puerto> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar: CustomAppBar(titulo: 'Consorcio Nettel', subtitulo: 'Puerto'),
+      appBar: CustomAppBar(titulo: 'Consorcio Nettel', subtitulo: 'Puerto',),
       drawer: const customDrawer(
         nameUser: "Puerto",
       ),
