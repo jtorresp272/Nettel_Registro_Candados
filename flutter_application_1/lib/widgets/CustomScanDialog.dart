@@ -13,7 +13,7 @@ class CustomScanDialog extends StatefulWidget {
 }
 
 class _CustomScanDialogState extends State<CustomScanDialog>
-    with SingleTickerProviderStateMixin {
+  with SingleTickerProviderStateMixin {
   late TextEditingController _descripcionIngresoController;
   late TextEditingController _descripcionSalidaController;
   late AnimationController _animationController;
@@ -62,12 +62,17 @@ class _CustomScanDialogState extends State<CustomScanDialog>
     return ScaleTransition(
       scale: _animation, // Aplicar escala según la animación
       child: AlertDialog(
-        insetPadding: const EdgeInsets.symmetric(horizontal: 25.0,vertical: 10.0),
+        shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0), // Radio del borde
+        // Puedes ajustar otros atributos del borde según lo desees
+        ),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 23.0,vertical: 15.0),
+        surfaceTintColor: getBackgroundColor(),
         title: Column(
           children: [
             Image.asset(
               imagen,
-              fit: (widget.candado.tipo == 'CC_5' || widget.candado.tipo == 'CC_4') ? BoxFit.cover:BoxFit.contain,
+              fit: (widget.candado.tipo == 'CC_5' || widget.candado.tipo == 'CC_4') ? BoxFit.fitWidth:BoxFit.contain,
               height: 110.0,
               width: 200.0,
             ),
@@ -130,20 +135,12 @@ class _CustomScanDialogState extends State<CustomScanDialog>
                           onPressed:[
                             () {
                               setState(() {
-                                buttonOnPressed[0] = !buttonOnPressed[0];
-                                buttonOnPressed[1] = false;
-                                buttonOnPressed[2] = false;
-                                buttonOnPressed[3] = false;
-                                buttonOnPressed[4] = false;
+                                buttonOnPressed = List.generate(buttonOnPressed.length, (index) => index == 0 ? !buttonOnPressed[0] : false);
                               });
                             },
                             () {
                               setState(() {
-                                buttonOnPressed[1] = !buttonOnPressed[1];
-                                buttonOnPressed[0] = false;
-                                buttonOnPressed[2] = false;
-                                buttonOnPressed[3] = false;
-                                buttonOnPressed[4] = false;
+                                buttonOnPressed = List.generate(buttonOnPressed.length, (index) => index == 1 ? !buttonOnPressed[1] : false);
                               });
                             },
                           ],
@@ -154,20 +151,13 @@ class _CustomScanDialogState extends State<CustomScanDialog>
                           onPressed:[
                             () {
                               setState(() {
-                                buttonOnPressed[2] = !buttonOnPressed[2];
-                                buttonOnPressed[0] = false;
-                                buttonOnPressed[1] = false;
-                                buttonOnPressed[3] = false;
-                                buttonOnPressed[4] = false;
+                                buttonOnPressed = List.generate(buttonOnPressed.length, (index) => index == 2 ? !buttonOnPressed[2] : false);
                               });
                             },
                             () {
                               setState(() {
-                                buttonOnPressed[3] = !buttonOnPressed[3];
-                                buttonOnPressed[0] = false;
-                                buttonOnPressed[1] = false;
-                                buttonOnPressed[2] = false;
-                                buttonOnPressed[4] = false;
+                                buttonOnPressed = List.generate(buttonOnPressed.length, (index) => index == 3 ? !buttonOnPressed[3] : false);
+
                               });
                             },
                           ],
@@ -178,11 +168,14 @@ class _CustomScanDialogState extends State<CustomScanDialog>
                           onPressed:[
                             () {
                               setState(() {
+                                buttonOnPressed = List.generate(buttonOnPressed.length, (index) => index == 4 ? !buttonOnPressed[4] : false);
+                                /*
                                 buttonOnPressed[4] = !buttonOnPressed[4];
                                 buttonOnPressed[0] = false;
                                 buttonOnPressed[1] = false;
                                 buttonOnPressed[2] = false;
                                 buttonOnPressed[3] = false;
+                              */
                               });
                             },
                           ],
@@ -210,14 +203,37 @@ class _CustomScanDialogState extends State<CustomScanDialog>
               ),
             ),
           ),
+          TextButton(
+            onPressed: () {
+              _animationController.reverse().then((_) {
+                Navigator.of(context).pop(); // Cerrar el diálogo al finalizar la animación de salida
+              });
+            },
+            child: Text(
+              'Guardar y cerrar',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: getColorAlmostBlue(),
+              ),
+            ),
+          ),
           ElevatedButton(
             onPressed: () {
               _saveChanges();
             },
+            
+            style: ElevatedButton.styleFrom(
+              elevation: 5, // Ajusta el valor según el efecto de sombra deseado
+              // Otros estilos como colores, márgenes, etc.
+              foregroundColor: Colors.transparent,
+              backgroundColor: getColorAlmostBlue(),
+              shadowColor: getColorAlmostBlue(),
+            ),
             child: Text(
-              'Guardar Cambios',
+              'Guardar y seguir escaneando',
               style: TextStyle(
-                color: getColorAlmostBlue(),
+                color: getBackgroundColor(),
+                fontSize: 14.5,
               ),
             ),
           ),

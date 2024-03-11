@@ -8,6 +8,7 @@ import 'package:flutter_application_1/widgets/CustomListViewBuilder.dart';
 import 'package:flutter_application_1/widgets/CustomQrScan.dart';
 import 'package:flutter_application_1/widgets/CustomResume.dart';
 import 'package:flutter_application_1/widgets/CustomScanDialog.dart';
+import 'package:flutter_application_1/widgets/CustomScanResume.dart';
 import 'package:flutter_application_1/widgets/CustomSearch.dart';
 import 'package:logger/logger.dart';
 //import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
@@ -67,7 +68,7 @@ class _TallerState extends State<Taller> {
                 // Candado encontrado en la lista, mostrar el dialogo con la información
                 showDialog(
                   context: context,
-                  builder: (context) => CustomScanDialog(candado: scannedCandado),
+                  builder: (context) => CustomScanResume(candado: scannedCandado,),
                 );
               } else {
                 // Candado no encontrado en la lista, manejar el caso aquí
