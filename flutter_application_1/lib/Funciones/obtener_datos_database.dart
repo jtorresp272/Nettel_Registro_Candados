@@ -80,7 +80,7 @@ Future getDataGoogleSheet() async {
   if (response.statusCode == 200) {
     final jsonData = json.decode(response.body);
     for (var item in jsonData) {
-      if (['L', 'M', 'I', 'V'].contains(item['lugar'])) {
+      if (['L', 'M', 'I', 'V', 'E'].contains(item['lugar'])) {
         DateTime? fechaIngreso = parseDateString(item['Fecha Ingreso']);
         DateTime? fechaSalida = parseDateString(item['Fecha Salida']);
         final Candado candadoTaller = Candado(

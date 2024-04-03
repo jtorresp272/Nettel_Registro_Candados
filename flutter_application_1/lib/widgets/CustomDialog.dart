@@ -1,5 +1,7 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Funciones/BuildClass/BuildDecorationTextField.dart';
+import 'package:flutter_application_1/Funciones/BuildClass/BuildRowWithCheckBox.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:intl/intl.dart';
@@ -16,26 +18,34 @@ class CustomCandadoDialog extends StatefulWidget {
 
 class _CustomCandadoDialogState extends State<CustomCandadoDialog>
     with SingleTickerProviderStateMixin {
+  // controlares para los textfromfield
   late TextEditingController _descripcionIngresoController;
   late TextEditingController _descripcionSalidaController;
   late TextEditingController _descripcionDanadaController;
+  // Variables para animación del alertDialog
   late AnimationController _animationController;
   late Animation<double> _animation;
-  final String lugares = 'ILMV';
-  Map<String,Color> color = {'I':Colors.orange,'L':Colors.green,'V':Colors.red,'M':Colors.yellow};
+  // Lugares que estan en taller
+  final String lugares = 'ILMVE';
+  // Colores para el fondo dependiendo del lugar
+  Map<String,Color> color = {'I':Colors.orange,'L':Colors.green,'V':Colors.blueAccent,'E':Colors.red,'M':Colors.yellow};
+  // Variables globales
   bool isEditable_1 = false;
   bool isEditable_2 = false;
-  bool isMecDamage = false;
-
+  late bool isMecDamage;
+  late bool isElectDamage;
+  
   @override
   void initState() {
     super.initState();
+    isMecDamage = widget.candado.lugar == 'V' ? true: false;
+    isElectDamage = widget.candado.lugar == 'E' ? true: false;
     _descripcionIngresoController =
         TextEditingController(text: widget.candado.razonIngreso);
     _descripcionSalidaController =
         TextEditingController(text: widget.candado.razonSalida);
     _descripcionDanadaController =
-        TextEditingController(text: '');
+        TextEditingController(text: widget.candado.razonIngreso);
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500), // Duración de la animación
@@ -107,71 +117,45 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Row(
-                children: [
-                  Checkbox(
-                    side: BorderSide(
-                      color: getColorAlmostBlue(),
-                      width: 2.0,
-                      style: BorderStyle.solid,
-                    ),
-                    fillColor: MaterialStateColor.resolveWith((states) => isMecDamage ? Colors.red:Colors.transparent),
-                    value: isMecDamage, 
-                    onChanged: (value){
-                      setState(() {
-                        isMecDamage = !isMecDamage;
-                      });
-                    },
-                  ),
-                  Text(
-                    "Mecánica Dañada",
-                    style: TextStyle(
-                      color: isMecDamage ? Colors.red:getColorAlmostBlue(),
-                      fontSize: 14.0,
-                    ),
-                  ),
-                ],
+              /* Check de mecanica dañada */
+              if(!isElectDamage)
+              customCheckBox(
+                name: "Mecanica Dañada", 
+                onPressed:(bool? value){
+                  setState(() {
+                    isMecDamage = value ?? false;
+                  });
+                },
+                isPressed: isMecDamage,
               ),
-              if(isMecDamage)
+              /* Check de electronica dañada */
+              if(!isMecDamage)
+              customCheckBox(
+                name: "Electronica Dañada", 
+                onPressed:(bool? value){
+                  setState(() {
+                    isElectDamage = value ?? false;
+                  });
+                },
+                isPressed: isElectDamage,
+              ),
+              if(isMecDamage || isElectDamage)
                 TextFormField(
                   maxLines: null,
                   controller: _descripcionDanadaController,
-                  decoration: InputDecoration(
-                    labelText: 'Descripción Mecánica Dañada',
-                    labelStyle: const TextStyle(
-                      color: Colors.red,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(
-                        color: Colors.red,
-                        style: BorderStyle.solid,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(
-                        color: Colors.red,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    filled: true,
-                    fillColor: Colors.white54,
-                  ),
+                  decoration: decorationTextField(text: 'Descripción de daño',color: Colors.red),
                 ),
               const SizedBox(
                 height: 20.0,
               ),
-              if(!isMecDamage)
+              if(!isMecDamage && !isElectDamage)
               // Descripción de entrada
               TextFormField(
                 maxLines: null,
                 readOnly: !isEditable_1,
                 autofocus: !isEditable_1,
                 controller: _descripcionIngresoController,
-                decoration: decorationTextField(
+                decoration: decorationTextFieldwithAction(
                   text: 'Descripción de ingreso',
                   isEnabled: isEditable_1,
                   onPressed: () {
@@ -181,18 +165,18 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                   },
                 ),
               ),
-              if(!isMecDamage)
+              if(!isMecDamage && !isElectDamage)
               const SizedBox(
                 height: 20.0,
               ),
-              if(!isMecDamage)
+              if(!isMecDamage && !isElectDamage)
               // Descripción de salida
               if(lugares.contains(widget.candado.lugar))
               TextFormField(
                 maxLines: null,
                 readOnly: !isEditable_2,
                 controller: _descripcionSalidaController,
-                decoration: decorationTextField(
+                decoration: decorationTextFieldwithAction(
                   text: 'Descripción de salida',
                   isEnabled: isEditable_2,
                   onPressed: () {
@@ -246,41 +230,4 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
     _animationController.dispose();
     super.dispose();
   }
-}
-
-Text  decorationText(String texto)
-{
-  return Text(texto,style: const TextStyle(color: Colors.black),);
-}
-
-InputDecoration decorationTextField({required String text, required bool isEnabled, required VoidCallback onPressed}) {
-  return InputDecoration(
-    labelText: text,
-    suffixIcon: IconButton(
-      onPressed: onPressed,
-      icon: Icon(isEnabled ? Icons.edit_off : Icons.edit),
-    ),
-    suffixIconColor: getColorAlmostBlue(),
-    labelStyle: TextStyle(
-      color: getColorAlmostBlue(),
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderSide: BorderSide(
-        color: getColorAlmostBlue(),
-        style: BorderStyle.solid,
-      ),
-      borderRadius: BorderRadius.circular(10),
-    ),
-    enabledBorder: OutlineInputBorder(
-      borderSide: BorderSide(
-        color: getColorAlmostBlue(),
-      ),
-      borderRadius: BorderRadius.circular(10),
-    ),
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10.0),
-    ),
-    filled: true,
-    fillColor: Colors.white54,
-  );
 }

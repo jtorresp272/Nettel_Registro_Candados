@@ -28,7 +28,7 @@ class CustomListViewBuilder extends StatelessWidget {
     }
 
     List<String> lugares = where_from == "Taller"
-        ? ['L', 'M', 'I', 'V']
+        ? ['L', 'M', 'I', 'V', 'E']
         : [
             'NAPORTEC',
             'DPW',
@@ -64,8 +64,12 @@ class CustomListViewBuilder extends StatelessWidget {
                   titulo = 'Candados Operativos';
                   break;
                 case 'V':
-                  colorContenedor = Colors.red;
+                  colorContenedor = Colors.blueAccent;
                   titulo = 'Mecanicas Dañadas';
+                  break;
+                case 'E':
+                  colorContenedor = Colors.red;
+                  titulo = 'Electronicas Dañadas';
                   break;
                 default:
                   colorContenedor = Colors.grey;
