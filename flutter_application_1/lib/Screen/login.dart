@@ -25,7 +25,7 @@ class _LogInState extends State<LogIn> {
     final Size screenSize = MediaQuery.of(context).size;
     //var logger = Logger();
     return Scaffold(
-      backgroundColor: getBackgroundColor(),
+      backgroundColor: Colors.white,
       body: Container(
         color: Colors.transparent,
         padding: const EdgeInsets.symmetric(horizontal: 25.0),

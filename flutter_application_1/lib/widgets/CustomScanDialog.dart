@@ -72,9 +72,9 @@ class _CustomScanDialogState extends State<CustomScanDialog>
           children: [
             Image.asset(
               imagen,
-              fit: (widget.candado.tipo == 'CC_5' || widget.candado.tipo == 'CC_4') ? BoxFit.fitWidth:BoxFit.contain,
+              fit: (widget.candado.tipo == 'CC_5' || widget.candado.tipo == 'CC_4') ? BoxFit.fitWidth:BoxFit.fill,
               height: 110.0,
-              width: 200.0,
+              width: 180.0,
             ),
             const SizedBox(height: 8.0),
             Text(

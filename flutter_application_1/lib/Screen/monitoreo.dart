@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/notification_state.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
-import 'package:flutter_application_1/widgets/CustomDrawer.dart';
+import 'package:flutter_application_1/widgets/CustomMenu.dart';
 
 class Monitoreo extends StatefulWidget {
   const Monitoreo({super.key});

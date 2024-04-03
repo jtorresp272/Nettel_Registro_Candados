@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/notification_state.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -56,21 +57,21 @@ class _CustomAppBarState extends State<CustomAppBar> {
             ],
           ),
         ],
-      backgroundColor: const Color.fromARGB(255, 68, 91, 164),
-      iconTheme: const IconThemeData(color: Colors.white),
+      backgroundColor: Colors.white,
+      iconTheme: IconThemeData(color: getColorAlmostBlue()),
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             widget.titulo,
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: getColorAlmostBlue(),fontWeight: FontWeight.bold),
           ),
           Text(
             widget.subtitulo,
-            style: const TextStyle(
-                color: Colors.white,
+            style: TextStyle(
+                color: getColorAlmostBlue(),
                 fontSize: 14.0,
-                fontWeight: FontWeight.w300),
+                fontWeight: FontWeight.bold),
           ),
         ],
       ),

@@ -43,6 +43,36 @@ final List<Candado> listaCandadosTaller = [];
 final List<Candado> listaCandadosPuerto = [];
 
 var logger = Logger();
+// Obtener información de un candado en especifico
+Future<Candado?> getDatoCandado(String numeroCandado) async {
+  const urlBuscar = "https://script.google.com/macros/s/AKfycbwF1JiiQQtvxmiWteQNyRt_APQvd4_6jmFht--pOIo4d_IBkniKlJw37HE90TIZkUcV3w/exec?accion=buscar&string=";
+  final response = await http.get(Uri.parse(urlBuscar+numeroCandado));
+
+  if (response.statusCode == 200) {
+    final jsonData = json.decode(response.body);
+    if (jsonData != null && jsonData.isNotEmpty) {
+      final item = jsonData; // Suponemos que la API devuelve solo un candado con ese número
+      DateTime? fechaIngreso = parseDateString(item['Fecha Ingreso']);
+      DateTime? fechaSalida = parseDateString(item['Fecha Salida']);
+      return Candado(
+        numero: item['Numero'],
+        tipo: item['Tipo'],
+        razonIngreso: item['Descripcion Ingreso'],
+        razonSalida: item['Descripcion Salida'],
+        responsable: item['Responsable'],
+        fechaIngreso: fechaIngreso!,
+        fechaSalida: fechaSalida,
+        lugar: item['lugar'],
+        imageDescripcion: item['Imagen'],
+        imageTipo: getImagePath(item['Tipo']), // Obtener la ruta de la imagen según el tipo
+      );
+    }
+  } else {
+    throw Exception('Error al cargar los datos del candado $numeroCandado desde Google Sheets');
+  }
+  return null; // En caso de no encontrar ningún candado con ese número
+}
+
 
 Future getDataGoogleSheet() async {
   final response = await http.get(Uri.parse(URL));

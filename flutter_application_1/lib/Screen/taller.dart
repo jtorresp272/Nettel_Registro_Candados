@@ -3,15 +3,14 @@ import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/notification_state.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
-import 'package:flutter_application_1/widgets/CustomDrawer.dart';
+import 'package:flutter_application_1/widgets/CustomDialogScanQr.dart';
+import 'package:flutter_application_1/widgets/CustomMenu.dart';
 import 'package:flutter_application_1/widgets/CustomListViewBuilder.dart';
 import 'package:flutter_application_1/widgets/CustomQrScan.dart';
 import 'package:flutter_application_1/widgets/CustomResume.dart';
-import 'package:flutter_application_1/widgets/CustomScanDialog.dart';
 import 'package:flutter_application_1/widgets/CustomScanResume.dart';
 import 'package:flutter_application_1/widgets/CustomSearch.dart';
 import 'package:logger/logger.dart';
-//import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
 
 enum MenuNavigator {
   // ignore: constant_identifier_names
@@ -53,30 +52,62 @@ class _TallerState extends State<Taller> {
     if (_selectedIndex == MenuNavigator.ESCANER.index) {
       Navigator.of(context)
           .push(MaterialPageRoute(
-            builder: (context) => const CustomQrScan(),
-          ))
+        builder: (context) => const CustomQrScan(),
+      ))
           .then((result) {
-            if (result != null) {
-              logger.i('Codigo QR escaneado: $result');
-              String scannedNumber = result as String;
-              Candado scannedCandado = listaCandadosTaller.firstWhere(
-                (candado) => candado.numero == scannedNumber,
-                orElse: () => Candado(numero: scannedNumber, tipo: '', razonIngreso: '', razonSalida: '', responsable: '', fechaIngreso: DateTime.now(), fechaSalida: null, lugar: '', imageTipo: '', imageDescripcion: ''), // Valor predeterminado
-              );
+        if (result != null) {
+          String scannedNumber = result as String;
+          // Buscar en la lista local de Taller
+          Candado scannedCandado = listaCandadosTaller.firstWhere(
+            (e) => e.numero == scannedNumber,
+            orElse: () => Candado(numero: '', tipo: '', razonIngreso: '', razonSalida: '', responsable: '', fechaIngreso: DateTime.now(), fechaSalida: null, lugar: '', imageTipo: '', imageDescripcion: ''), // Valor predeterminado
+          );
 
-              if (scannedCandado.numero.isNotEmpty) {
-                // Candado encontrado en la lista, mostrar el dialogo con la información
-                showDialog(
-                  context: context,
-                  builder: (context) => CustomScanResume(candado: scannedCandado,),
-                );
-              } else {
-                // Candado no encontrado en la lista, manejar el caso aquí
-              }
+          // Si no se encontró en la lista de Taller, buscar en la lista Por Llegar
+          if (scannedCandado.numero != scannedNumber) {
+            scannedCandado = listaCandadosLlegar.firstWhere(
+              (e) => e.numero == scannedNumber,
+              orElse: () => Candado(numero: '', tipo: '', razonIngreso: '', razonSalida: '', responsable: '', fechaIngreso: DateTime.now(), fechaSalida: null, lugar: '', imageTipo: '', imageDescripcion: ''), // Valor predeterminado
+            );
+          }
+          
+          if (scannedCandado.numero == scannedNumber) {
+            // Candado encontrado en la lista local, mostrar el diálogo con la información
+            EstadoCandados estado;
+            switch (scannedCandado.lugar) {
+              case 'I':
+                estado = EstadoCandados.ingresado;
+                break;
+              case 'M':
+                estado = EstadoCandados.mantenimiento;
+                break;
+              case 'D':
+                estado = EstadoCandados.danados;
+                break;
+              case 'L':
+                estado = EstadoCandados.listos;
+                break;
+              default:
+                estado = EstadoCandados.porIngresar;
+                break;
             }
 
-          });
-    } else if (_selectedIndex == MenuNavigator.HISTORIAL.index) {
+            showDialog(
+              context: context,
+              builder: (context) => CustomScanResume(candado: scannedCandado, estado: estado),
+            );
+          }else
+          // Candado no encontrado en la lista local, obtener datos de la API
+          {
+            showDialog(
+              context: context,
+              builder: (context) => DialogScanQr(scannedNumber: scannedNumber),
+            );
+          }
+        }
+      });
+    }
+    else if (_selectedIndex == MenuNavigator.HISTORIAL.index) {
       // Acciones para el índice 1 (Historial)
     }
   }
@@ -163,43 +194,44 @@ class _TallerState extends State<Taller> {
     final notify = NotificationState();
 
     return Scaffold(
+        backgroundColor: Colors.white,
         appBar: CustomAppBar(
           titulo: 'Consorcio Nettel',
           subtitulo: 'Taller',
           notificationState: notify,
         ),
-        drawer: const customDrawer(
-          nameUser: "Taller",
-        ),
         resizeToAvoidBottomInset: false,
         body: termino_ob_data ? DefaultTabController(
           initialIndex: 1,
-          length: 3,
+          length: 4,
           child: Column(
             children: [
               Container(
-                color: getColorAlmostBlue(),
-                child: const TabBar(
-                  labelColor:
-                      Colors.white, // Color del texto de la pestaña seleccionada
+                color: Colors.white,
+                child: TabBar(
+                  labelColor: getColorAlmostBlue(),
                   unselectedLabelColor: Colors
                       .black45, // Color del texto de las pestañas no seleccionadas
                   indicatorColor:
-                      Colors.white, // Color del indicador que resalta la pestaña seleccionada
-                  labelStyle: TextStyle(
-                      fontSize: 18,), // Estilo del texto de la pestaña seleccionada
-                  unselectedLabelStyle: TextStyle(
-                      fontSize:
-                          16), // Estilo del texto de las pestañas no seleccionadas
-                  tabs: [
+                      getColorAlmostBlue(), // Color del indicador que resalta la pestaña seleccionada
+                  labelStyle: const TextStyle(
+                      fontSize: 18,
+                  ), // Estilo del texto de la pestaña seleccionada
+                  unselectedLabelStyle: const TextStyle(
+                      fontSize:16,
+                  ), // Estilo del texto de las pestañas no seleccionadas
+                  tabs: const [
                     Tab(
-                      text: 'Resumen',
+                      icon: Icon(Icons.info),
                     ),
                     Tab(
-                      text: 'En Taller',
+                      icon: Icon(Icons.construction),
                     ),
                     Tab(
-                      text: 'Por Llegar',
+                      icon: Icon(Icons.local_shipping),
+                    ),
+                    Tab(
+                      icon:Icon(Icons.menu)
                     ),
                   ],
                 ),
@@ -281,6 +313,11 @@ class _TallerState extends State<Taller> {
                         ],
                       ),
                     ),
+                    // Usuario
+                    const Padding(
+                      padding:EdgeInsets.only(top: 10.0),
+                      child: customDrawer(nameUser: "Taller"),
+                      ), 
                   ],
                 ),
               ),
