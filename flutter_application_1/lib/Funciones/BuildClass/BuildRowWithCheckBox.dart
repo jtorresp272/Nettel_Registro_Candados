@@ -20,8 +20,8 @@ class customCheckBox extends StatelessWidget{
       children: [
         Checkbox(
         fillColor:MaterialStateColor.resolveWith((states) => isPressed ?  Colors.red:Colors.transparent),
-        side: BorderSide(
-          color: getColorAlmostBlue(),
+        side: const BorderSide(
+          color: Colors.black,
           width: 2.0,
           style: BorderStyle.solid,
         ),
@@ -33,7 +33,7 @@ class customCheckBox extends StatelessWidget{
         Text(
           name,
           style: TextStyle(
-            color: isPressed ? Colors.red:getColorAlmostBlue(),
+            color: isPressed ? Colors.red:Colors.black,
             fontSize: 14.0,
           ),
         ),

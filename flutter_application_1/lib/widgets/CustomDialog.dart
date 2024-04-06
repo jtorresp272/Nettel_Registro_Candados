@@ -3,6 +3,7 @@ import 'package:flutter_application_1/Funciones/BuildClass/BuildDecorationTextFi
 import 'package:flutter_application_1/Funciones/BuildClass/BuildRowWithCheckBox.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
+import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:intl/intl.dart';
 
 class CustomCandadoDialog extends StatefulWidget {
@@ -90,11 +91,12 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    width: 38.0,
-                    height: 38.0,
+                    width: 40.0,
+                    height: 40.0,
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.5),
                       shape: BoxShape.circle,
@@ -109,13 +111,12 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                       },
                       icon: const Icon(
                         Icons.arrow_back,
-                        size: 25.0,
                       ),
                     ),
                   ),
                   Container(
-                    width: 38.0,
-                    height: 38.0,
+                    width: 40.0,
+                    height: 40.0,
                     decoration: BoxDecoration(
                       color: isDamage
                           ? Colors.red.withOpacity(0.5)
@@ -124,7 +125,7 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                     ),
                     child: Center(
                       child: IconButton(
-                        color: isMecDamage ? Colors.white : Colors.black,
+                        color: isDamage ? Colors.white : Colors.black,
                         icon: const Icon(Icons.error_outline_sharp),
                         onPressed: () {
                           setState(() {
@@ -178,8 +179,46 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              if(isDamage)
+              const Text( 
+                'Tipo de daño:',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 13.0,
+                ),
+              ),
+              // Check para saber si se daño la electronica o la mecanica
+              if(isDamage)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    customCheckBox(
+                      name: "Mecánico", 
+                      onPressed: (value){
+                        setState(() {
+                          isMecDamage = !isMecDamage;
+                        });
+                      }, 
+                      isPressed: isMecDamage,
+                    ),
+                    customCheckBox(
+                      name: "Electronico", 
+                      onPressed: (value){
+                        setState(() {
+                          isElectDamage = !isElectDamage;
+                        });
+                      }, 
+                      isPressed: isElectDamage,
+                    ),    
+                  ],
+                ),
+              if(isDamage)
+                const SizedBox(
+                  height: 20.0,
+                ),
+              // TextFromField Candado dañado
               if (isDamage)
                 TextFormField(
                   maxLines: null,
@@ -187,9 +226,6 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                   decoration: decorationTextField(
                       text: 'Descripción de daño', color: Colors.red),
                 ),
-              const SizedBox(
-                height: 20.0,
-              ),
               if (!isDamage)
                 // Descripción de entrada
                 TextFormField(
@@ -261,10 +297,31 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
     final String newDescripcionDanada = _descripcionDanadaController.text;
     // Aquí puedes guardar los cambios o hacer lo que necesites con las descripciones editadas
     // Por ahora, solo cerraremos el diálogo
-    _animationController.reverse().then((_) {
+    if(isDamage)
+    {
+      if (!isElectDamage && !isMecDamage)
+      {
+        customSnackBar(context, 'No se selecciono el tipo de daño', Colors.red);
+      }
+      else if (!isElectDamage && isMecDamage)
+      {
+
+      }
+      else if (isElectDamage && !isMecDamage)
+      {
+
+      }
+      else
+      {
+
+      }
+    }else
+    {
+      _animationController.reverse().then((_) {
       Navigator.of(context)
           .pop(); // Cerrar el diálogo al finalizar la animación de salida
-    });
+      });
+    }
   }
 
   @override
