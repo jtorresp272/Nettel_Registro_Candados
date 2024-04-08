@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
+import 'package:flutter_application_1/Funciones/clases/data_model.dart';
+import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
 import 'package:flutter_application_1/widgets/CustomElevatedButton.dart';
 import 'package:flutter_application_1/Funciones/verificar_credenciales.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
@@ -7,7 +9,8 @@ import '/widgets/CustomTextFromField.dart';
 //import 'package:logger/logger.dart';
 
 class LogIn extends StatefulWidget {
-  const LogIn({super.key});
+  final Note? note;
+  LogIn({Key? key, this.note}) : super(key: key);
 
   @override
   State<LogIn> createState() => _LogInState();
@@ -17,9 +20,15 @@ class _LogInState extends State<LogIn> {
   String user = '';
   String pass = '';
   String where_go = '';
+  int save_database = 0;
+
   // Estado para controlar si se está realizando la solicitud HTTP
   bool cargando = false;
   @override
+  void initState() {
+    super.initState();
+  }
+
   Widget build(BuildContext context) {
     // obtenemos la dimension total del telefono
     final Size screenSize = MediaQuery.of(context).size;
@@ -74,15 +83,63 @@ class _LogInState extends State<LogIn> {
                   if (!cargando)
                     CustomElevatedButton(
                       text: 'Ingresar',
-                      onPressed: () {
+                      onPressed: () async {
+                        //setState((){
+                        if (user.isEmpty) {
+                          customSnackBar(context, 'Campo de usuario vacio',
+                              Colors.deepOrange);
+                          return;
+                        } else if (pass.isEmpty) {
+                          customSnackBar(context, 'Campo de contraseña vacio',
+                              Colors.deepOrange);
+                          return;
+                        }
+
                         setState(() {
-                          if (user == '') {
-                            customSnackBar(context, 'Campo de usuario vacio',
-                                Colors.deepOrange);
-                          } else if (pass == '') {
-                            customSnackBar(context, 'Campo de contraseña vacio',
-                                Colors.deepOrange);
-                          } else if (user != '' && pass != '') {
+                          cargando = true;
+                        });
+
+                        bool isValidCredentials =
+                            await validarCredenciales(user, pass);
+
+                        setState(() {
+                          cargando = false;
+                        });
+
+                        if (!isValidCredentials) {
+                          customSnackBar(context, 'Verificar credenciales',
+                              Colors.redAccent);
+                          return;
+                        } else {
+                          if (user == 'taller@nettelcorp.com') {
+                            save_database = 1;
+                            where_go = '/taller';
+                          } else if (user == 'monitoreo@nettelcorp.com') {
+                            save_database = 2;
+                            where_go = '/monitoreo';
+                          } else if (user == 'puerto@nettelcorp.com') {
+                            save_database = 3;
+                            where_go = '/puerto';
+                          }
+                        }
+
+                        // Guardar informacion en la base de datos
+                        Note model = Note(
+                          id: 1,
+                          title: 'login',
+                          description: save_database,
+                        );
+
+                        if (widget.note == null) {
+                          await DatabaseHelper.addNote(model);
+                        } else {
+                          await DatabaseHelper.updateNote(model);
+                        }
+
+                        // Redirigir a la pagina correspondiente
+                        Navigator.pushReplacementNamed(context, where_go);
+                        /*
+                          else if (user != '' && pass != '') {
                             cargando = true;
                             validarCredenciales(user, pass).then((value) {
                               setState(() {
@@ -95,12 +152,24 @@ class _LogInState extends State<LogIn> {
                                       Colors.redAccent);
                                 } else {
                                   if (user == 'taller@nettelcorp.com') {
+                                    save_database = 1;
                                     where_go = '/taller';
                                   } else if (user ==
                                       'monitoreo@nettelcorp.com') {
+                                    save_database = 2;
                                     where_go = '/monitoreo';
                                   } else if (user == 'puerto@nettelcorp.com') {
+                                    save_database = 3;
                                     where_go = '/puerto';
+                                  }
+                                  final Note model = Note(
+                                      id: 1,
+                                      title: 'login',
+                                      description: save_database.toString());
+                                  if (widget.note == null) {
+                                    await DatabaseHelper.addNote(model);
+                                  } else {
+                                    await DatabaseHelper.updateNote(model);
                                   }
                                   Navigator.pushReplacementNamed(
                                     context,
@@ -109,8 +178,8 @@ class _LogInState extends State<LogIn> {
                                 }
                               });
                             });
-                          }
-                        });
+                          }*/
+                        //});
                       },
                     ),
                   const SizedBox(

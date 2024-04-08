@@ -1,46 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/notification_state.dart';
+import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
+import 'package:provider/provider.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String titulo;
   final String subtitulo;
   final NotificationState? notificationState;
+  final VoidCallback? reloadCallback;
 
-  CustomAppBar({Key? key,required this.titulo, required this.subtitulo, this.notificationState,}) : super(key: key);
+  CustomAppBar({
+    Key? key,
+    required this.titulo,
+    required this.subtitulo,
+    this.notificationState,
+    this.reloadCallback,
+  }) : super(key: key);
 
   @override
   _CustomAppBarState createState() => _CustomAppBarState();
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
 class _CustomAppBarState extends State<CustomAppBar> {
-  bool showNotification = false;
-
   @override
   Widget build(BuildContext context) {
+    final notificationState = Provider.of<NotificationState>(context);
+
     return AppBar(
       actions: [
-        if(widget.subtitulo != "Puerto")
-        Stack(
+        if (widget.subtitulo != "Puerto")
+          Stack(
             children: [
               IconButton(
-                icon: const Icon(Icons.update),
+                icon: const Icon(Icons.update_outlined),
                 onPressed: () {
                   setState(() {
-                    showNotification = !showNotification;
-                    if(widget.notificationState != null)
-                    {
-                      widget.notificationState!.updateNotification(showNotification);
+                    // Chequea si existe una actualizacion para las datos en la base de datos
+                    if (notificationState.hasNotification) {
+                      if (widget.reloadCallback != null) {
+                        widget
+                            .reloadCallback!(); // Llamar a la funcion para actualizar los datos
+                      }
+                    } else {
+                      customSnackBar(
+                          context, 'no tienes actualizaciones', Colors.red);
                     }
-                    
-                  });// Acción al presionar el icono de notificaciones
+                  }); // Acción al presionar el icono de notificaciones
                 },
               ),
-              if(widget.notificationState != null)
-                if (widget.notificationState!.hasNotification)
+              if (notificationState.hasNotification)
                 Positioned(
                   right: 12,
                   top: 10,
@@ -56,7 +68,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 ),
             ],
           ),
-        ],
+      ],
       backgroundColor: Colors.white,
       iconTheme: IconThemeData(color: getColorAlmostBlue()),
       title: Column(
@@ -64,7 +76,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
         children: [
           Text(
             widget.titulo,
-            style: TextStyle(color: getColorAlmostBlue(),fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: getColorAlmostBlue(), fontWeight: FontWeight.bold),
           ),
           Text(
             widget.subtitulo,

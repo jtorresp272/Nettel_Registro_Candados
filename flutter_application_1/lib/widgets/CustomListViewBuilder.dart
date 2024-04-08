@@ -130,7 +130,8 @@ class CustomListViewBuilder extends StatelessWidget {
                                 index]; // Accede al candado específico en esta posición
                             return GestureDetector(
                               onTap: () {
-                                _showCandadoDialog(context, candadoPress);
+                                _showCandadoDialog(
+                                    context, candadoPress, where_from);
                               },
                               child: Container(
                                 width: 120.0,
@@ -192,10 +193,10 @@ class CustomListViewBuilder extends StatelessWidget {
     );
   }
 
-  void _showCandadoDialog(BuildContext context, Candado candado) {
+  void _showCandadoDialog(BuildContext context, Candado candado, String where) {
     showDialog(
       context: context,
-      builder: (context) => CustomCandadoDialog(candado: candado),
+      builder: (context) => CustomCandadoDialog(candado: candado, where: where),
     );
   }
 }

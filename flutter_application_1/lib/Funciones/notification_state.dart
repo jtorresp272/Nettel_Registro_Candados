@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class NotificationState extends ChangeNotifier {
   bool _hasNotification = false;

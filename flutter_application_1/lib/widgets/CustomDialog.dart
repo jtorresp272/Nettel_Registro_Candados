@@ -3,15 +3,22 @@ import 'package:flutter_application_1/Funciones/BuildClass/BuildDecorationTextFi
 import 'package:flutter_application_1/Funciones/BuildClass/BuildRowWithCheckBox.dart';
 import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
+import 'package:flutter_application_1/Funciones/notification_state.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
+import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class CustomCandadoDialog extends StatefulWidget {
   final Candado candado;
+  final String where;
 
-  const CustomCandadoDialog({Key? key, required this.candado})
-      : super(key: key);
+  const CustomCandadoDialog({
+    Key? key,
+    required this.candado,
+    required this.where,
+  }) : super(key: key);
 
   @override
   _CustomCandadoDialogState createState() => _CustomCandadoDialogState();
@@ -36,12 +43,13 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
     'L': Colors.green,
     'M': Colors.yellow
   };
-  // Variables globales
-  bool isEditable_1 = false;
-  bool isEditable_2 = false;
-  late bool isDamage;
-  late bool isMecDamage;
-  late bool isElectDamage;
+  /* Variables globales */
+  bool isEditable_1 = false; // Editar el campo Descripcion ingreso
+  bool isEditable_2 = false; // Editar el campo Descripcion Salida
+  late bool isDamage; // Candado presenta alguna parte dañada
+  late bool isMecDamage; // mecanica dañada
+  late bool isElectDamage; // Electronica dañada
+  final NotificationState notify = NotificationState();
 
   @override
   void initState() {
@@ -117,7 +125,7 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                       ),
                     ),
                   ),
-                  if(lugares.contains(widget.candado.lugar))
+                  if (lugares.contains(widget.candado.lugar))
                     Container(
                       width: 40.0,
                       height: 40.0,
@@ -175,8 +183,9 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
           ),
         ),
         content: ConstrainedBox(
+          // Dimensiones maximas y minimas
           constraints: BoxConstraints(
-            minHeight: 120,
+            minHeight: MediaQuery.of(context).size.height * 0.1,
             maxWidth: MediaQuery.of(context).size.width * 0.7,
             minWidth: MediaQuery.of(context).size.width * 0.7,
           ),
@@ -185,40 +194,40 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              if(isDamage)
-              const Text( 
-                'Tipo de daño:',
-                style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 13.0,
+              if (isDamage)
+                const Text(
+                  'Tipo de daño:',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 13.0,
+                  ),
                 ),
-              ),
               // Check para saber si se daño la electronica o la mecanica
-              if(isDamage)
+              if (isDamage)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     customCheckBox(
-                      name: "Mecánico", 
-                      onPressed: (value){
+                      name: "Mecánico",
+                      onPressed: (value) {
                         setState(() {
                           isMecDamage = !isMecDamage;
                         });
-                      }, 
+                      },
                       isPressed: isMecDamage,
                     ),
                     customCheckBox(
-                      name: "Electronico", 
-                      onPressed: (value){
+                      name: "Electronico",
+                      onPressed: (value) {
                         setState(() {
                           isElectDamage = !isElectDamage;
                         });
-                      }, 
+                      },
                       isPressed: isElectDamage,
-                    ),    
+                    ),
                   ],
                 ),
-              if(isDamage)
+              if (isDamage)
                 const SizedBox(
                   height: 20.0,
                 ),
@@ -237,32 +246,31 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                   readOnly: !isEditable_1,
                   autofocus: !isEditable_1,
                   controller: _descripcionIngresoController,
-                  decoration: lugares.contains(widget.candado.lugar)?
-                    decorationTextFieldwithAction(
-                      text: 'Descripción de ingreso',
-                      isEnabled: isEditable_1,
-                      onPressed: () {
-                        setState(() {
-                          isEditable_1 = !isEditable_1;
-                        });
-                      },
-                    )
-                    : decorationTextField(text: 'Descripción de ingreso'),
+                  decoration: lugares.contains(widget.candado.lugar)
+                      ? decorationTextFieldwithAction(
+                          text: 'Descripción de ingreso',
+                          isEnabled: isEditable_1,
+                          onPressed: () {
+                            setState(() {
+                              isEditable_1 = !isEditable_1;
+                            });
+                          },
+                        )
+                      : decorationTextField(text: 'Descripción de ingreso'),
                 ),
-              if (!['I','V','E'].contains(widget.candado.lugar))
+              if (!['I', 'V', 'E'].contains(widget.candado.lugar))
                 const SizedBox(
                   height: 20.0,
                 ),
-              
-              if (!isDamage && !['I','V','E'].contains(widget.candado.lugar))
+
+              if (!isDamage && !['I', 'V', 'E'].contains(widget.candado.lugar))
                 // Descripción de salida
                 if (lugares.contains(widget.candado.lugar))
                   TextFormField(
                     maxLines: null,
                     readOnly: !isEditable_2,
                     controller: _descripcionSalidaController,
-                    decoration: 
-                    decorationTextFieldwithAction(
+                    decoration: decorationTextFieldwithAction(
                       text: 'Descripción de salida',
                       isEnabled: isEditable_2,
                       onPressed: () {
@@ -284,6 +292,7 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                       (states) => getColorAlmostBlue()),
                 ),
                 onPressed: () {
+                  // Guardar cambios realizados
                   _saveChanges();
                 },
                 child: const Text(
@@ -300,66 +309,78 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
   }
 
   void _saveChanges() {
-    final String newDescripcionIngreso = _descripcionIngresoController.text.replaceAll(',', '/');
-    final String newDescripcionSalida = _descripcionSalidaController.text.replaceAll(',', '/');
-    final String newDescripcionDanada = _descripcionDanadaController.text.replaceAll(',', '/');
+    final String newDescripcionIngreso =
+        _descripcionIngresoController.text.replaceAll(',', '/');
+    final String newDescripcionSalida =
+        _descripcionSalidaController.text.replaceAll(',', '/');
+    final String newDescripcionDanada =
+        _descripcionDanadaController.text.replaceAll(',', '/');
     List<String> valoresNuevos;
+    String lugar = widget.candado.lugar;
     // Aquí puedes guardar los cambios o hacer lo que necesites con las descripciones editadas
-    // Por ahora, solo cerraremos el diálogo
-    if(isDamage)
-    {
+    if (isDamage) {
       // Ningun check seleccionado
-      if (!isElectDamage && !isMecDamage)
-      {
+      if (!isElectDamage && !isMecDamage) {
         customSnackBar(context, 'No se selecciono el tipo de daño', Colors.red);
         return;
       }
       // Mecanica Dañada
-      else if (!isElectDamage && isMecDamage)
-      {
-        valoresNuevos = [newDescripcionDanada,'','',DateFormat('dd-MM-yyyy').format(widget.candado.fechaIngreso),'','V'];
+      else if (!isElectDamage && isMecDamage) {
+        lugar = 'V';
       }
       // Electronica Dañada
-      else if (isElectDamage && !isMecDamage)
-      {
-        valoresNuevos = [newDescripcionDanada,'','',DateFormat('dd-MM-yyyy').format(widget.candado.fechaIngreso),'','E'];
+      else if (isElectDamage && !isMecDamage) {
+        lugar = 'E';
       }
       // Electronica Dañada
-      else
-      {
-        valoresNuevos = [newDescripcionDanada,'','',DateFormat('dd-MM-yyyy').format(widget.candado.fechaIngreso),'','E'];
+      else {
+        lugar = 'E';
       }
-
-      // Enviar a la funcion modificar valores
-      modificarRegistro('modificarRegistroHistorial', widget.candado.numero, valoresNuevos);
-      _animationController.reverse().then((_) {
-      Navigator.of(context)
-          .pop(); // Cerrar el diálogo al finalizar la animación de salida
-      });
-    }
-    else
-    {
-      switch(widget.candado.lugar)
-      {
-        case 'I':
-          break;
-        case 'M':
-          break;
-        case 'L':
-          break;
+      // Agregar el lugar en la lista para actualizar el candado
+      valoresNuevos = [
+        newDescripcionDanada,
+        '',
+        '',
+        DateFormat('dd-MM-yyyy').format(widget.candado.fechaIngreso),
+        '',
+        lugar
+      ];
+    } else {
+      switch (widget.candado.lugar) {
         case 'V':
+          lugar = 'I';
           break;
         case 'E':
+          lugar = 'I';
           break;
+        case 'I':
+        case 'L':
+        case 'M':
         default:
+          lugar = widget.candado.lugar;
           break;
       }
-      
-      _animationController.reverse().then((_) {
+      valoresNuevos = [
+        newDescripcionIngreso,
+        newDescripcionSalida,
+        widget.candado.responsable,
+        DateFormat('dd-MM-yyyy').format(widget.candado.fechaIngreso),
+        (widget.candado.fechaSalida != null)
+            ? DateFormat('dd-MM-yyyy').format(widget.candado.fechaSalida!)
+            : '',
+        lugar
+      ];
+    }
+    // Enviar a la funcion modificar valores
+    modificarRegistro(
+        'modificarRegistroHistorial', widget.candado.numero, valoresNuevos);
+    // Colocar un punto rojo en el icono de actualizar
+    updateIconAppBar().triggerNotification(context, true);
+    // Cerrar el CustomDialog
+    _animationController.reverse().then((_) {
       Navigator.of(context)
           .pop(); // Cerrar el diálogo al finalizar la animación de salida
-      });
-    }
+    });
   }
 
   @override
