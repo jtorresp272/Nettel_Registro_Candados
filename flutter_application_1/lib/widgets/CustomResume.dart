@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
-import 'package:flutter_application_1/Funciones/obtener_datos.dart';
+import 'package:flutter_application_1/Funciones/contar_datos.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:logger/logger.dart';
 
@@ -21,7 +20,7 @@ class CustomResumen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var logger = Logger();
-    datosTaller = obtenerDatosTaller(listaTaller);
+    datosTaller = contarDatosTaller(listaTaller);
     //logger.i("Cantidad por llegar: $listaLlegar");
     // Lógica para obtener los datos de llegada si es necesario
     width_screen = MediaQuery.of(context).size.width;
@@ -46,6 +45,9 @@ class CustomResumen extends StatelessWidget {
                 razon: 'Mecanicas Dañadas',
                 dato: datosTaller['Mecanicas Dañadas']),
             _CustomContainer(
+                razon: 'Electronicas Dañadas',
+                dato: datosTaller['Electronicas Dañadas']),    
+            _CustomContainer(
                 razon: 'Total mecanicas en taller',
                 dato: datosTaller['Total mecanicas en taller']),
             _CustomContainer(
@@ -66,11 +68,14 @@ Widget _CustomContainer({String? razon, int? dato}) {
     case 'Candados Ingresados':
       fillContainer = Colors.orange;
       break;
-    case 'Mecanicas Dañadas':
-      fillContainer = Colors.red;
-      break;
     case 'Mecanicas Listas':
       fillContainer = Colors.yellow;
+      break;
+    case 'Mecanicas Dañadas':
+      fillContainer = Colors.blue;
+      break;
+    case 'Electronicas Dañadas':
+      fillContainer = Colors.red;
       break;
     case 'Total mecanicas en taller':
       fillContainer = Colors.grey;

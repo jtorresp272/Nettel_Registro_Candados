@@ -35,10 +35,6 @@ class Candado {
     return 'Candado{numero: $numero, tipo: $tipo, razonIngreso: $razonIngreso, razonSalida: $razonSalida, responsable: $responsable, fechaIngreso: $fechaIngreso, fechaSalida: $fechaSalida, lugar: $lugar, imageTipo: $imageTipo, imageDescripcion: $imageDescripcion}';
   }
 }
-
-String URL =
-    "https://script.google.com/macros/s/AKfycbwwLA26uBvHLJBzdZ_oJAvbwyx21mEZm7U153PcnTQz8YGzl5JYpZTsAVs43-LmA2yB-w/exec?accion=ob_data";
-
 final List<Candado> listaCandadosTaller = [];
 final List<Candado> listaCandadosPuerto = [];
 
@@ -52,8 +48,8 @@ Future<Candado?> getDatoCandado(String numeroCandado) async {
     final jsonData = json.decode(response.body);
     if (jsonData != null && jsonData.isNotEmpty) {
       final item = jsonData; // Suponemos que la API devuelve solo un candado con ese número
-      DateTime? fechaIngreso = parseDateString(item['Fecha Ingreso']);
-      DateTime? fechaSalida = parseDateString(item['Fecha Salida']);
+      DateTime? fechaIngreso = _parseDateString(item['Fecha Ingreso']);
+      DateTime? fechaSalida = _parseDateString(item['Fecha Salida']);
       return Candado(
         numero: item['Numero'],
         tipo: item['Tipo'],
@@ -73,16 +69,19 @@ Future<Candado?> getDatoCandado(String numeroCandado) async {
   return null; // En caso de no encontrar ningún candado con ese número
 }
 
-
+// Retorna todo el listado de la tabla del registro de candados
 Future getDataGoogleSheet() async {
+  String URL =
+      "https://script.google.com/macros/s/AKfycbwwLA26uBvHLJBzdZ_oJAvbwyx21mEZm7U153PcnTQz8YGzl5JYpZTsAVs43-LmA2yB-w/exec?accion=ob_data";
+
   final response = await http.get(Uri.parse(URL));
 
   if (response.statusCode == 200) {
     final jsonData = json.decode(response.body);
     for (var item in jsonData) {
       if (['L', 'M', 'I', 'V', 'E'].contains(item['lugar'])) {
-        DateTime? fechaIngreso = parseDateString(item['Fecha Ingreso']);
-        DateTime? fechaSalida = parseDateString(item['Fecha Salida']);
+        DateTime? fechaIngreso = _parseDateString(item['Fecha Ingreso']);
+        DateTime? fechaSalida = _parseDateString(item['Fecha Salida']);
         final Candado candadoTaller = Candado(
           numero: item['Numero'],
           tipo: item['Tipo'],
@@ -108,8 +107,8 @@ Future getDataGoogleSheet() async {
         'TPG',
         'CONTECON'
       ].contains(item['lugar'])) {
-        DateTime? fechaIngreso = parseDateString(item['Fecha Ingreso']);
-        DateTime? fechaSalida = parseDateString(item['Fecha Salida']);
+        DateTime? fechaIngreso = _parseDateString(item['Fecha Ingreso']);
+        DateTime? fechaSalida = _parseDateString(item['Fecha Salida']);
         final Candado candadoPuerto = Candado(
           numero: item['Numero'],
           tipo: item['Tipo'],
@@ -130,15 +129,16 @@ Future getDataGoogleSheet() async {
     throw Exception('Error al cargar los datos desde Google Sheets');
   }
 }
-
+// Retorna un listado de los candados en taller
 List<Candado> getCandadosTaller() {
   return listaCandadosTaller;
 }
-
+// Retorna un listado de los candados en el puerto
 List<Candado> getCandadosPuerto() {
   return listaCandadosPuerto;
 }
 
+// Retorna una imagen asignada segun el tipo de candado
 String getImagePath(String tipo) {
   switch (tipo) {
     case 'Tipo_U':
@@ -156,7 +156,8 @@ String getImagePath(String tipo) {
   }
 }
 
-DateTime? parseDateString(String dateString) {
+// Si no existe nada en el campo de fecha retorna un vacio y no  crea conflictos por el formato fecha
+DateTime? _parseDateString(String dateString) {
   // Si la cadena de fecha está vacía, retorna null
   if (dateString.isEmpty) {
     return null;

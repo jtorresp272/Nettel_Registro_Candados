@@ -3,13 +3,14 @@
 
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 
-Map<String, int> obtenerDatosTaller(List<Candado> listaTaller) {
+Map<String, int> contarDatosTaller(List<Candado> listaTaller) {
   // Lógica para procesar la lista de taller y obtener los datos requeridos
   // Devuelve un mapa con los datos procesados
   int candadosOperativos = 0;
   int mecanicasListas = 0;
   int candadosIngresados = 0;
   int mecanicasDanadas = 0;
+  int electronicaDanadas = 0;
   int totalCandados = 0;
   // Iterar sobre la lista de candados del taller y contar los elementos de cada tipo
   for (var candado in listaTaller) {
@@ -26,6 +27,9 @@ Map<String, int> obtenerDatosTaller(List<Candado> listaTaller) {
       case 'V':
         mecanicasDanadas++;
         break;
+      case 'E':
+        electronicaDanadas++;
+        break;  
       default:
         break;
     }
@@ -34,13 +38,14 @@ Map<String, int> obtenerDatosTaller(List<Candado> listaTaller) {
   totalCandados = candadosOperativos +
       candadosIngresados +
       mecanicasListas +
-      mecanicasDanadas;
+      mecanicasDanadas + electronicaDanadas;
   // Retornar un mapa con los datos contados
   return {
     'Candados Operativos': candadosOperativos,
     'Mecanicas Listas': mecanicasListas,
     'Candados Ingresados': candadosIngresados,
     'Mecanicas Dañadas': mecanicasDanadas,
+    'Electronicas Dañadas': electronicaDanadas,
     'Total mecanicas en taller': totalCandados,
   };
 }
