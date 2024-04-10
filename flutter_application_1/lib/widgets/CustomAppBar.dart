@@ -46,8 +46,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
                             .reloadCallback!(); // Llamar a la funcion para actualizar los datos
                       }
                     } else {
-                      customSnackBar(
-                          context, 'no tienes actualizaciones', Colors.red);
+                      customSnackBar(context,
+                          'No existen actualizaciones pendientes', Colors.red);
                     }
                   }); // Acción al presionar el icono de notificaciones
                 },

@@ -35,19 +35,22 @@ class Candado {
     return 'Candado{numero: $numero, tipo: $tipo, razonIngreso: $razonIngreso, razonSalida: $razonSalida, responsable: $responsable, fechaIngreso: $fechaIngreso, fechaSalida: $fechaSalida, lugar: $lugar, imageTipo: $imageTipo, imageDescripcion: $imageDescripcion}';
   }
 }
+
 final List<Candado> listaCandadosTaller = [];
 final List<Candado> listaCandadosPuerto = [];
 
 var logger = Logger();
 // Obtener información de un candado en especifico
 Future<Candado?> getDatoCandado(String numeroCandado) async {
-  const urlBuscar = "https://script.google.com/macros/s/AKfycbwF1JiiQQtvxmiWteQNyRt_APQvd4_6jmFht--pOIo4d_IBkniKlJw37HE90TIZkUcV3w/exec?accion=buscar&string=";
-  final response = await http.get(Uri.parse(urlBuscar+numeroCandado));
+  const urlBuscar =
+      "https://script.google.com/macros/s/AKfycbwF1JiiQQtvxmiWteQNyRt_APQvd4_6jmFht--pOIo4d_IBkniKlJw37HE90TIZkUcV3w/exec?accion=buscar&string=";
+  final response = await http.get(Uri.parse(urlBuscar + numeroCandado));
 
   if (response.statusCode == 200) {
     final jsonData = json.decode(response.body);
     if (jsonData != null && jsonData.isNotEmpty) {
-      final item = jsonData; // Suponemos que la API devuelve solo un candado con ese número
+      final item =
+          jsonData; // Suponemos que la API devuelve solo un candado con ese número
       DateTime? fechaIngreso = _parseDateString(item['Fecha Ingreso']);
       DateTime? fechaSalida = _parseDateString(item['Fecha Salida']);
       return Candado(
@@ -60,11 +63,13 @@ Future<Candado?> getDatoCandado(String numeroCandado) async {
         fechaSalida: fechaSalida,
         lugar: item['lugar'],
         imageDescripcion: item['Imagen'],
-        imageTipo: getImagePath(item['Tipo']), // Obtener la ruta de la imagen según el tipo
+        imageTipo: getImagePath(
+            item['Tipo']), // Obtener la ruta de la imagen según el tipo
       );
     }
   } else {
-    throw Exception('Error al cargar los datos del candado $numeroCandado desde Google Sheets');
+    throw Exception(
+        'Error al cargar los datos del candado $numeroCandado desde Google Sheets');
   }
   return null; // En caso de no encontrar ningún candado con ese número
 }
@@ -73,7 +78,9 @@ Future<Candado?> getDatoCandado(String numeroCandado) async {
 Future getDataGoogleSheet() async {
   String URL =
       "https://script.google.com/macros/s/AKfycbwwLA26uBvHLJBzdZ_oJAvbwyx21mEZm7U153PcnTQz8YGzl5JYpZTsAVs43-LmA2yB-w/exec?accion=ob_data";
-
+  // Borrar toda la información de los candados
+  listaCandadosTaller.clear();
+  listaCandadosPuerto.clear();
   final response = await http.get(Uri.parse(URL));
 
   if (response.statusCode == 200) {
@@ -129,10 +136,12 @@ Future getDataGoogleSheet() async {
     throw Exception('Error al cargar los datos desde Google Sheets');
   }
 }
+
 // Retorna un listado de los candados en taller
 List<Candado> getCandadosTaller() {
   return listaCandadosTaller;
 }
+
 // Retorna un listado de los candados en el puerto
 List<Candado> getCandadosPuerto() {
   return listaCandadosPuerto;

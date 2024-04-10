@@ -5,29 +5,36 @@ import '../Funciones/get_color.dart';
 import 'package:intl/intl.dart';
 
 //import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
-class CustomListViewBuilder extends StatelessWidget {
+class CustomListViewBuilder extends StatefulWidget {
   final String where_from;
+  final bool reload;
   final List<Candado> listaFiltrada;
   final Map<int, bool> expandedState;
   final ValueChanged<int>? onExpandedChanged;
 
   const CustomListViewBuilder({
+    super.key,
     required this.where_from,
+    this.reload = false,
     required this.listaFiltrada,
     required this.expandedState,
     this.onExpandedChanged,
   });
 
   @override
+  State<CustomListViewBuilder> createState() => _CustomListViewBuilderState();
+}
+
+class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
+  @override
   Widget build(BuildContext context) {
     Map<String, List<Candado>> candadosPorLugar = {};
-
-    for (var candado in listaFiltrada) {
+    for (var candado in widget.listaFiltrada) {
       candadosPorLugar.putIfAbsent(candado.lugar, () => []);
       candadosPorLugar[candado.lugar]!.add(candado);
     }
 
-    List<String> lugares = where_from == "Taller"
+    List<String> lugares = widget.where_from == "Taller"
         ? ['L', 'M', 'I', 'V', 'E']
         : [
             'NAPORTEC',
@@ -49,7 +56,7 @@ class CustomListViewBuilder extends StatelessWidget {
               candadosPorLugar[lugar]!.isNotEmpty) {
             Color colorContenedor = Colors.grey;
             late final String titulo;
-            if (where_from == "Taller") {
+            if (widget.where_from == "Taller") {
               switch (lugar) {
                 case 'I':
                   colorContenedor = Colors.orange;
@@ -76,12 +83,12 @@ class CustomListViewBuilder extends StatelessWidget {
                   titulo = 'Candados Ingresados';
                   break;
               }
-            } else if (where_from == 'Llegar') {
+            } else if (widget.where_from == 'Llegar') {
               colorContenedor = Colors.grey;
               titulo = lugar;
             }
 
-            final isExpanded = expandedState[index] ?? false;
+            final isExpanded = widget.expandedState[index] ?? false;
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,7 +114,7 @@ class CustomListViewBuilder extends StatelessWidget {
                       const Spacer(),
                       GestureDetector(
                         onTap: () {
-                          onExpandedChanged?.call(index);
+                          widget.onExpandedChanged?.call(index);
                         },
                         child: Icon(
                           isExpanded ? Icons.remove : Icons.add,
@@ -131,7 +138,7 @@ class CustomListViewBuilder extends StatelessWidget {
                             return GestureDetector(
                               onTap: () {
                                 _showCandadoDialog(
-                                    context, candadoPress, where_from);
+                                    context, candadoPress, widget.where_from);
                               },
                               child: Container(
                                 width: 120.0,

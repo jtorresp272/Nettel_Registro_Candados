@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
-import 'package:flutter_application_1/Funciones/notification_state.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
-import 'package:flutter_application_1/widgets/CustomDialog.dart';
 import 'package:flutter_application_1/widgets/CustomDialogScanQr.dart';
 import 'package:flutter_application_1/widgets/CustomMenu.dart';
 import 'package:flutter_application_1/widgets/CustomListViewBuilder.dart';
@@ -22,7 +20,7 @@ enum MenuNavigator {
 }
 
 class Taller extends StatefulWidget {
-  const Taller({Key? key}) : super(key: key);
+  const Taller({super.key});
 
   @override
   State<Taller> createState() => _TallerState();
@@ -31,6 +29,7 @@ class Taller extends StatefulWidget {
 class _TallerState extends State<Taller> {
   var logger = Logger();
   bool termino_ob_data = false;
+/* Variables globales */
   List<Candado> listaCandadosTaller = [];
   List<Candado> listaFiltradaTaller = [];
   List<Candado> listaCandadosLlegar = [];
@@ -137,6 +136,10 @@ class _TallerState extends State<Taller> {
   @override
   void initState() {
     super.initState();
+    listaCandadosTaller.clear();
+    listaFiltradaTaller.clear();
+    listaCandadosLlegar.clear();
+    listaFiltradaLlegar.clear();
     _searchFocusNodeTaller = FocusNode();
     _searchFocusNodeLlegar = FocusNode();
     _tabExpandedStates = {
@@ -213,24 +216,16 @@ class _TallerState extends State<Taller> {
 
   @override
   Widget build(BuildContext context) {
-    final notify = NotificationState();
-
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: CustomAppBar(
           titulo: 'Consorcio Nettel',
           subtitulo: 'Taller',
-          //notificationState: notify,
           reloadCallback: () {
             setState(() {
-              // restart datos del taller
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => const Taller()));
+              restartPage(context);
             });
             updateIconAppBar().triggerNotification(context, false);
-            // falta reiniciar las variables Candado
           },
         ),
         resizeToAvoidBottomInset: false,
@@ -298,6 +293,7 @@ class _TallerState extends State<Taller> {
                                 ),
                                 CustomListViewBuilder(
                                     where_from: 'Taller',
+                                    reload: true,
                                     listaFiltrada: listaFiltradaTaller,
                                     expandedState: _tabExpandedStates[1]!,
                                     onExpandedChanged: (index) {
@@ -397,4 +393,11 @@ class _TallerState extends State<Taller> {
     _searchFocusNodeLlegar.dispose();
     super.dispose();
   }
+}
+
+/* funcion para resetear la pagina Taller */
+void restartPage(BuildContext context) {
+  // restart datos del taller
+  Navigator.pushReplacement(context,
+      MaterialPageRoute(builder: (BuildContext context) => const Taller()));
 }
