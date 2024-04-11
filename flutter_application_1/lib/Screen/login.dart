@@ -29,6 +29,7 @@ class _LogInState extends State<LogIn> {
     super.initState();
   }
 
+  @override
   Widget build(BuildContext context) {
     // obtenemos la dimension total del telefono
     final Size screenSize = MediaQuery.of(context).size;
@@ -138,48 +139,6 @@ class _LogInState extends State<LogIn> {
 
                         // Redirigir a la pagina correspondiente
                         Navigator.pushReplacementNamed(context, where_go);
-                        /*
-                          else if (user != '' && pass != '') {
-                            cargando = true;
-                            validarCredenciales(user, pass).then((value) {
-                              setState(() {
-                                cargando = false;
-                                //logger.i(value);
-                                if (!value) {
-                                  customSnackBar(
-                                      context,
-                                      'Verificar credenciales',
-                                      Colors.redAccent);
-                                } else {
-                                  if (user == 'taller@nettelcorp.com') {
-                                    save_database = 1;
-                                    where_go = '/taller';
-                                  } else if (user ==
-                                      'monitoreo@nettelcorp.com') {
-                                    save_database = 2;
-                                    where_go = '/monitoreo';
-                                  } else if (user == 'puerto@nettelcorp.com') {
-                                    save_database = 3;
-                                    where_go = '/puerto';
-                                  }
-                                  final Note model = Note(
-                                      id: 1,
-                                      title: 'login',
-                                      description: save_database.toString());
-                                  if (widget.note == null) {
-                                    await DatabaseHelper.addNote(model);
-                                  } else {
-                                    await DatabaseHelper.updateNote(model);
-                                  }
-                                  Navigator.pushReplacementNamed(
-                                    context,
-                                    where_go,
-                                  );
-                                }
-                              });
-                            });
-                          }*/
-                        //});
                       },
                     ),
                   const SizedBox(

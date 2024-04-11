@@ -292,8 +292,7 @@ class _TallerState extends State<Taller> {
                                   },
                                 ),
                                 CustomListViewBuilder(
-                                    where_from: 'Taller',
-                                    reload: true,
+                                    whereFrom: 'Taller',
                                     listaFiltrada: listaFiltradaTaller,
                                     expandedState: _tabExpandedStates[1]!,
                                     onExpandedChanged: (index) {
@@ -329,7 +328,7 @@ class _TallerState extends State<Taller> {
                                   },
                                 ),
                                 CustomListViewBuilder(
-                                  where_from: 'Llegar',
+                                  whereFrom: 'Llegar',
                                   listaFiltrada: listaFiltradaLlegar,
                                   expandedState: _tabExpandedStates[2]!,
                                   onExpandedChanged: (index) {

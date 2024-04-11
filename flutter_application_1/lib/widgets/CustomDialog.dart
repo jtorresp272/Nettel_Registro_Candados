@@ -8,7 +8,10 @@ import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
+//import 'package:provider/provider.dart';
+
+// Espera que termine la confirmación luego de presionar el boton guardar cambios
+bool waiting = false;
 
 class CustomCandadoDialog extends StatefulWidget {
   final Candado candado;
@@ -285,22 +288,38 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
         ),
         actions: [
           if (lugares.contains(widget.candado.lugar))
-            Center(
-              child: ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateColor.resolveWith(
-                      (states) => getColorAlmostBlue()),
-                ),
-                onPressed: () {
-                  // Guardar cambios realizados
-                  _saveChanges();
-                },
-                child: const Text(
-                  'Guardar Cambios',
-                  style: TextStyle(
-                    color: Colors.white,
+            if (!waiting)
+              Center(
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateColor.resolveWith(
+                        (states) => getColorAlmostBlue()),
+                  ),
+                  onPressed: () async {
+                    setState(() {
+                      waiting = true;
+                    });
+                    // Guardar cambios realizados
+                    await _saveChanges();
+
+                    setState(() {
+                      waiting = false;
+                    });
+                  },
+                  child: const Text(
+                    'Guardar Cambios',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
                 ),
+              ),
+          if (waiting)
+            Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 4,
+                color: getBackgroundColor(),
+                backgroundColor: getColorAlmostBlue(),
               ),
             ),
         ],
@@ -308,7 +327,8 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
     );
   }
 
-  void _saveChanges() {
+// Función para enviar los cambios a la base de datos (es async porque espera confirmacion de la base de datos)
+  Future<void> _saveChanges() async {
     final String newDescripcionIngreso =
         _descripcionIngresoController.text.replaceAll(',', '/');
     final String newDescripcionSalida =
@@ -371,16 +391,31 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
         lugar
       ];
     }
+
+    String snackMessage = '';
+    Color snackColor = Colors.red;
     // Enviar a la funcion modificar valores
-    modificarRegistro(
+    bool checkModification = await modificarRegistro(
         'modificarRegistroHistorial', widget.candado.numero, valoresNuevos);
     // Colocar un punto rojo en el icono de actualizar
-    updateIconAppBar().triggerNotification(context, true);
-    // Cerrar el CustomDialog
-    _animationController.reverse().then((_) {
-      Navigator.of(context)
-          .pop(); // Cerrar el diálogo al finalizar la animación de salida
-    });
+    if (checkModification) {
+      //updateIconAppBar().triggerNotification(context, true);
+      // Cerrar el CustomDialog
+      _animationController.reverse().then((_) {
+        Navigator.of(context)
+            .pop(); // Cerrar el diálogo al finalizar la animación de salida
+      });
+      snackMessage = 'Actualización realizada existosamente :D';
+      snackColor = Colors.green;
+    } else {
+      snackMessage = 'No se pudo enviar correctamente la actualización';
+      snackColor = Colors.red;
+    }
+    // mensaje para retroalimentar al usuario que la operacion fue exitosa o no
+    customSnackBar(context, snackMessage, snackColor);
+    if (snackColor == Colors.red) return;
+    // Actualizar la pagina de Taller
+    Navigator.pushNamedAndRemoveUntil(context, '/taller', (route) => false);
   }
 
   @override

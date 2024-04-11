@@ -6,16 +6,14 @@ import 'package:intl/intl.dart';
 
 //import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
 class CustomListViewBuilder extends StatefulWidget {
-  final String where_from;
-  final bool reload;
+  final String whereFrom;
   final List<Candado> listaFiltrada;
   final Map<int, bool> expandedState;
   final ValueChanged<int>? onExpandedChanged;
 
   const CustomListViewBuilder({
     super.key,
-    required this.where_from,
-    this.reload = false,
+    required this.whereFrom,
     required this.listaFiltrada,
     required this.expandedState,
     this.onExpandedChanged,
@@ -34,7 +32,7 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
       candadosPorLugar[candado.lugar]!.add(candado);
     }
 
-    List<String> lugares = widget.where_from == "Taller"
+    List<String> lugares = widget.whereFrom == "Taller"
         ? ['L', 'M', 'I', 'V', 'E']
         : [
             'NAPORTEC',
@@ -56,7 +54,7 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
               candadosPorLugar[lugar]!.isNotEmpty) {
             Color colorContenedor = Colors.grey;
             late final String titulo;
-            if (widget.where_from == "Taller") {
+            if (widget.whereFrom == "Taller") {
               switch (lugar) {
                 case 'I':
                   colorContenedor = Colors.orange;
@@ -83,7 +81,7 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                   titulo = 'Candados Ingresados';
                   break;
               }
-            } else if (widget.where_from == 'Llegar') {
+            } else if (widget.whereFrom == 'Llegar') {
               colorContenedor = Colors.grey;
               titulo = lugar;
             }
@@ -138,7 +136,7 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                             return GestureDetector(
                               onTap: () {
                                 _showCandadoDialog(
-                                    context, candadoPress, widget.where_from);
+                                    context, candadoPress, widget.whereFrom);
                               },
                               child: Container(
                                 width: 120.0,

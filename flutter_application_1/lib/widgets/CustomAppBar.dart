@@ -36,7 +36,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
           Stack(
             children: [
               IconButton(
-                icon: const Icon(Icons.update_outlined),
+                icon: const Icon(Icons.email_outlined),
                 onPressed: () {
                   setState(() {
                     // Chequea si existe una actualizacion para las datos en la base de datos
