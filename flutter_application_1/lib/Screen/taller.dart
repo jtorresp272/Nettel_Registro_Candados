@@ -103,6 +103,7 @@ class _TallerState extends State<Taller> {
                 estado = EstadoCandados.mantenimiento;
                 break;
               case 'V':
+              case 'E':
                 estado = EstadoCandados.danados;
                 break;
               case 'L':

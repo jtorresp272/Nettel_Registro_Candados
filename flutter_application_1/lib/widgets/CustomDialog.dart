@@ -41,8 +41,8 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
   // Colores para el fondo dependiendo del lugar
   Map<String, Color> color = {
     'E': Colors.red,
-    'V': Colors.blueAccent,
-    'I': Colors.orange,
+    'V': Colors.orange,
+    'I': Colors.blueAccent,
     'L': Colors.green,
     'M': Colors.yellow
   };

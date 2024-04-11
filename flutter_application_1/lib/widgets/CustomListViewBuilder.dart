@@ -57,7 +57,7 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
             if (widget.whereFrom == "Taller") {
               switch (lugar) {
                 case 'I':
-                  colorContenedor = Colors.orange;
+                  colorContenedor = Colors.blueAccent;
                   titulo = 'Candados Ingresados';
                   break;
                 case 'M':
@@ -69,7 +69,7 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                   titulo = 'Candados Operativos';
                   break;
                 case 'V':
-                  colorContenedor = Colors.blueAccent;
+                  colorContenedor = Colors.orange;
                   titulo = 'Mecanicas Dañadas';
                   break;
                 case 'E':
