@@ -1,7 +1,7 @@
 class Note {
   final int id;
   final String title;
-  final int description;
+  final dynamic description;
 
   const Note(
       {required this.id, required this.title, required this.description});

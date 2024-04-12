@@ -40,15 +40,15 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 onPressed: () {
                   setState(() {
                     // Chequea si existe una actualizacion para las datos en la base de datos
-                    if (notificationState.hasNotification) {
-                      if (widget.reloadCallback != null) {
-                        widget
-                            .reloadCallback!(); // Llamar a la funcion para actualizar los datos
-                      }
-                    } else {
-                      customSnackBar(context,
-                          'No existen actualizaciones pendientes', Colors.red);
+                    //if (notificationState.hasNotification) {
+                    if (widget.reloadCallback != null) {
+                      widget
+                          .reloadCallback!(); // Llamar a la funcion para actualizar los datos
                     }
+                    //} else {
+                    //  customSnackBar(context,
+                    //      'No existen actualizaciones pendientes', Colors.red);
+                    //}
                   }); // Acción al presionar el icono de notificaciones
                 },
               ),

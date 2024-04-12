@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/BuildClass/BuildDecorationTextField.dart';
 import 'package:flutter_application_1/Funciones/BuildClass/BuildRowWithButton.dart';
 import 'package:flutter_application_1/Funciones/BuildClass/BuildRowWithCheckBox.dart';
+import 'package:flutter_application_1/Funciones/database/data_model.dart';
 import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
+import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
 import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:intl/intl.dart';
@@ -23,8 +25,15 @@ bool waiting = false;
 class CustomScanResume extends StatefulWidget {
   final Candado candado;
   final EstadoCandados estado;
+  final Note? note;
+  final int? candadosEnCache;
+
   const CustomScanResume(
-      {Key? key, required this.candado, required this.estado})
+      {Key? key,
+      required this.candado,
+      required this.estado,
+      this.note,
+      this.candadosEnCache})
       : super(key: key);
 
   @override
@@ -47,6 +56,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
   String responsable = '';
   String fechaIngreso = '';
   String fechaSalida = '';
+  late int candadosIngresados;
   List<bool> buttonOnPressed = [false, false, false, false, false];
   List<String> name = ['Joshue', 'Oliver', 'Fabian', 'Oswaldo', 'Jordy'];
   Map<String, List<Color>> color = {
@@ -95,6 +105,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
   @override
   void initState() {
     super.initState();
+    candadosIngresados = widget.candadosEnCache ?? 0;
     candadoEnLista = (widget.candado.tipo == '') ? false : true;
     if (candadoEnLista) {
       imagen = widget.candado.imageTipo;
@@ -598,6 +609,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
           responsable = '';
           lugar = 'I';
           accion = 'agregarRegistroHistorial';
+          candadosIngresados++;
           break;
         case EstadoCandados.mantenimiento:
         case EstadoCandados.danados:
@@ -647,9 +659,31 @@ class _CustomScanResumeState extends State<CustomScanResume>
     bool checkModification =
         await modificarRegistro(accion, widget.candado.numero, valoresNuevos);
     if (checkModification) {
-      widget.estado == EstadoCandados.porIngresar
-          ? updateIconAppBar().triggerNotification(context, true)
-          : null;
+      // Si el candado es por ingresar se debe guardar en la base de datos para luego solicitar la informacion puesta en correo
+      if (widget.estado == EstadoCandados.porIngresar) {
+        updateIconAppBar().triggerNotification(context, true);
+        // crear estructura para los candados en el cache
+        Note modelCandado = Note(
+          id: 1,
+          title: candadosIngresados.toString(),
+          description:
+              '${widget.candado.numero} - ${widget.candado.razonIngreso}',
+        );
+        // crear estructura de cuantos candados por enviar hay en el cache
+        Note modelLength = Note(
+          id: 1,
+          title: 'length',
+          description: candadosIngresados,
+        );
+        // Guardar informacion
+        if (widget.note == null) {
+          await DatabaseHelper.addNote(modelCandado);
+          await DatabaseHelper.addNote(modelLength);
+        } else {
+          await DatabaseHelper.updateNote(modelCandado);
+          await DatabaseHelper.updateNote(modelLength);
+        }
+      }
       // Cerrar el CustomDialog
       _animationController.reverse().then((_) {
         Navigator.of(context)

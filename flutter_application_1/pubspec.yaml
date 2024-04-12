@@ -43,6 +43,7 @@ dependencies:
   sqflite: ^2.0.2
   path: ^1.8.2
   provider: ^5.0.0
+  flutter_email_sender: ^5.1.0
 
 dev_dependencies:
   flutter_test:

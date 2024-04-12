@@ -20,8 +20,8 @@ class _SplashState extends State<Splash> {
     super.initState();
     // Inicia chequeo en la base de datos
     _initData();
-    // Inicia un timer de 3 segundos
-    _timer = Timer(const Duration(seconds: 3), () {
+    // Inicia un timer de 2 segundos
+    _timer = Timer(const Duration(seconds: 2), () {
       Navigator.of(context).pushReplacementNamed(
           page); // Reemplaza '/pagina_uno' con la ruta de tu página
     });

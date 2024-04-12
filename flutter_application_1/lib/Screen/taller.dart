@@ -10,6 +10,7 @@ import 'package:flutter_application_1/widgets/CustomQrScan.dart';
 import 'package:flutter_application_1/widgets/CustomResume.dart';
 import 'package:flutter_application_1/widgets/CustomScanResume.dart';
 import 'package:flutter_application_1/widgets/CustomSearch.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:logger/logger.dart';
 
 enum MenuNavigator {
@@ -149,6 +150,7 @@ class _TallerState extends State<Taller> {
       2: {},
     };
     _initializeData();
+    //_getDataInCache();
   }
 
   Future<void> _initializeData() async {
@@ -396,8 +398,15 @@ class _TallerState extends State<Taller> {
 }
 
 /* funcion para resetear la pagina Taller */
-void restartPage(BuildContext context) {
+void restartPage(BuildContext context) async {
   // restart datos del taller
   //Navigator.pushReplacement(context,
   //    MaterialPageRoute(builder: (BuildContext context) => const Taller()));
+  final Email email = Email(
+    body: 'Envio de prueba',
+    subject: 'Eres gay',
+    recipients: ['jtorresp272@gmail.com', 'osanes28@gmail.com'],
+    isHTML: false,
+  );
+  await FlutterEmailSender.send(email);
 }

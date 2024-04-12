@@ -1,10 +1,10 @@
+// ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/contar_datos.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
-import 'package:logger/logger.dart';
 
-double width_screen = 0.0;
+double widthScreen = 0.0;
 Map<String, int> datosTaller = {};
 
 class CustomResumen extends StatelessWidget {
@@ -14,16 +14,15 @@ class CustomResumen extends StatelessWidget {
   const CustomResumen({
     required this.listaTaller,
     required this.listaLlegar,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    var logger = Logger();
     datosTaller = contarDatosTaller(listaTaller);
     //logger.i("Cantidad por llegar: $listaLlegar");
     // Lógica para obtener los datos de llegada si es necesario
-    width_screen = MediaQuery.of(context).size.width;
+    widthScreen = MediaQuery.of(context).size.width;
     // Aquí puedes usar los datos obtenidos para construir la interfaz de usuario
     return SingleChildScrollView(
       child: Padding(
@@ -59,6 +58,7 @@ class CustomResumen extends StatelessWidget {
   }
 }
 
+// ignore: non_constant_identifier_names
 Widget _CustomContainer({String? razon, int? dato}) {
   Color fillContainer;
   switch (razon) {
