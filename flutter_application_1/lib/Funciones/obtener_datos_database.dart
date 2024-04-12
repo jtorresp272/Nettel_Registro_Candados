@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 
 class Candado {
@@ -53,13 +54,14 @@ Future<Candado?> getDatoCandado(String numeroCandado) async {
           jsonData; // Suponemos que la API devuelve solo un candado con ese número
       DateTime? fechaIngreso = _parseDateString(item['Fecha Ingreso']);
       DateTime? fechaSalida = _parseDateString(item['Fecha Salida']);
+      fechaIngreso ??= DateTime.now();
       return Candado(
         numero: item['Numero'],
         tipo: item['Tipo'],
         razonIngreso: item['Descripcion Ingreso'],
         razonSalida: item['Descripcion Salida'],
         responsable: item['Responsable'],
-        fechaIngreso: fechaIngreso!,
+        fechaIngreso: fechaIngreso,
         fechaSalida: fechaSalida,
         lugar: item['lugar'],
         imageDescripcion: item['Imagen'],
