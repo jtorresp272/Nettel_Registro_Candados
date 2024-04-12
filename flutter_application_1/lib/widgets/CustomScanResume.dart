@@ -130,9 +130,11 @@ class _CustomScanResumeState extends State<CustomScanResume>
     // Check si existe un responsable
     responsable = widget.candado.responsable;
     if (responsable.isNotEmpty) {
-      // Do something
-      buttonOnPressed[name.indexWhere((name) => name.contains(responsable))] =
-          true;
+      // Chequeo si el responsable esta en la lista sino no hace nada
+      if (name.indexWhere((name) => name.contains(responsable)) != -1) {
+        buttonOnPressed[name.indexWhere((name) => name.contains(responsable))] =
+            true;
+      }
     }
     // animacion de ingreso
     _animationController = AnimationController(
