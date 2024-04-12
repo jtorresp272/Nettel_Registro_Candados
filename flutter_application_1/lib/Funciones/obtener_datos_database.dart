@@ -43,7 +43,7 @@ var logger = Logger();
 // Obtener información de un candado en especifico
 Future<Candado?> getDatoCandado(String numeroCandado) async {
   const urlBuscar =
-      "https://script.google.com/macros/s/AKfycbwF1JiiQQtvxmiWteQNyRt_APQvd4_6jmFht--pOIo4d_IBkniKlJw37HE90TIZkUcV3w/exec?accion=buscar&string=";
+      "https://script.google.com/macros/s/AKfycbztJOQs6rFUVIGYJLHynOkf4Cn_OMIKXE_Spii0-4GBz8xk68_DIVpbEDIMYrkP7lsbew/exec?accion=buscar&string=";
   final response = await http.get(Uri.parse(urlBuscar + numeroCandado));
 
   if (response.statusCode == 200) {

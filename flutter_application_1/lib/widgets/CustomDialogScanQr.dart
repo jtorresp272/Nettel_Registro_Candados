@@ -30,11 +30,15 @@ class DialogScanQr extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                    height: 60.0, // Ajusta la altura deseada para el CircularProgressIndicator
-                    width: 60.0, // Ajusta el ancho deseado para el CircularProgressIndicator
+                    height:
+                        60.0, // Ajusta la altura deseada para el CircularProgressIndicator
+                    width:
+                        60.0, // Ajusta el ancho deseado para el CircularProgressIndicator
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(getColorAlmostBlue()), // Color personalizado para el CircularProgressIndicator
-                      strokeWidth: 5.0, // Grosor personalizado para el CircularProgressIndicator
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                          getColorAlmostBlue()), // Color personalizado para el CircularProgressIndicator
+                      strokeWidth:
+                          5.0, // Grosor personalizado para el CircularProgressIndicator
                     ),
                   ),
                   const SizedBox(height: 20.0),
@@ -52,7 +56,8 @@ class DialogScanQr extends StatelessWidget {
         } else if (snapshot.hasError) {
           return AlertDialog(
             title: const Text('Error'),
-            content: Text('Ocurrió un error al buscar el candado: ${snapshot.error}'),
+            content: Text(
+                'Ocurrió un error al buscar el candado: ${snapshot.error}'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
@@ -65,11 +70,13 @@ class DialogScanQr extends StatelessWidget {
         } else {
           final Candado? scannedCandado = snapshot.data;
           if (scannedCandado != null) {
-            return CustomScanResume(candado: scannedCandado, estado: EstadoCandados.porIngresar);
+            return CustomScanResume(
+                candado: scannedCandado, estado: EstadoCandados.porIngresar);
           } else {
             return AlertDialog(
               title: const Text('Candado no encontrado'),
-              content: const Text('No se encontraron datos para el candado escaneado.'),
+              content: const Text(
+                  'No se encontraron datos para el candado escaneado.'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {

@@ -398,6 +398,6 @@ class _TallerState extends State<Taller> {
 /* funcion para resetear la pagina Taller */
 void restartPage(BuildContext context) {
   // restart datos del taller
-  Navigator.pushReplacement(context,
-      MaterialPageRoute(builder: (BuildContext context) => const Taller()));
+  //Navigator.pushReplacement(context,
+  //    MaterialPageRoute(builder: (BuildContext context) => const Taller()));
 }

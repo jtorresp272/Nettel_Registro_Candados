@@ -5,7 +5,6 @@ import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/notification_state.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
-import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:intl/intl.dart';
 //import 'package:provider/provider.dart';
@@ -397,7 +396,6 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
     // Enviar a la funcion modificar valores
     bool checkModification = await modificarRegistro(
         'modificarRegistroHistorial', widget.candado.numero, valoresNuevos);
-    // Colocar un punto rojo en el icono de actualizar
     if (checkModification) {
       //updateIconAppBar().triggerNotification(context, true);
       // Cerrar el CustomDialog

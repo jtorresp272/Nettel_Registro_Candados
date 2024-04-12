@@ -1,11 +1,11 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/BuildClass/BuildDecorationTextField.dart';
 import 'package:flutter_application_1/Funciones/BuildClass/BuildRowWithButton.dart';
 import 'package:flutter_application_1/Funciones/BuildClass/BuildRowWithCheckBox.dart';
+import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
+import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:intl/intl.dart';
 
@@ -16,6 +16,9 @@ enum EstadoCandados {
   listos,
   danados,
 }
+
+// Espera que termine la confirmación luego de presionar el boton guardar cambios
+bool waiting = false;
 
 class CustomScanResume extends StatefulWidget {
   final Candado candado;
@@ -42,8 +45,10 @@ class _CustomScanResumeState extends State<CustomScanResume>
   bool isElectDamage = false;
   late String imagen;
   String responsable = '';
+  String fechaIngreso = '';
+  String fechaSalida = '';
   List<bool> buttonOnPressed = [false, false, false, false, false];
-  List<String> name = ['Joshue', 'Oliver', 'Fabian ', 'Oswaldo', 'Jordy'];
+  List<String> name = ['Joshue', 'Oliver', 'Fabian', 'Oswaldo', 'Jordy'];
   Map<String, List<Color>> color = {
     'V': [
       Colors.white,
@@ -118,10 +123,16 @@ class _CustomScanResumeState extends State<CustomScanResume>
     isDamage = ['V', 'E'].contains(widget.candado.lugar);
     isMecDamage = widget.candado.lugar.contains('V');
     isElectDamage = widget.candado.lugar.contains('E');
+    fechaIngreso = DateFormat('dd-MM-yy').format(widget.candado.fechaIngreso);
+    fechaSalida = widget.candado.fechaSalida != null
+        ? DateFormat('dd-MM-yy').format(widget.candado.fechaSalida!)
+        : '';
     // Check si existe un responsable
     responsable = widget.candado.responsable;
     if (responsable.isNotEmpty) {
       // Do something
+      buttonOnPressed[name.indexWhere((name) => name.contains(responsable))] =
+          true;
     }
     // animacion de ingreso
     _animationController = AnimationController(
@@ -457,52 +468,68 @@ class _CustomScanResumeState extends State<CustomScanResume>
                       ],
                     ),
                   ),
-                  // Solo se vera el boton si se quiere indicar que esta dañado o si es diferente de candado listo
-                  if (isDamage || widget.estado != EstadoCandados.listos)
-                    // Boton
-                    Expanded(
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            elevation:
-                                5, // Ajusta el valor según el efecto de sombra deseado
-                            // Otros estilos como colores, márgenes, etc.
-                            foregroundColor: Colors.transparent,
-                            backgroundColor: getColorAlmostBlue(),
-                            shadowColor: getColorAlmostBlue(),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15.0),
+                  // Boton
+                  Expanded(
+                    child: !waiting
+                        ? Container(
+                            alignment: Alignment.center,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                elevation:
+                                    5, // Ajusta el valor según el efecto de sombra deseado
+                                // Otros estilos como colores, márgenes, etc.
+                                foregroundColor: Colors.transparent,
+                                backgroundColor: getColorAlmostBlue(),
+                                shadowColor: getColorAlmostBlue(),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                minimumSize: Size(
+                                    MediaQuery.of(context).size.width * 0.7,
+                                    MediaQuery.of(context).size.height * 0.06),
+                                maximumSize: Size(
+                                    MediaQuery.of(context).size.width * 0.8,
+                                    MediaQuery.of(context).size.height * 0.1),
+                              ),
+                              onPressed: () async {
+                                // Acción del botón
+                                if (buttonOnPressed.contains(true) ||
+                                    widget.estado ==
+                                        EstadoCandados.porIngresar ||
+                                    isDamage) {
+                                  setState(() {
+                                    waiting = true;
+                                  });
+                                  await _saveChanges();
+                                  setState(() {
+                                    waiting = false;
+                                  });
+                                } else {
+                                  customSnackBar(
+                                      context,
+                                      'Se debe escoger un responsable',
+                                      Colors.red);
+                                }
+                              },
+                              child: Text(
+                                widget.estado != EstadoCandados.porIngresar
+                                    ? "Guardar y actualizar"
+                                    : "Ingresar y actualizar",
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16.0),
+                              ),
                             ),
-                            minimumSize: Size(
-                                MediaQuery.of(context).size.width * 0.7,
-                                MediaQuery.of(context).size.height * 0.06),
-                            maximumSize: Size(
-                                MediaQuery.of(context).size.width * 0.8,
-                                MediaQuery.of(context).size.height * 0.1),
+                          )
+                        : Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 4,
+                              color: getBackgroundColor(),
+                              backgroundColor: getColorAlmostBlue(),
+                            ),
                           ),
-                          onPressed: () {
-                            // Acción del botón
-                            if (buttonOnPressed.contains(true) ||
-                                widget.estado == EstadoCandados.porIngresar) {
-                              _saveChanges();
-                            } else {
-                              customSnackBar(context,
-                                  'Se debe escoger un responsable', Colors.red);
-                            }
-                          },
-                          child: Text(
-                            widget.estado != EstadoCandados.porIngresar
-                                ? "Guardar y actualizar"
-                                : "Ingresar y actualizar",
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16.0),
-                          ),
-                        ),
-                      ),
-                    ),
+                  ),
                 ],
               ),
             ),
@@ -512,7 +539,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
     );
   }
 
-  void _saveChanges() {
+  Future<void> _saveChanges() async {
     final String newDescripcionIngreso =
         _descripcionIngresoController.text.replaceAll(',', '/');
     String newDescripcionSalida =
@@ -521,7 +548,8 @@ class _CustomScanResumeState extends State<CustomScanResume>
         _descripcionDanadoController.text.replaceAll(',', '/');
     List<String> valoresNuevos = [];
     String lugar = widget.candado.lugar;
-
+    String accion =
+        'modificarRegistroHistorial'; // por defecto modificara los valores en las celdas
     // Aquí puedes guardar los cambios o hacer lo que necesites con las descripciones editadas
     if (isDamage) {
       // Ningun check seleccionado
@@ -550,54 +578,92 @@ class _CustomScanResumeState extends State<CustomScanResume>
         '',
         lugar
       ];
-    } else {
+    }
+    /* Actualizar o Ingresar Valores a la base de datos */
+    else {
       switch (widget.estado) {
         case EstadoCandados.ingresado:
           newDescripcionSalida =
               '$newDescripcionSalida / ${name[buttonOnPressed.indexWhere((e) => e)]}';
-          customSnackBar(context, newDescripcionSalida, Colors.red);
           // Proximo estado
           lugar = 'M';
+          fechaSalida = '';
           break;
         case EstadoCandados.porIngresar:
           // Proximo estado
+          fechaIngreso = DateFormat('dd-MM-yy').format(DateTime.now());
+          fechaSalida = '';
+          responsable = '';
           lugar = 'I';
+          accion = 'agregarRegistroHistorial';
           break;
         case EstadoCandados.mantenimiento:
+        case EstadoCandados.danados:
           responsable = name[buttonOnPressed.indexWhere((e) => e)];
+          fechaSalida = DateFormat('dd-MM-yy').format(DateTime.now());
           // Proximo estado
           lugar = 'L';
           break;
         case EstadoCandados.listos:
           // Proximo estado
           lugar = 'M';
-          break;
-        case EstadoCandados.danados:
-          // Proximo estado
-          lugar = 'L';
+          fechaSalida = '';
           break;
         default:
           // Proximo estado
           lugar = 'I';
+          fechaSalida = '';
           break;
       }
-      valoresNuevos = [
-        newDescripcionIngreso,
-        newDescripcionSalida,
-        responsable,
-        DateFormat('dd-MM-yyyy').format(widget.candado.fechaIngreso),
-        (widget.candado.fechaSalida != null)
-            ? DateFormat('dd-MM-yyyy').format(widget.candado.fechaSalida!)
-            : '',
-        lugar
-      ];
+      // Dependiendo de la accion  a realizar se realizan las modificaciones
+      if (accion == 'modificarRegistroHistorial') {
+        valoresNuevos = [
+          newDescripcionIngreso,
+          newDescripcionSalida,
+          responsable,
+          fechaIngreso,
+          fechaSalida,
+          lugar
+        ];
+      } else {
+        valoresNuevos = [
+          widget.candado.numero,
+          widget.candado.tipo,
+          newDescripcionIngreso,
+          newDescripcionSalida,
+          responsable,
+          fechaIngreso,
+          fechaSalida,
+          lugar
+        ];
+      }
     }
 
-    //cerraremos el diálogo
-    _animationController.reverse().then((_) {
-      Navigator.of(context)
-          .pop(); // Cerrar el diálogo al finalizar la animación de salida
-    });
+    String snackMessage = '';
+    Color snackColor = Colors.red;
+    // Enviar a la funcion modificar valores
+    bool checkModification =
+        await modificarRegistro(accion, widget.candado.numero, valoresNuevos);
+    if (checkModification) {
+      widget.estado == EstadoCandados.porIngresar
+          ? updateIconAppBar().triggerNotification(context, true)
+          : null;
+      // Cerrar el CustomDialog
+      _animationController.reverse().then((_) {
+        Navigator.of(context)
+            .pop(); // Cerrar el diálogo al finalizar la animación de salida
+      });
+      snackMessage = 'Actualización realizada existosamente :D';
+      snackColor = Colors.green;
+    } else {
+      snackMessage = 'No se pudo enviar correctamente la actualización';
+      snackColor = Colors.red;
+    }
+    // mensaje para retroalimentar al usuario que la operacion fue exitosa o no
+    customSnackBar(context, snackMessage, snackColor);
+    if (snackColor == Colors.red) return;
+    // Actualizar la pagina de Taller
+    Navigator.pushNamedAndRemoveUntil(context, '/taller', (route) => false);
   }
 
   @override

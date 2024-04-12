@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/clases/data_model.dart';
+import 'package:flutter_application_1/Funciones/database/data_model.dart';
 import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
 
 class Splash extends StatefulWidget {
