@@ -42,10 +42,14 @@ class _SplashState extends State<Splash> {
 
   /* Obtiene informacion de la base de datos */
   Future<void> _getDataFromDB() async {
-    final List<Note>? notes = await DatabaseHelper.getAllNote();
+    final List<Note>? notes = await DatabaseHelper.getAllNote(1);
     if (notes != null && notes.isNotEmpty) {
-      final Note note = notes.firstWhere((note) => note.title == 'login');
-      _description = note.description;
+      try {
+        final Note note = notes.firstWhere((note) => note.title == 'login');
+        _description = note.description;
+      } on StateError catch (_) {
+        _description = 0;
+      }
     } else {
       _description =
           0; // Si notes es nulo o está vacío, establece la descripción como '0'

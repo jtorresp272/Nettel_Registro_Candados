@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/BuildClass/BuildDecorationTextField.dart';
 import 'package:flutter_application_1/Funciones/BuildClass/BuildRowWithButton.dart';
@@ -8,8 +9,10 @@ import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
 import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
+import 'package:flutter_application_1/Screen/taller.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 
 enum EstadoCandados {
   ingresado,
@@ -21,6 +24,10 @@ enum EstadoCandados {
 
 // Espera que termine la confirmación luego de presionar el boton guardar cambios
 bool waiting = false;
+String datosMemoria = '';
+late int candadosIngresados;
+String _description = '';
+List<String> candadosPorEnviar = [];
 
 class CustomScanResume extends StatefulWidget {
   final Candado candado;
@@ -56,7 +63,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
   String responsable = '';
   String fechaIngreso = '';
   String fechaSalida = '';
-  late int candadosIngresados;
+
   List<bool> buttonOnPressed = [false, false, false, false, false];
   List<String> name = ['Joshue', 'Oliver', 'Fabian', 'Oswaldo', 'Jordy'];
   Map<String, List<Color>> color = {
@@ -553,6 +560,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
   }
 
   Future<void> _saveChanges() async {
+    var logger = Logger();
     final String newDescripcionIngreso =
         _descripcionIngresoController.text.replaceAll(',', '/');
     String newDescripcionSalida =
@@ -609,7 +617,6 @@ class _CustomScanResumeState extends State<CustomScanResume>
           responsable = '';
           lugar = 'I';
           accion = 'agregarRegistroHistorial';
-          candadosIngresados++;
           break;
         case EstadoCandados.mantenimiento:
         case EstadoCandados.danados:
@@ -662,26 +669,28 @@ class _CustomScanResumeState extends State<CustomScanResume>
       // Si el candado es por ingresar se debe guardar en la base de datos para luego solicitar la informacion puesta en correo
       if (widget.estado == EstadoCandados.porIngresar) {
         updateIconAppBar().triggerNotification(context, true);
+        // check si hay datos en memoria
+        await _getDataDB();
         // crear estructura para los candados en el cache
+        if (datosMemoria.isNotEmpty) {
+          candadosPorEnviar.add(
+              '$datosMemoria,${widget.candado.numero} - $newDescripcionIngreso');
+        } else {
+          candadosPorEnviar
+              .add('${widget.candado.numero} - $newDescripcionIngreso');
+        }
+
         Note modelCandado = Note(
-          id: 1,
-          title: candadosIngresados.toString(),
-          description:
-              '${widget.candado.numero} - ${widget.candado.razonIngreso}',
+          id: 2,
+          title: 'candados',
+          description: candadosPorEnviar.toString(),
         );
-        // crear estructura de cuantos candados por enviar hay en el cache
-        Note modelLength = Note(
-          id: 1,
-          title: 'length',
-          description: candadosIngresados,
-        );
+
         // Guardar informacion
         if (widget.note == null) {
-          await DatabaseHelper.addNote(modelCandado);
-          await DatabaseHelper.addNote(modelLength);
+          await DatabaseHelper.addNote(modelCandado, modelCandado.id);
         } else {
-          await DatabaseHelper.updateNote(modelCandado);
-          await DatabaseHelper.updateNote(modelLength);
+          await DatabaseHelper.updateNote(modelCandado, modelCandado.id);
         }
       }
       // Cerrar el CustomDialog
@@ -708,5 +717,23 @@ class _CustomScanResumeState extends State<CustomScanResume>
     _descripcionSalidaController.dispose();
     _animationController.dispose();
     super.dispose();
+  }
+}
+
+/* Obtiene informacion de la base de datos */
+Future<void> _getDataDB() async {
+  final List<Note>? notes = await DatabaseHelper.getAllNote(2);
+  if (notes != null && notes.isNotEmpty) {
+    try {
+      final Note note = notes.firstWhere((note) => note.title == 'candados');
+      String texto = note.description;
+      datosMemoria = texto.substring(1, texto.length - 1);
+    } on StateError catch (_) {
+      datosMemoria =
+          ''; // Si notes es nulo o está vacío, establece la descripción como '0'
+    }
+  } else {
+    datosMemoria =
+        ''; // Si notes es nulo o está vacío, establece la descripción como '0'
   }
 }

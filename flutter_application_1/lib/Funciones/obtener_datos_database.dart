@@ -90,13 +90,14 @@ Future getDataGoogleSheet() async {
       if (['L', 'M', 'I', 'V', 'E'].contains(item['lugar'])) {
         DateTime? fechaIngreso = _parseDateString(item['Fecha Ingreso']);
         DateTime? fechaSalida = _parseDateString(item['Fecha Salida']);
+        fechaIngreso ??= DateTime.now();
         final Candado candadoTaller = Candado(
           numero: item['Numero'],
           tipo: item['Tipo'],
           razonIngreso: item['Descripcion Ingreso'],
           razonSalida: item['Descripcion Salida'],
           responsable: item['Responsable'],
-          fechaIngreso: fechaIngreso!,
+          fechaIngreso: fechaIngreso,
           fechaSalida: fechaSalida,
           lugar: item['lugar'],
           imageDescripcion: item['Imagen'],

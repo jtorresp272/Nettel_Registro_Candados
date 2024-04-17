@@ -6,7 +6,6 @@ import 'package:flutter_application_1/widgets/CustomElevatedButton.dart';
 import 'package:flutter_application_1/Funciones/verificar_credenciales.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import '/widgets/CustomTextFromField.dart';
-//import 'package:logger/logger.dart';
 
 class LogIn extends StatefulWidget {
   final Note? note;
@@ -19,8 +18,8 @@ class LogIn extends StatefulWidget {
 class _LogInState extends State<LogIn> {
   String user = '';
   String pass = '';
-  String where_go = '';
-  int save_database = 0;
+  String whereGo = '';
+  int saveDatabase = 0;
 
   // Estado para controlar si se está realizando la solicitud HTTP
   bool cargando = false;
@@ -113,14 +112,14 @@ class _LogInState extends State<LogIn> {
                           return;
                         } else {
                           if (user == 'taller@nettelcorp.com') {
-                            save_database = 1;
-                            where_go = '/taller';
+                            saveDatabase = 1;
+                            whereGo = '/taller';
                           } else if (user == 'monitoreo@nettelcorp.com') {
-                            save_database = 2;
-                            where_go = '/monitoreo';
+                            saveDatabase = 2;
+                            whereGo = '/monitoreo';
                           } else if (user == 'puerto@nettelcorp.com') {
-                            save_database = 3;
-                            where_go = '/puerto';
+                            saveDatabase = 3;
+                            whereGo = '/puerto';
                           }
                         }
 
@@ -128,17 +127,17 @@ class _LogInState extends State<LogIn> {
                         Note model = Note(
                           id: 1,
                           title: 'login',
-                          description: save_database,
+                          description: saveDatabase,
                         );
 
                         if (widget.note == null) {
-                          await DatabaseHelper.addNote(model);
+                          await DatabaseHelper.addNote(model, model.id);
                         } else {
-                          await DatabaseHelper.updateNote(model);
+                          await DatabaseHelper.updateNote(model, model.id);
                         }
 
                         // Redirigir a la pagina correspondiente
-                        Navigator.pushReplacementNamed(context, where_go);
+                        Navigator.pushReplacementNamed(context, whereGo);
                       },
                     ),
                   const SizedBox(
