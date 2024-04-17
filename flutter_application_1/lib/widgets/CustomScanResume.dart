@@ -679,7 +679,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
           candadosPorEnviar
               .add('${widget.candado.numero} - $newDescripcionIngreso');
         }
-
+        logger.i(candadosPorEnviar);
         Note modelCandado = Note(
           id: 2,
           title: 'candados',
@@ -692,6 +692,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
         } else {
           await DatabaseHelper.updateNote(modelCandado, modelCandado.id);
         }
+        candadosPorEnviar.clear();
       }
       // Cerrar el CustomDialog
       _animationController.reverse().then((_) {
