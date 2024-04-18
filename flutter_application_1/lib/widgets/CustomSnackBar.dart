@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 
 void customSnackBar(BuildContext context, String mensaje, Color colorFondo) {

@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
@@ -6,7 +8,7 @@ import 'package:flutter_application_1/widgets/CustomScanResume.dart';
 class DialogScanQr extends StatelessWidget {
   final String scannedNumber;
 
-  const DialogScanQr({Key? key, required this.scannedNumber}) : super(key: key);
+  const DialogScanQr({super.key, required this.scannedNumber});
 
   @override
   Widget build(BuildContext context) {

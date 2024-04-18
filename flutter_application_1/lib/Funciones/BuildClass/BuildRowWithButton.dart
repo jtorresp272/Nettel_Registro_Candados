@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 
@@ -7,11 +9,11 @@ class RowWithButton extends StatelessWidget {
   final List<bool> isPressed;
 
   const RowWithButton({
-    Key? key,
+    super.key,
     required this.name,
     required this.onPressed,
     required this.isPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +34,7 @@ class RowWithButton extends StatelessWidget {
                   height: 20,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(
-                        color: getColorAlmostBlue(), width: 2.0),
+                    border: Border.all(color: getColorAlmostBlue(), width: 2.0),
                   ),
                   child: Center(
                     child: Container(

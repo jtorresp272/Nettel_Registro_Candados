@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/database/data_model.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
@@ -39,6 +41,7 @@ class Taller extends StatefulWidget {
 
 class _TallerState extends State<Taller> {
   var logger = Logger();
+  // ignore: non_constant_identifier_names
   bool termino_ob_data = false;
 /* Variables globales */
   List<Candado> listaCandadosTaller = [];
@@ -479,8 +482,6 @@ Future<void> _hasEmail(context) async {
     try {
       notes.firstWhere((note) => note.title == 'candados');
       updateIconAppBar().triggerNotification(context, true);
-    } catch (_) {
-    }
-  } else {
-  }
+    } catch (_) {}
+  } else {}
 }

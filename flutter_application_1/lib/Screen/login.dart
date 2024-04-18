@@ -9,7 +9,7 @@ import '/widgets/CustomTextFromField.dart';
 
 class LogIn extends StatefulWidget {
   final Note? note;
-  LogIn({Key? key, this.note}) : super(key: key);
+  const LogIn({super.key, this.note});
 
   @override
   State<LogIn> createState() => _LogInState();
@@ -107,6 +107,7 @@ class _LogInState extends State<LogIn> {
                         });
 
                         if (!isValidCredentials) {
+                          // ignore: use_build_context_synchronously
                           customSnackBar(context, 'Verificar credenciales',
                               Colors.redAccent);
                           return;
@@ -137,6 +138,7 @@ class _LogInState extends State<LogIn> {
                         }
 
                         // Redirigir a la pagina correspondiente
+                        // ignore: use_build_context_synchronously
                         Navigator.pushReplacementNamed(context, whereGo);
                       },
                     ),

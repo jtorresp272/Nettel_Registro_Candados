@@ -1,7 +1,8 @@
+// ignore_for_file: file_names, library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/notification_state.dart';
-import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:provider/provider.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -10,13 +11,13 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final NotificationState? notificationState;
   final VoidCallback? reloadCallback;
 
-  CustomAppBar({
-    Key? key,
+  const CustomAppBar({
+    super.key,
     required this.titulo,
     required this.subtitulo,
     this.notificationState,
     this.reloadCallback,
-  }) : super(key: key);
+  });
 
   @override
   _CustomAppBarState createState() => _CustomAppBarState();
@@ -63,15 +64,16 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 ),
             ],
           ),
-          IconButton(
-            icon: const Icon(Icons.update_outlined),
-            onPressed: (){
-              setState(() {
-                  // Actualizar la pagina de Taller
-                  Navigator.pushNamedAndRemoveUntil(context, '/taller', (route) => false);        
-              });
-            },
-          ),
+        IconButton(
+          icon: const Icon(Icons.update_outlined),
+          onPressed: () {
+            setState(() {
+              // Actualizar la pagina de Taller
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/taller', (route) => false);
+            });
+          },
+        ),
       ],
       backgroundColor: Colors.white,
       iconTheme: IconThemeData(color: getColorAlmostBlue()),

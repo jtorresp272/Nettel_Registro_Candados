@@ -77,6 +77,7 @@ Future<Candado?> getDatoCandado(String numeroCandado) async {
 
 // Retorna todo el listado de la tabla del registro de candados
 Future getDataGoogleSheet() async {
+  // ignore: non_constant_identifier_names
   String URL =
       "https://script.google.com/macros/s/AKfycbwwLA26uBvHLJBzdZ_oJAvbwyx21mEZm7U153PcnTQz8YGzl5JYpZTsAVs43-LmA2yB-w/exec?accion=ob_data";
   // Borrar toda la información de los candados

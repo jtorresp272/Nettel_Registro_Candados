@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -6,7 +8,7 @@ import 'package:logger/logger.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class CustomQrScan extends StatefulWidget {
-  const CustomQrScan({Key? key}) : super(key: key);
+  const CustomQrScan({super.key});
 
   @override
   State<StatefulWidget> createState() => _CustomQrScan();
@@ -14,7 +16,7 @@ class CustomQrScan extends StatefulWidget {
 
 class _CustomQrScan extends State<CustomQrScan> {
   bool flash = false;
-  String? result_code;
+  String? resultCode;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
 
@@ -200,9 +202,9 @@ class _CustomQrScan extends State<CustomQrScan> {
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         //result = scanData;
-        result_code = scanData.code;
+        resultCode = scanData.code;
         controller.pauseCamera();
-        Navigator.pop(context, result_code);
+        Navigator.pop(context, resultCode);
       });
     });
   }

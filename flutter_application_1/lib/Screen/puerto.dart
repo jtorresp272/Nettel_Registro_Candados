@@ -24,7 +24,10 @@ class _PuertoState extends State<Puerto> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar: CustomAppBar(titulo: 'Consorcio Nettel', subtitulo: 'Puerto',),
+      appBar: const CustomAppBar(
+        titulo: 'Consorcio Nettel',
+        subtitulo: 'Puerto',
+      ),
       drawer: const customDrawer(
         nameUser: "Puerto",
       ),

@@ -26,8 +26,8 @@ class MyApp extends StatelessWidget {
           '/monitoreo': (context) => const Monitoreo(),
           '/taller': (context) => const Taller(),
           '/puerto': (context) => const Puerto(),
-          '/login': (context) => LogIn(),
-          '/splash': (context) => Splash(),
+          '/login': (context) => const LogIn(),
+          '/splash': (context) => const Splash(),
         },
       ),
     );

@@ -1,4 +1,5 @@
-import 'package:flutter/gestures.dart';
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/BuildClass/BuildDecorationTextField.dart';
 import 'package:flutter_application_1/Funciones/BuildClass/BuildRowWithButton.dart';
@@ -9,7 +10,6 @@ import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
 import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
-import 'package:flutter_application_1/Screen/taller.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
@@ -26,7 +26,6 @@ enum EstadoCandados {
 bool waiting = false;
 String datosMemoria = '';
 late int candadosIngresados;
-String _description = '';
 List<String> candadosPorEnviar = [];
 
 class CustomScanResume extends StatefulWidget {
@@ -36,14 +35,14 @@ class CustomScanResume extends StatefulWidget {
   final int? candadosEnCache;
 
   const CustomScanResume(
-      {Key? key,
+      {super.key,
       required this.candado,
       required this.estado,
       this.note,
-      this.candadosEnCache})
-      : super(key: key);
+      this.candadosEnCache});
 
   @override
+  // ignore: library_private_types_in_public_api
   _CustomScanResumeState createState() => _CustomScanResumeState();
 }
 
@@ -668,6 +667,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
     if (checkModification) {
       // Si el candado es por ingresar se debe guardar en la base de datos para luego solicitar la informacion puesta en correo
       if (widget.estado == EstadoCandados.porIngresar) {
+        // ignore: use_build_context_synchronously
         updateIconAppBar().triggerNotification(context, true);
         // check si hay datos en memoria
         await _getDataDB();
@@ -707,9 +707,11 @@ class _CustomScanResumeState extends State<CustomScanResume>
       snackColor = Colors.red;
     }
     // mensaje para retroalimentar al usuario que la operacion fue exitosa o no
+    // ignore: use_build_context_synchronously
     customSnackBar(context, snackMessage, snackColor);
     if (snackColor == Colors.red) return;
     // Actualizar la pagina de Taller
+    // ignore: use_build_context_synchronously
     Navigator.pushNamedAndRemoveUntil(context, '/taller', (route) => false);
   }
 
