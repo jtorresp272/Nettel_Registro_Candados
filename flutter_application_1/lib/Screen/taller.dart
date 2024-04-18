@@ -477,14 +477,10 @@ Future<void> _hasEmail(context) async {
   final List<Note>? notes = await DatabaseHelper.getAllNote(2);
   if (notes != null && notes.isNotEmpty) {
     try {
-      final Note note = notes.firstWhere((note) => note.title == 'candados');
-      //String texto = note.description;
-      //datosMemoria = texto.substring(1, texto.length - 1);
+      notes.firstWhere((note) => note.title == 'candados');
       updateIconAppBar().triggerNotification(context, true);
     } catch (_) {
-      //datosMemoria = '';
     }
   } else {
-    //datosMemoria = '';
   }
 }

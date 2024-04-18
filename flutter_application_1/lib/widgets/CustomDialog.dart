@@ -82,7 +82,7 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
       child: AlertDialog(
         titlePadding: const EdgeInsets.all(0.0),
         scrollable: true,
-        surfaceTintColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.white,
         insetPadding: const EdgeInsets.all(15.0),
         // Encabezado (Imagen - Numero - Fecha)

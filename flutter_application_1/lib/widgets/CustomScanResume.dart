@@ -692,6 +692,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
         } else {
           await DatabaseHelper.updateNote(modelCandado, modelCandado.id);
         }
+        // Limpiar la variable de candados por enviar
         candadosPorEnviar.clear();
       }
       // Cerrar el CustomDialog
@@ -699,10 +700,10 @@ class _CustomScanResumeState extends State<CustomScanResume>
         Navigator.of(context)
             .pop(); // Cerrar el diálogo al finalizar la animación de salida
       });
-      snackMessage = 'Actualización realizada existosamente :D';
+      snackMessage = 'Datos guardados existosamente';
       snackColor = Colors.green;
     } else {
-      snackMessage = 'No se pudo enviar correctamente la actualización';
+      snackMessage = 'No se pudo enviar correctamente los datos';
       snackColor = Colors.red;
     }
     // mensaje para retroalimentar al usuario que la operacion fue exitosa o no

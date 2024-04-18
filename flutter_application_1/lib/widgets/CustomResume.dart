@@ -47,10 +47,10 @@ class CustomResumen extends StatelessWidget {
                 razon: 'Electronicas Dañadas',
                 dato: datosTaller['Electronicas Dañadas']),
             _CustomContainer(
-                razon: 'Total mecanicas en taller',
-                dato: datosTaller['Total mecanicas en taller']),
+                razon: 'Total electronicas en taller',
+                dato: datosTaller['Total electronicas en taller']),
             _CustomContainer(
-                razon: 'Total mecanicas por llegar', dato: listaLlegar.length),
+                razon: 'Total candados por llegar', dato: listaLlegar.length),
           ],
         ),
       ),
@@ -77,10 +77,10 @@ Widget _CustomContainer({String? razon, int? dato}) {
     case 'Electronicas Dañadas':
       fillContainer = Colors.red;
       break;
-    case 'Total mecanicas en taller':
+    case 'Total electronicas en taller':
       fillContainer = Colors.grey;
       break;
-    case 'Total mecanicas por llegar':
+    case 'Total candados por llegar':
       fillContainer = Colors.grey;
       break;
     default:

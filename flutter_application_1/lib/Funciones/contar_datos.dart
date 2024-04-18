@@ -46,6 +46,6 @@ Map<String, int> contarDatosTaller(List<Candado> listaTaller) {
     'Candados Ingresados': candadosIngresados,
     'Mecanicas Dañadas': mecanicasDanadas,
     'Electronicas Dañadas': electronicaDanadas,
-    'Total mecanicas en taller': totalCandados,
+    'Total electronicas en taller': totalCandados,
   };
 }

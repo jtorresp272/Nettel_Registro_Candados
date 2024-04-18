@@ -40,15 +40,10 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 onPressed: () {
                   setState(() {
                     // Chequea si existe una actualizacion para las datos en la base de datos
-                    //if (notificationState.hasNotification) {
                     if (widget.reloadCallback != null) {
                       widget
                           .reloadCallback!(); // Llamar a la funcion para actualizar los datos
                     }
-                    //} else {
-                    //  customSnackBar(context,
-                    //      'No existen actualizaciones pendientes', Colors.red);
-                    //}
                   }); // Acción al presionar el icono de notificaciones
                 },
               ),
@@ -67,6 +62,15 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   ),
                 ),
             ],
+          ),
+          IconButton(
+            icon: const Icon(Icons.update_outlined),
+            onPressed: (){
+              setState(() {
+                  // Actualizar la pagina de Taller
+                  Navigator.pushNamedAndRemoveUntil(context, '/taller', (route) => false);        
+              });
+            },
           ),
       ],
       backgroundColor: Colors.white,
