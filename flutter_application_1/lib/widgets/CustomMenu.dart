@@ -1,12 +1,17 @@
-// ignore_for_file: file_names, camel_case_types
+// ignore_for_file: file_names, camel_case_types, use_build_context_synchronously
+
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Funciones/database/data_model.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
+import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
 import 'package:logger/logger.dart';
 
 class customDrawer extends StatefulWidget {
   final String nameUser;
-  const customDrawer({super.key, required this.nameUser});
+  final VoidCallback? reloadCallback;
+  const customDrawer({super.key, required this.nameUser, this.reloadCallback});
 
   @override
   State<customDrawer> createState() => _customDrawerState();
@@ -161,7 +166,13 @@ class _customDrawerState extends State<customDrawer> {
               ),
               onTap: () {
                 // Implementa lo que quieres hacer al seleccionar la opción 2
-                logger.i("tap 2");
+                setState(() {
+                  // Chequea si existe una actualizacion para las datos en la base de datos
+                  if (widget.reloadCallback != null) {
+                    widget
+                        .reloadCallback!(); // Llamar a la funcion para actualizar los datos
+                  }
+                });
               },
             ),
             ListTile(
@@ -175,10 +186,10 @@ class _customDrawerState extends State<customDrawer> {
                   color: Color.fromARGB(255, 68, 91, 164),
                 ),
               ),
-              onTap: () {
+              onTap: () async {
                 // Implementa lo que quieres hacer al seleccionar la opción 3
-                logger.i("tap 3");
-
+                // Eliminar los datos guardados en memoria del login
+                await _deleteData();
                 Navigator.pushReplacementNamed(
                   context,
                   "/login",
@@ -198,10 +209,20 @@ class _customDrawerState extends State<customDrawer> {
               ),
               onTap: () {
                 // Implementa lo que quieres hacer al seleccionar la opción 4
-                logger.i("tap 4");
+                exit(0); // sale de la aplicacion
               },
             ),
           ],
         ));
   }
+}
+
+/* Funcion para borrar los datos guardados en memoria */
+Future<void> _deleteData() async {
+  Note modelDelete = const Note(
+    id: 1,
+    title: 'login',
+    description: '',
+  );
+  await DatabaseHelper.deleteNote(modelDelete, modelDelete.id);
 }

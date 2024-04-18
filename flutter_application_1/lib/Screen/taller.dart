@@ -361,9 +361,18 @@ class _TallerState extends State<Taller> {
                             ),
                           ),
                           // Usuario
-                          const Padding(
-                            padding: EdgeInsets.only(top: 10.0),
-                            child: customDrawer(nameUser: "Taller"),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: customDrawer(
+                              nameUser: "Taller",
+                              reloadCallback: () {
+                                setState(() {
+                                  restartPage(context);
+                                });
+                                updateIconAppBar()
+                                    .triggerNotification(context, false);
+                              },
+                            ),
                           ),
                         ],
                       ),
