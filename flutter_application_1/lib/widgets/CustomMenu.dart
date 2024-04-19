@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/database/data_model.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
-import 'package:logger/logger.dart';
+import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
+
+bool hasEmail = false;
 
 class customDrawer extends StatefulWidget {
   final String nameUser;
@@ -186,13 +188,19 @@ class _customDrawerState extends State<customDrawer> {
                 ),
               ),
               onTap: () async {
-                // Implementa lo que quieres hacer al seleccionar la opción 3
-                // Eliminar los datos guardados en memoria del login
-                await _deleteData();
-                Navigator.pushReplacementNamed(
-                  context,
-                  "/login",
-                );
+                  await _hasEmail(context);
+                  if(!hasEmail)
+                  {
+                    // Eliminar los datos guardados en memoria del login
+                    await _deleteData();
+                    Navigator.pushReplacementNamed(
+                      context,
+                      "/login",
+                    );
+                  }else{
+                    customSnackBar(context, 'No puede cerrar sesion si tiene un correo por enviar', Colors.red);
+                  }   
+                
               },
             ),
             ListTile(
@@ -224,4 +232,20 @@ Future<void> _deleteData() async {
     description: '',
   );
   await DatabaseHelper.deleteNote(modelDelete, modelDelete.id);
+}
+
+
+/* Check si existe informacion por enviar en correo  */
+Future<void> _hasEmail(context) async {
+  final List<Note>? notes = await DatabaseHelper.getAllNote(2);
+  if (notes != null && notes.isNotEmpty) {
+    try {
+      final Note note = notes.firstWhere((note) => note.title == 'candados');
+      hasEmail = true;
+    } catch (_) {
+      hasEmail = false;
+    }
+  } else {
+    hasEmail = false;
+  }
 }

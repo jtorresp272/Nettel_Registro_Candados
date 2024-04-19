@@ -3,12 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/database/data_model.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
-import 'package:flutter_application_1/Funciones/notification_state.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
 import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
-import 'package:flutter_application_1/widgets/CustomDialogScanQr.dart';
 import 'package:flutter_application_1/widgets/CustomListViewBuilder.dart';
 import 'package:flutter_application_1/widgets/CustomMenu.dart';
 import 'package:flutter_application_1/widgets/CustomQrScan.dart';
@@ -363,7 +361,7 @@ class _MonitoreoState extends State<Monitoreo> with SingleTickerProviderStateMix
                 ),
               ),
         
-        floatingActionButton: (_currentTabIndex == 1) ?
+        floatingActionButton: (_currentTabIndex != 0) ?
         FloatingActionButton(  
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30.0)
