@@ -37,7 +37,6 @@ class _customDrawerState extends State<customDrawer> {
                 ? contras[2]
                 : "***";
     final Size screenSize = MediaQuery.of(context).size;
-    var logger = Logger();
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
         width: screenSize.width * 0.75,

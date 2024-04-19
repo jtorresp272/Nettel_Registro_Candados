@@ -68,9 +68,10 @@ class _CustomAppBarState extends State<CustomAppBar> {
           icon: const Icon(Icons.update_outlined),
           onPressed: () {
             setState(() {
+              String page = widget.subtitulo == 'Monitoreo' ? '/monitoreo':'/taller';  
               // Actualizar la pagina de Taller
               Navigator.pushNamedAndRemoveUntil(
-                  context, '/taller', (route) => false);
+                  context, page, (route) => false);
             });
           },
         ),

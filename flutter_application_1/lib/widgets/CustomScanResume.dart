@@ -32,14 +32,14 @@ class CustomScanResume extends StatefulWidget {
   final Candado candado;
   final EstadoCandados estado;
   final Note? note;
-  final int? candadosEnCache;
-
+  final String? whereGo;
   const CustomScanResume(
       {super.key,
       required this.candado,
       required this.estado,
       this.note,
-      this.candadosEnCache});
+      this.whereGo,
+      });
 
   @override
   // ignore: library_private_types_in_public_api
@@ -111,7 +111,6 @@ class _CustomScanResumeState extends State<CustomScanResume>
   @override
   void initState() {
     super.initState();
-    candadosIngresados = widget.candadosEnCache ?? 0;
     candadoEnLista = (widget.candado.tipo == '') ? false : true;
     if (candadoEnLista) {
       imagen = widget.candado.imageTipo;
@@ -212,7 +211,9 @@ class _CustomScanResumeState extends State<CustomScanResume>
               ),
             ),
           ),
+          
           actions: [
+            if(widget.whereGo != 'monitoreo')
             Container(
               width: 40.0,
               height: 40.0,
@@ -348,6 +349,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
                         if (!isDamage &&
                             !['V', 'E'].contains(widget.candado.lugar))
                           TextFormField(
+                            readOnly: widget.whereGo == 'monitoreo',
                             maxLines: null,
                             controller: _descripcionIngresoController,
                             decoration: decorationTextField(
@@ -361,19 +363,20 @@ class _CustomScanResumeState extends State<CustomScanResume>
                         if (widget.estado != EstadoCandados.porIngresar &&
                             !isDamage)
                           TextFormField(
+                            readOnly: widget.whereGo == 'monitoreo',
                             maxLines: null,
                             controller: _descripcionSalidaController,
                             decoration: decorationTextField(
                                 text: 'Descripción de salida'),
                           ),
                         if (widget.estado != EstadoCandados.porIngresar &&
-                            !isDamage)
+                            !isDamage && widget.whereGo != 'monitoreo')
                           const SizedBox(
                             height: 10.0,
                           ),
                         // Responsables
                         if (widget.estado != EstadoCandados.porIngresar &&
-                            !isDamage)
+                            !isDamage && widget.whereGo != 'monitoreo')
                           Container(
                             padding: const EdgeInsets.all(5.0),
                             alignment: Alignment.center,
@@ -601,40 +604,47 @@ class _CustomScanResumeState extends State<CustomScanResume>
     }
     /* Actualizar o Ingresar Valores a la base de datos */
     else {
-      switch (widget.estado) {
-        case EstadoCandados.ingresado:
-          newDescripcionSalida =
-              '$newDescripcionSalida / ${name[buttonOnPressed.indexWhere((e) => e)]}';
-          // Proximo estado
-          lugar = 'M';
-          fechaSalida = '';
-          break;
-        case EstadoCandados.porIngresar:
-          // Proximo estado
-          fechaIngreso = DateFormat('dd-MM-yy').format(DateTime.now());
-          fechaSalida = '';
-          responsable = '';
-          lugar = 'I';
-          accion = 'agregarRegistroHistorial';
-          break;
-        case EstadoCandados.mantenimiento:
-        case EstadoCandados.danados:
-          responsable = name[buttonOnPressed.indexWhere((e) => e)];
-          fechaSalida = DateFormat('dd-MM-yy').format(DateTime.now());
-          // Proximo estado
-          lugar = 'L';
-          break;
-        case EstadoCandados.listos:
-          // Proximo estado
-          lugar = 'M';
-          fechaSalida = '';
-          break;
-        default:
-          // Proximo estado
-          lugar = 'I';
-          fechaSalida = '';
-          break;
+      if(widget.whereGo == 'monitoreo')
+      {
+        lugar = 'OP';
+        fechaSalida = DateFormat('dd-MM-yy').format(DateTime.now());
+      }else{
+        switch (widget.estado) {
+          case EstadoCandados.ingresado:
+            newDescripcionSalida =
+                '$newDescripcionSalida / ${name[buttonOnPressed.indexWhere((e) => e)]}';
+            // Proximo estado
+            lugar = 'M';
+            fechaSalida = '';
+            break;
+          case EstadoCandados.porIngresar:
+            // Proximo estado
+            fechaIngreso = DateFormat('dd-MM-yy').format(DateTime.now());
+            fechaSalida = '';
+            responsable = '';
+            lugar = 'I';
+            accion = 'agregarRegistroHistorial';
+            break;
+          case EstadoCandados.mantenimiento:
+          case EstadoCandados.danados:
+            responsable = name[buttonOnPressed.indexWhere((e) => e)];
+            fechaSalida = DateFormat('dd-MM-yy').format(DateTime.now());
+            // Proximo estado
+            lugar = 'L';
+            break;
+          case EstadoCandados.listos:
+            // Proximo estado
+            lugar = 'M';
+            fechaSalida = '';
+            break;
+          default:
+            // Proximo estado
+            lugar = 'I';
+            fechaSalida = '';
+            break;
+        }
       }
+      
       // Dependiendo de la accion  a realizar se realizan las modificaciones
       if (accion == 'modificarRegistroHistorial') {
         valoresNuevos = [
@@ -666,7 +676,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
         await modificarRegistro(accion, widget.candado.numero, valoresNuevos);
     if (checkModification) {
       // Si el candado es por ingresar se debe guardar en la base de datos para luego solicitar la informacion puesta en correo
-      if (widget.estado == EstadoCandados.porIngresar) {
+      if (widget.estado == EstadoCandados.porIngresar || widget.whereGo == 'monitoreo') {
         // ignore: use_build_context_synchronously
         updateIconAppBar().triggerNotification(context, true);
         // check si hay datos en memoria
@@ -710,9 +720,10 @@ class _CustomScanResumeState extends State<CustomScanResume>
     // ignore: use_build_context_synchronously
     customSnackBar(context, snackMessage, snackColor);
     if (snackColor == Colors.red) return;
-    // Actualizar la pagina de Taller
+    String page = widget.whereGo == 'monitoreo' ? '/monitoreo':'/taller';
+    // Actualizar la pagina
     // ignore: use_build_context_synchronously
-    Navigator.pushNamedAndRemoveUntil(context, '/taller', (route) => false);
+    Navigator.pushNamedAndRemoveUntil(context, page, (route) => false);
   }
 
   @override
