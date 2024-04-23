@@ -73,7 +73,7 @@ class DialogScanQr extends StatelessWidget {
           final Candado? scannedCandado = snapshot.data;
           if (scannedCandado != null) {
             return CustomScanResume(
-                candado: scannedCandado, estado: EstadoCandados.porIngresar);
+                candado: scannedCandado, estado: EstadoCandados.porIngresar,whereGo: 'Puerto',);
           } else {
             return AlertDialog(
               title: const Text('Candado no encontrado'),

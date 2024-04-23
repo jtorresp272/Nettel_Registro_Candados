@@ -47,6 +47,10 @@ class _customDrawerState extends State<customDrawer> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            if(widget.nameUser == 'Puerto')
+              const SizedBox(
+                height: 20.0,
+              ),
             Container(
               height: screenSize.height * 0.1,
               decoration: BoxDecoration(
@@ -154,6 +158,7 @@ class _customDrawerState extends State<customDrawer> {
             const SizedBox(
               height: 10.0,
             ),
+            if(widget.nameUser != 'Puerto')
             ListTile(
               leading: const Icon(
                 Icons.email,

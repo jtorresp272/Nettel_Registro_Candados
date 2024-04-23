@@ -43,7 +43,7 @@ var logger = Logger();
 // Obtener información de un candado en especifico
 Future<Candado?> getDatoCandado(String numeroCandado) async {
   const urlBuscar =
-      "https://script.google.com/macros/s/AKfycbztJOQs6rFUVIGYJLHynOkf4Cn_OMIKXE_Spii0-4GBz8xk68_DIVpbEDIMYrkP7lsbew/exec?accion=buscar&string=";
+        "https://script.google.com/macros/s/AKfycbxojXb67pxCBQCDoGkZuHpsYVqSH4U9JIVlPP4bKHQ37kMlimMUSPRJ_rKjDhGmKkBpGg/exec?accion=buscar&string=";
   final response = await http.get(Uri.parse(urlBuscar + numeroCandado));
 
   if (response.statusCode == 200) {
@@ -79,7 +79,7 @@ Future<Candado?> getDatoCandado(String numeroCandado) async {
 Future getDataGoogleSheet() async {
   // ignore: non_constant_identifier_names
   String URL =
-      "https://script.google.com/macros/s/AKfycbwwLA26uBvHLJBzdZ_oJAvbwyx21mEZm7U153PcnTQz8YGzl5JYpZTsAVs43-LmA2yB-w/exec?accion=ob_data";
+        "https://script.google.com/macros/s/AKfycbz3nqGJSEI8snxYQtMZkPD1tjFsUmeoCq9kaQizTHOL4IFI9timwnkAtpRZjRf-LFB4LQ/exec?accion=ob_data";
   // Borrar toda la información de los candados
   listaCandadosTaller.clear();
   listaCandadosPuerto.clear();

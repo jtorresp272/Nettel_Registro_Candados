@@ -279,6 +279,7 @@ class _MonitoreoState extends State<Monitoreo> with SingleTickerProviderStateMix
                                 ),
                                 CustomListViewBuilder(
                                     whereFrom: 'Taller',
+                                    user: 'monitoreo',
                                     listaFiltrada: listaFiltradaTaller,
                                     expandedState: _tabExpandedStates[1]!,
                                     onExpandedChanged: (index) {

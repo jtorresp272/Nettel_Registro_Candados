@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 //import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
 class CustomListViewBuilder extends StatefulWidget {
   final String whereFrom;
+  final String? user;
   final List<Candado> listaFiltrada;
   final Map<int, bool> expandedState;
   final ValueChanged<int>? onExpandedChanged;
@@ -16,6 +17,7 @@ class CustomListViewBuilder extends StatefulWidget {
   const CustomListViewBuilder({
     super.key,
     required this.whereFrom,
+    this.user,
     required this.listaFiltrada,
     required this.expandedState,
     this.onExpandedChanged,
@@ -28,6 +30,8 @@ class CustomListViewBuilder extends StatefulWidget {
 class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
   @override
   Widget build(BuildContext context) {
+    // Obtener el usuario que vera el customListView
+    final user = widget.user ?? 'taller';
     Map<String, List<Candado>> candadosPorLugar = {};
     for (var candado in widget.listaFiltrada) {
       candadosPorLugar.putIfAbsent(candado.lugar, () => []);
@@ -138,7 +142,7 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                             return GestureDetector(
                               onTap: () {
                                 _showCandadoDialog(
-                                    context, candadoPress, widget.whereFrom);
+                                    context, candadoPress, widget.whereFrom,user);
                               },
                               child: Container(
                                 width: 120.0,
@@ -200,10 +204,11 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
     );
   }
 
-  void _showCandadoDialog(BuildContext context, Candado candado, String where) {
+  void _showCandadoDialog(BuildContext context, Candado candado, String where,String? user) {
+    final user0 = user ?? 'taller';
     showDialog(
       context: context,
-      builder: (context) => CustomCandadoDialog(candado: candado, where: where),
+      builder: (context) => CustomCandadoDialog(candado: candado, where: where,user: user0),
     );
   }
 }

@@ -17,11 +17,12 @@ bool waiting = false;
 class CustomCandadoDialog extends StatefulWidget {
   final Candado candado;
   final String where;
-
+  final String? user;
   const CustomCandadoDialog({
     super.key,
     required this.candado,
     required this.where,
+    this.user,
   });
 
   @override
@@ -79,6 +80,9 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
 
   @override
   Widget build(BuildContext context) {
+    // obtener el usario que esta usando el customdialog
+    final String user = widget.user ?? 'taller';
+
     return ScaleTransition(
       scale: _animation, // Aplicar escala según la animación
       child: AlertDialog(
@@ -129,7 +133,7 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                       ),
                     ),
                   ),
-                  if (lugares.contains(widget.candado.lugar))
+                  if (lugares.contains(widget.candado.lugar) && user != 'monitoreo')
                     Container(
                       width: 40.0,
                       height: 40.0,
@@ -198,7 +202,7 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              if (isDamage)
+              if (isDamage && user != 'monitoreo')
                 const Text(
                   'Tipo de daño:',
                   style: TextStyle(
@@ -207,7 +211,7 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                   ),
                 ),
               // Check para saber si se daño la electronica o la mecanica
-              if (isDamage)
+              if (isDamage && user != 'monitoreo')
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -231,7 +235,7 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                     ),
                   ],
                 ),
-              if (isDamage)
+              if (isDamage && user != 'monitoreo')
                 const SizedBox(
                   height: 20.0,
                 ),
@@ -250,7 +254,7 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                   readOnly: !isEditable_1,
                   autofocus: !isEditable_1,
                   controller: _descripcionIngresoController,
-                  decoration: lugares.contains(widget.candado.lugar)
+                  decoration: (lugares.contains(widget.candado.lugar) && user != 'monitoreo')
                       ? decorationTextFieldwithAction(
                           text: 'Descripción de ingreso',
                           isEnabled: isEditable_1,
@@ -274,7 +278,8 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                     maxLines: null,
                     readOnly: !isEditable_2,
                     controller: _descripcionSalidaController,
-                    decoration: decorationTextFieldwithAction(
+                    decoration: user != 'monitoreo' 
+                    ? decorationTextFieldwithAction(
                       text: 'Descripción de salida',
                       isEnabled: isEditable_2,
                       onPressed: () {
@@ -282,13 +287,13 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                           isEditable_2 = !isEditable_2;
                         });
                       },
-                    ),
+                    ): decorationTextField(text: 'Descripción de salida'),
                   ),
             ],
           ),
         ),
         actions: [
-          if (lugares.contains(widget.candado.lugar))
+          if (lugares.contains(widget.candado.lugar) && user != 'monitoreo')
             if (!waiting)
               Center(
                 child: ElevatedButton(

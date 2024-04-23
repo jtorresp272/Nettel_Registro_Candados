@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/notification_state.dart';
+import 'package:flutter_application_1/widgets/CustomDialogScanQr.dart';
 import 'package:flutter_application_1/widgets/CustomElevatedButton.dart';
 import 'package:flutter_application_1/widgets/CustomQrScan.dart';
 import 'package:logger/logger.dart';
@@ -24,6 +25,7 @@ class _PuertoState extends State<Puerto> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: const CustomAppBar(
         titulo: 'Consorcio Nettel',
         subtitulo: 'Puerto',
@@ -82,6 +84,11 @@ class _PuertoState extends State<Puerto> {
                   ))
                       .then((result) {
                     if (result != null) {
+                      String scannedNumber = result as String;
+                      showDialog(
+                        context: context,
+                        builder: (context) => DialogScanQr(scannedNumber: scannedNumber),
+                      );
                       logger.i('Codigo QR escaneado: $result');
                     }
                   });
