@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/BuildClass/BuildDecorationTextField.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/widgets/CustomDialogScanQr.dart';
-import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 
 class CustomAboutDialog extends StatefulWidget {
   const CustomAboutDialog({

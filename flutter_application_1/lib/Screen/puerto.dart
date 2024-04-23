@@ -5,7 +5,6 @@ import 'package:flutter_application_1/widgets/CustomDialogScanQr.dart';
 import 'package:flutter_application_1/widgets/CustomElevatedButton.dart';
 import 'package:flutter_application_1/widgets/CustomQrScan.dart';
 import 'package:flutter_application_1/widgets/CustomShowDialogPuerto.dart';
-import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:logger/logger.dart';
 import '../widgets/CustomAppBar.dart';
 import '../widgets/CustomMenu.dart';
