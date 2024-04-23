@@ -12,8 +12,9 @@ Text decorationText(String texto) {
 }
 
 /* Decoracion de un textfromfield */
-InputDecoration decorationTextField({required String text, Color? color}) {
+InputDecoration decorationTextField({required String text, Color? color,String? hint}) {
   return InputDecoration(
+    hintText: hint?? '',
     labelText: text,
     labelStyle: TextStyle(color: color ?? getColorAlmostBlue()),
     focusedBorder: OutlineInputBorder(

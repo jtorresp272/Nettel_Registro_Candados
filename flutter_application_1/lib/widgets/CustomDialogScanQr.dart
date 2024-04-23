@@ -7,8 +7,9 @@ import 'package:flutter_application_1/widgets/CustomScanResume.dart';
 
 class DialogScanQr extends StatelessWidget {
   final String scannedNumber;
+  final String? who;
 
-  const DialogScanQr({super.key, required this.scannedNumber});
+  const DialogScanQr({super.key, required this.scannedNumber,this.who});
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +74,7 @@ class DialogScanQr extends StatelessWidget {
           final Candado? scannedCandado = snapshot.data;
           if (scannedCandado != null) {
             return CustomScanResume(
-                candado: scannedCandado, estado: EstadoCandados.porIngresar,whereGo: 'Puerto',);
+                candado: scannedCandado, estado: EstadoCandados.porIngresar,whereGo: who ?? 'taller',);
           } else {
             return AlertDialog(
               title: const Text('Candado no encontrado'),

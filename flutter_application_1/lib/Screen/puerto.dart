@@ -4,6 +4,8 @@ import 'package:flutter_application_1/Funciones/notification_state.dart';
 import 'package:flutter_application_1/widgets/CustomDialogScanQr.dart';
 import 'package:flutter_application_1/widgets/CustomElevatedButton.dart';
 import 'package:flutter_application_1/widgets/CustomQrScan.dart';
+import 'package:flutter_application_1/widgets/CustomShowDialogPuerto.dart';
+import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:logger/logger.dart';
 import '../widgets/CustomAppBar.dart';
 import '../widgets/CustomMenu.dart';
@@ -25,6 +27,7 @@ class _PuertoState extends State<Puerto> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       appBar: const CustomAppBar(
         titulo: 'Consorcio Nettel',
@@ -87,13 +90,49 @@ class _PuertoState extends State<Puerto> {
                       String scannedNumber = result as String;
                       showDialog(
                         context: context,
-                        builder: (context) => DialogScanQr(scannedNumber: scannedNumber),
+                        builder: (context) => DialogScanQr(
+                          scannedNumber: scannedNumber,
+                          who: 'puerto',
+                        ),
                       );
                       logger.i('Codigo QR escaneado: $result');
                     }
                   });
                 },
-              )
+              ),
+              const SizedBox(
+                height: 10.0,
+              ),
+              Text(
+                'o',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: getColorAlmostBlue(),
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+              const SizedBox(
+                height: 5.0,
+              ),
+              GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => const CustomAboutDialog(),
+                  );
+                },
+                child: Text(
+                  'Ingresar manualmente',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: getColorAlmostBlue(),
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
