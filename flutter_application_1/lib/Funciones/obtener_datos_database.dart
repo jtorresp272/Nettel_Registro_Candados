@@ -36,14 +36,42 @@ class Candado {
   }
 }
 
+class CandadoHistorial {
+  final int id;
+  final String tipo;
+  final String razonIngreso;
+  final String razonSalida;
+  final String responsable;
+  final DateTime fechaIngreso;
+  final DateTime? fechaSalida;
+  final String lugar;
+
+  CandadoHistorial({
+    required this.id,
+    required this.tipo,
+    required this.razonIngreso,
+    required this.razonSalida,
+    required this.responsable,
+    required this.fechaIngreso,
+    required this.fechaSalida,
+    required this.lugar,
+  });
+
+  @override
+  String toString() {
+    return 'id: $id, tipo: $tipo, razonIngreso: $razonIngreso, razonSalida: $razonSalida, responsable: $responsable, fechaIngreso: $fechaIngreso, fechaSalida: $fechaSalida, lugar: $lugar';
+  }
+}
+
 final List<Candado> listaCandadosTaller = [];
 final List<Candado> listaCandadosPuerto = [];
+Map<int, List<CandadoHistorial>> mapCandadoHistorial = {};
 
 var logger = Logger();
 // Obtener información de un candado en especifico
 Future<Candado?> getDatoCandado(String numeroCandado) async {
   const urlBuscar =
-      "https://script.google.com/macros/s/AKfycbztJOQs6rFUVIGYJLHynOkf4Cn_OMIKXE_Spii0-4GBz8xk68_DIVpbEDIMYrkP7lsbew/exec?accion=buscar&string=";
+      "https://script.google.com/macros/s/AKfycbxojXb67pxCBQCDoGkZuHpsYVqSH4U9JIVlPP4bKHQ37kMlimMUSPRJ_rKjDhGmKkBpGg/exec?accion=buscar&string=";
   final response = await http.get(Uri.parse(urlBuscar + numeroCandado));
 
   if (response.statusCode == 200) {
@@ -75,11 +103,60 @@ Future<Candado?> getDatoCandado(String numeroCandado) async {
   return null; // En caso de no encontrar ningún candado con ese número
 }
 
+/* Obtiene informacion del historial y guarda toda la informacion en una variable
+ * Retornar un true si el dato se obtuvo 
+*/
+Future<bool> getDataHistorial({required String numero}) async {
+  String url =
+      "https://script.google.com/macros/s/AKfycbzzivR2HvtB4SnxEMD_XBzS4LQ_MKg5enddPab4fAu4t_86RQIgCBCUpZ3VI3z8O-1qSw/exec?numero=";
+
+  final response = await http.get(Uri.parse(url + numero));
+  if (response.statusCode == 200) {
+    final jsonData = json.decode(response.body);
+    if (jsonData != null && jsonData.isNotEmpty) {
+      for (var data in jsonData) {
+        int id = data["ID"];
+        String tipo = data["Tipo"];
+        String razonIngreso = data["Descripcion Ingreso"];
+        String razonSalida = data["Descripcion Salida"];
+        String responsable = data["Responsable"];
+        DateTime fechaIngreso = DateTime.parse(data["Fecha Ingreso"]);
+        DateTime? fechaSalida = _parseDateString(data['Fecha Salida']);
+        String lugar = data["lugar"];
+        
+        CandadoHistorial candado = CandadoHistorial(
+          id: id,
+          tipo: tipo,
+          razonIngreso: razonIngreso,
+          razonSalida: razonSalida,
+          responsable: responsable,
+          fechaIngreso: fechaIngreso,
+          fechaSalida: fechaSalida,
+          lugar: lugar,
+        );
+
+        if (!mapCandadoHistorial.containsKey(id)) {
+          mapCandadoHistorial[id] = [];
+        }
+        mapCandadoHistorial[id]!.add(candado);
+      }
+    }
+  } else {
+    return false;
+  }
+  return true;
+}
+
+/* Retorna los datos almacenados previamente en la funcion getDataHistorial */
+Map<int, List<CandadoHistorial>> getMapHistorial() {
+  return mapCandadoHistorial;
+}
+
 // Retorna todo el listado de la tabla del registro de candados
 Future getDataGoogleSheet() async {
   // ignore: non_constant_identifier_names
   String URL =
-      "https://script.google.com/macros/s/AKfycbwwLA26uBvHLJBzdZ_oJAvbwyx21mEZm7U153PcnTQz8YGzl5JYpZTsAVs43-LmA2yB-w/exec?accion=ob_data";
+      "https://script.google.com/macros/s/AKfycbz3nqGJSEI8snxYQtMZkPD1tjFsUmeoCq9kaQizTHOL4IFI9timwnkAtpRZjRf-LFB4LQ/exec?accion=ob_data";
   // Borrar toda la información de los candados
   listaCandadosTaller.clear();
   listaCandadosPuerto.clear();

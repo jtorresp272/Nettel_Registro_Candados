@@ -43,6 +43,10 @@ class _customDrawerState extends State<customDrawer> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            if (widget.nameUser == 'Puerto')
+              const SizedBox(
+                height: 20.0,
+              ),
             Container(
               height: screenSize.height * 0.1,
               decoration: BoxDecoration(
@@ -150,28 +154,29 @@ class _customDrawerState extends State<customDrawer> {
             const SizedBox(
               height: 10.0,
             ),
-            ListTile(
-              leading: const Icon(
-                Icons.email,
-                color: Color.fromARGB(255, 68, 91, 164),
-              ),
-              title: const Text(
-                'Enviar correo',
-                style: TextStyle(
+            if (widget.nameUser != 'Puerto')
+              ListTile(
+                leading: const Icon(
+                  Icons.email,
                   color: Color.fromARGB(255, 68, 91, 164),
                 ),
+                title: const Text(
+                  'Enviar correo',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 68, 91, 164),
+                  ),
+                ),
+                onTap: () {
+                  // Implementa lo que quieres hacer al seleccionar la opción 2
+                  setState(() {
+                    // Chequea si existe una actualizacion para las datos en la base de datos
+                    if (widget.reloadCallback != null) {
+                      widget
+                          .reloadCallback!(); // Llamar a la funcion para actualizar los datos
+                    }
+                  });
+                },
               ),
-              onTap: () {
-                // Implementa lo que quieres hacer al seleccionar la opción 2
-                setState(() {
-                  // Chequea si existe una actualizacion para las datos en la base de datos
-                  if (widget.reloadCallback != null) {
-                    widget
-                        .reloadCallback!(); // Llamar a la funcion para actualizar los datos
-                  }
-                });
-              },
-            ),
             ListTile(
               leading: const Icon(
                 Icons.exit_to_app,
@@ -184,13 +189,29 @@ class _customDrawerState extends State<customDrawer> {
                 ),
               ),
               onTap: () async {
-                // Implementa lo que quieres hacer al seleccionar la opción 3
-                // Eliminar los datos guardados en memoria del login
-                await deleteData(id: 1, title: 'login');
-                Navigator.pushReplacementNamed(
-                  context,
-                  "/login",
-                );
+                if (widget.nameUser != 'Puerto') {
+                  await _hasEmail(context);
+                  if (!hasEmail) {
+                    // Eliminar los datos guardados en memoria del login
+                    await _deleteData();
+                    Navigator.pushReplacementNamed(
+                      context,
+                      "/login",
+                    );
+                  } else {
+                    customSnackBar(
+                        context,
+                        'No puede cerrar sesion si tiene un correo por enviar',
+                        Colors.red);
+                  }
+                } else {
+                  // Eliminar los datos guardados en memoria del login
+                  await deleteData(id: 1, title: 'login');
+                  Navigator.pushReplacementNamed(
+                    context,
+                    "/login",
+                  );
+                }
               },
             ),
             ListTile(
@@ -211,5 +232,20 @@ class _customDrawerState extends State<customDrawer> {
             ),
           ],
         ));
+  }
+}
+
+/* Check si existe informacion por enviar en correo  */
+Future<void> _hasEmail(context) async {
+  final List<Note>? notes = await DatabaseHelper.getAllNote(2);
+  if (notes != null && notes.isNotEmpty) {
+    try {
+      final Note note = notes.firstWhere((note) => note.title == 'candados');
+      hasEmail = true;
+    } catch (_) {
+      hasEmail = false;
+    }
+  } else {
+    hasEmail = false;
   }
 }

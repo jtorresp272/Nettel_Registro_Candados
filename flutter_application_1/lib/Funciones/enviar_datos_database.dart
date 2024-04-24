@@ -7,7 +7,8 @@ var logger = Logger();
 Future<bool> modificarRegistro(
     String accion, String num, List<String> valores) async {
   const baseUrl =
-      'https://script.google.com/macros/s/AKfycbyPLY35Yh8EJU9lCfWf7CpXDTG5NeKrffjflK6OnXcSNrZbtdPs6BUjDjSTQia4jVtOEg/exec';
+      'https://script.google.com/macros/s/AKfycbzmePQJ3BkTkJ2SZrUbV0RSbS4gXp3fn9UFKVHSALFwx10aHMw20pnYB4doHKNoYxTtxg/exec';
+      
   // Construir la URL con los parámetros proporcionados
   bool state;
   // Combinar los componentes de la URL

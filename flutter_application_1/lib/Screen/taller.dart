@@ -13,6 +13,7 @@ import 'package:flutter_application_1/widgets/CustomQrScan.dart';
 import 'package:flutter_application_1/widgets/CustomResume.dart';
 import 'package:flutter_application_1/widgets/CustomScanResume.dart';
 import 'package:flutter_application_1/widgets/CustomSearch.dart';
+import 'package:flutter_application_1/widgets/CustomAboutDialog.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 
@@ -142,6 +143,12 @@ class _TallerState extends State<Taller> {
       });
     } else if (_selectedIndex == MenuNavigator.HISTORIAL.index) {
       // Acciones para el índice 1 (Historial)
+      showDialog(
+        context: context,
+        builder: ((context) => const CustomAboutDialog(
+              title: 'Ingrese número', whoIs: 'taller',
+            )),
+      );
     }
   }
 

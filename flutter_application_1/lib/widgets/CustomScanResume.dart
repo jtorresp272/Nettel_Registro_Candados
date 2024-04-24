@@ -32,14 +32,14 @@ class CustomScanResume extends StatefulWidget {
   final Candado candado;
   final EstadoCandados estado;
   final Note? note;
-  final int? candadosEnCache;
-
-  const CustomScanResume(
-      {super.key,
-      required this.candado,
-      required this.estado,
-      this.note,
-      this.candadosEnCache});
+  final String? whereGo;
+  const CustomScanResume({
+    super.key,
+    required this.candado,
+    required this.estado,
+    this.note,
+    this.whereGo,
+  });
 
   @override
   // ignore: library_private_types_in_public_api
@@ -63,8 +63,28 @@ class _CustomScanResumeState extends State<CustomScanResume>
   String fechaIngreso = '';
   String fechaSalida = '';
 
-  List<bool> buttonOnPressed = [false, false, false, false, false];
+  List<bool> buttonOnPressedResponsable = [false, false, false, false, false];
   List<String> name = ['Joshue', 'Oliver', 'Fabian', 'Oswaldo', 'Jordy'];
+  List<String> puertos = [
+    'DPW   ',
+    'NAPORTEC',
+    'TPG    ',
+    'CONTECON',
+    'QUITO',
+    'CUENCA',
+    'MANTA',
+    'OTRO'
+  ];
+  List<bool> buttonOnPressedPuerto = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ];
   Map<String, List<Color>> color = {
     'V': [
       Colors.white,
@@ -111,7 +131,6 @@ class _CustomScanResumeState extends State<CustomScanResume>
   @override
   void initState() {
     super.initState();
-    candadosIngresados = widget.candadosEnCache ?? 0;
     candadoEnLista = (widget.candado.tipo == '') ? false : true;
     if (candadoEnLista) {
       imagen = widget.candado.imageTipo;
@@ -149,8 +168,8 @@ class _CustomScanResumeState extends State<CustomScanResume>
     if (responsable.isNotEmpty) {
       // Chequeo si el responsable esta en la lista sino no hace nada
       if (name.indexWhere((name) => name.contains(responsable)) != -1) {
-        buttonOnPressed[name.indexWhere((name) => name.contains(responsable))] =
-            true;
+        buttonOnPressedResponsable[
+            name.indexWhere((name) => name.contains(responsable))] = true;
       }
     }
     // animacion de ingreso
@@ -176,14 +195,22 @@ class _CustomScanResumeState extends State<CustomScanResume>
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15.0),
         gradient: LinearGradient(
-          colors: color[widget.candado.lugar] ??
-              [
-                Colors.white,
-                Colors.white,
-                Colors.white,
-                Colors.grey.shade400,
-                Colors.grey.shade400
-              ],
+          colors: widget.whereGo != 'puerto'
+              ? color[widget.candado.lugar] ??
+                  [
+                    Colors.white,
+                    Colors.white,
+                    Colors.white,
+                    Colors.grey.shade400,
+                    Colors.grey.shade400
+                  ]
+              : [
+                  Colors.white,
+                  Colors.white,
+                  Colors.white,
+                  Colors.grey.shade400,
+                  Colors.grey.shade400
+                ],
           end: Alignment.topCenter,
           begin: Alignment.bottomCenter,
         ),
@@ -213,27 +240,28 @@ class _CustomScanResumeState extends State<CustomScanResume>
             ),
           ),
           actions: [
-            Container(
-              width: 40.0,
-              height: 40.0,
-              decoration: BoxDecoration(
-                color: isDamage
-                    ? Colors.red.withOpacity(0.5)
-                    : Colors.white.withOpacity(0.5),
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                onPressed: () {
-                  setState(() {
-                    isDamage = !isDamage;
-                  });
-                },
-                icon: Icon(
-                  Icons.error_outline_sharp,
-                  color: isDamage ? Colors.white : Colors.black,
+            if (widget.whereGo != 'monitoreo' && widget.whereGo != 'puerto')
+              Container(
+                width: 40.0,
+                height: 40.0,
+                decoration: BoxDecoration(
+                  color: isDamage
+                      ? Colors.red.withOpacity(0.5)
+                      : Colors.white.withOpacity(0.5),
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isDamage = !isDamage;
+                    });
+                  },
+                  icon: Icon(
+                    Icons.error_outline_sharp,
+                    color: isDamage ? Colors.white : Colors.black,
+                  ),
                 ),
               ),
-            ),
           ],
         ),
         backgroundColor: Colors
@@ -348,10 +376,189 @@ class _CustomScanResumeState extends State<CustomScanResume>
                         if (!isDamage &&
                             !['V', 'E'].contains(widget.candado.lugar))
                           TextFormField(
+                            readOnly: widget.whereGo != 'taller',
                             maxLines: null,
                             controller: _descripcionIngresoController,
                             decoration: decorationTextField(
                                 text: 'Descripción de ingreso'),
+                          ),
+                        if (widget.whereGo == 'puerto')
+                          const SizedBox(
+                            height: 10.0,
+                          ),
+                        if (widget.whereGo == 'puerto')
+                          Container(
+                            padding: const EdgeInsets.all(5.0),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10.0),
+                                border: Border.all(
+                                  color: getColorAlmostBlue(),
+                                )),
+                            child: Center(
+                              child: Stack(
+                                children: [
+                                  Positioned(
+                                    top:
+                                        -5.0, // Ajusta la posición vertical del texto
+                                    left:
+                                        4.0, // Ajusta la posición horizontal del texto
+                                    child: Container(
+                                      color: Colors
+                                          .white, // Color del fondo del texto
+                                      child: Text(
+                                        'Puerto:',
+                                        style: TextStyle(
+                                          color: getColorAlmostBlue(),
+                                          fontSize: 15.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 15.0, left: 10.0, right: 10.0),
+                                    child: Column(
+                                      children: [
+                                        RowWithButton(
+                                          name: [puertos[0], puertos[1]],
+                                          onPressed: [
+                                            () {
+                                              setState(() {
+                                                buttonOnPressedPuerto =
+                                                    List.generate(
+                                                        buttonOnPressedPuerto
+                                                            .length,
+                                                        (index) => index == 0
+                                                            ? !buttonOnPressedPuerto[
+                                                                0]
+                                                            : false);
+                                              });
+                                            },
+                                            () {
+                                              setState(() {
+                                                buttonOnPressedPuerto =
+                                                    List.generate(
+                                                        buttonOnPressedPuerto
+                                                            .length,
+                                                        (index) => index == 1
+                                                            ? !buttonOnPressedPuerto[
+                                                                1]
+                                                            : false);
+                                              });
+                                            },
+                                          ],
+                                          isPressed: [
+                                            buttonOnPressedPuerto[0],
+                                            buttonOnPressedPuerto[1]
+                                          ],
+                                        ),
+                                        RowWithButton(
+                                          name: [puertos[2], puertos[3]],
+                                          onPressed: [
+                                            () {
+                                              setState(() {
+                                                buttonOnPressedPuerto =
+                                                    List.generate(
+                                                        buttonOnPressedPuerto
+                                                            .length,
+                                                        (index) => index == 2
+                                                            ? !buttonOnPressedPuerto[
+                                                                2]
+                                                            : false);
+                                              });
+                                            },
+                                            () {
+                                              setState(() {
+                                                buttonOnPressedPuerto =
+                                                    List.generate(
+                                                        buttonOnPressedPuerto
+                                                            .length,
+                                                        (index) => index == 3
+                                                            ? !buttonOnPressedPuerto[
+                                                                3]
+                                                            : false);
+                                              });
+                                            },
+                                          ],
+                                          isPressed: [
+                                            buttonOnPressedPuerto[2],
+                                            buttonOnPressedPuerto[3]
+                                          ],
+                                        ),
+                                        RowWithButton(
+                                          name: [puertos[4], puertos[5]],
+                                          onPressed: [
+                                            () {
+                                              setState(() {
+                                                buttonOnPressedPuerto =
+                                                    List.generate(
+                                                        buttonOnPressedPuerto
+                                                            .length,
+                                                        (index) => index == 4
+                                                            ? !buttonOnPressedPuerto[
+                                                                4]
+                                                            : false);
+                                              });
+                                            },
+                                            () {
+                                              setState(() {
+                                                buttonOnPressedPuerto =
+                                                    List.generate(
+                                                        buttonOnPressedPuerto
+                                                            .length,
+                                                        (index) => index == 5
+                                                            ? !buttonOnPressedPuerto[
+                                                                5]
+                                                            : false);
+                                              });
+                                            },
+                                          ],
+                                          isPressed: [
+                                            buttonOnPressedPuerto[4],
+                                            buttonOnPressedPuerto[5]
+                                          ],
+                                        ),
+                                        RowWithButton(
+                                          name: [puertos[6], puertos[7]],
+                                          onPressed: [
+                                            () {
+                                              setState(() {
+                                                buttonOnPressedPuerto =
+                                                    List.generate(
+                                                        buttonOnPressedPuerto
+                                                            .length,
+                                                        (index) => index == 6
+                                                            ? !buttonOnPressedPuerto[
+                                                                6]
+                                                            : false);
+                                              });
+                                            },
+                                            () {
+                                              setState(() {
+                                                buttonOnPressedPuerto =
+                                                    List.generate(
+                                                        buttonOnPressedPuerto
+                                                            .length,
+                                                        (index) => index == 7
+                                                            ? !buttonOnPressedPuerto[
+                                                                7]
+                                                            : false);
+                                              });
+                                            },
+                                          ],
+                                          isPressed: [
+                                            buttonOnPressedPuerto[6],
+                                            buttonOnPressedPuerto[7]
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         if (widget.estado != EstadoCandados.porIngresar &&
                             !isDamage)
@@ -361,19 +568,22 @@ class _CustomScanResumeState extends State<CustomScanResume>
                         if (widget.estado != EstadoCandados.porIngresar &&
                             !isDamage)
                           TextFormField(
+                            readOnly: widget.whereGo == 'monitoreo',
                             maxLines: null,
                             controller: _descripcionSalidaController,
                             decoration: decorationTextField(
                                 text: 'Descripción de salida'),
                           ),
                         if (widget.estado != EstadoCandados.porIngresar &&
-                            !isDamage)
+                            !isDamage &&
+                            widget.whereGo != 'monitoreo')
                           const SizedBox(
                             height: 10.0,
                           ),
                         // Responsables
                         if (widget.estado != EstadoCandados.porIngresar &&
-                            !isDamage)
+                            !isDamage &&
+                            widget.whereGo != 'monitoreo')
                           Container(
                             padding: const EdgeInsets.all(5.0),
                             alignment: Alignment.center,
@@ -413,26 +623,32 @@ class _CustomScanResumeState extends State<CustomScanResume>
                                           onPressed: [
                                             () {
                                               setState(() {
-                                                buttonOnPressed = List.generate(
-                                                    buttonOnPressed.length,
-                                                    (index) => index == 0
-                                                        ? !buttonOnPressed[0]
-                                                        : false);
+                                                buttonOnPressedResponsable =
+                                                    List.generate(
+                                                        buttonOnPressedResponsable
+                                                            .length,
+                                                        (index) => index == 0
+                                                            ? !buttonOnPressedResponsable[
+                                                                0]
+                                                            : false);
                                               });
                                             },
                                             () {
                                               setState(() {
-                                                buttonOnPressed = List.generate(
-                                                    buttonOnPressed.length,
-                                                    (index) => index == 1
-                                                        ? !buttonOnPressed[1]
-                                                        : false);
+                                                buttonOnPressedResponsable =
+                                                    List.generate(
+                                                        buttonOnPressedResponsable
+                                                            .length,
+                                                        (index) => index == 1
+                                                            ? !buttonOnPressedResponsable[
+                                                                1]
+                                                            : false);
                                               });
                                             },
                                           ],
                                           isPressed: [
-                                            buttonOnPressed[0],
-                                            buttonOnPressed[1]
+                                            buttonOnPressedResponsable[0],
+                                            buttonOnPressedResponsable[1]
                                           ],
                                         ),
                                         RowWithButton(
@@ -440,26 +656,32 @@ class _CustomScanResumeState extends State<CustomScanResume>
                                           onPressed: [
                                             () {
                                               setState(() {
-                                                buttonOnPressed = List.generate(
-                                                    buttonOnPressed.length,
-                                                    (index) => index == 2
-                                                        ? !buttonOnPressed[2]
-                                                        : false);
+                                                buttonOnPressedResponsable =
+                                                    List.generate(
+                                                        buttonOnPressedResponsable
+                                                            .length,
+                                                        (index) => index == 2
+                                                            ? !buttonOnPressedResponsable[
+                                                                2]
+                                                            : false);
                                               });
                                             },
                                             () {
                                               setState(() {
-                                                buttonOnPressed = List.generate(
-                                                    buttonOnPressed.length,
-                                                    (index) => index == 3
-                                                        ? !buttonOnPressed[3]
-                                                        : false);
+                                                buttonOnPressedResponsable =
+                                                    List.generate(
+                                                        buttonOnPressedResponsable
+                                                            .length,
+                                                        (index) => index == 3
+                                                            ? !buttonOnPressedResponsable[
+                                                                3]
+                                                            : false);
                                               });
                                             },
                                           ],
                                           isPressed: [
-                                            buttonOnPressed[2],
-                                            buttonOnPressed[3]
+                                            buttonOnPressedResponsable[2],
+                                            buttonOnPressedResponsable[3]
                                           ],
                                         ),
                                         RowWithButton(
@@ -467,15 +689,20 @@ class _CustomScanResumeState extends State<CustomScanResume>
                                           onPressed: [
                                             () {
                                               setState(() {
-                                                buttonOnPressed = List.generate(
-                                                    buttonOnPressed.length,
-                                                    (index) => index == 4
-                                                        ? !buttonOnPressed[4]
-                                                        : false);
+                                                buttonOnPressedResponsable =
+                                                    List.generate(
+                                                        buttonOnPressedResponsable
+                                                            .length,
+                                                        (index) => index == 4
+                                                            ? !buttonOnPressedResponsable[
+                                                                4]
+                                                            : false);
                                               });
                                             },
                                           ],
-                                          isPressed: [buttonOnPressed[4]],
+                                          isPressed: [
+                                            buttonOnPressedResponsable[4]
+                                          ],
                                         ),
                                       ],
                                     ),
@@ -512,7 +739,8 @@ class _CustomScanResumeState extends State<CustomScanResume>
                               ),
                               onPressed: () async {
                                 // Acción del botón
-                                if (buttonOnPressed.contains(true) ||
+                                if( widget.whereGo != 'puerto'){
+                                  if (buttonOnPressedResponsable.contains(true) ||
                                     widget.estado ==
                                         EstadoCandados.porIngresar ||
                                     isDamage) {
@@ -523,11 +751,28 @@ class _CustomScanResumeState extends State<CustomScanResume>
                                   setState(() {
                                     waiting = false;
                                   });
-                                } else {
-                                  customSnackBar(
-                                      context,
-                                      'Se debe escoger un responsable',
-                                      Colors.red);
+                                  } else {
+                                    customSnackBar(
+                                        context,
+                                        'Seleccione un responsable',
+                                       Colors.red);
+                                  }
+                                }else
+                                {
+                                  if (buttonOnPressedPuerto.contains(true)){
+                                    setState(() {
+                                    waiting = true;
+                                  });
+                                  await _saveChanges();
+                                  setState(() {
+                                    waiting = false;
+                                  });
+                                  }else{
+                                    customSnackBar(
+                                        context,
+                                        'Seleccione un puerto',
+                                       Colors.red);
+                                  }
                                 }
                               },
                               child: Text(
@@ -601,42 +846,54 @@ class _CustomScanResumeState extends State<CustomScanResume>
     }
     /* Actualizar o Ingresar Valores a la base de datos */
     else {
-      switch (widget.estado) {
-        case EstadoCandados.ingresado:
-          newDescripcionSalida =
-              '$newDescripcionSalida / ${name[buttonOnPressed.indexWhere((e) => e)]}';
-          // Proximo estado
-          lugar = 'M';
-          fechaSalida = '';
-          break;
-        case EstadoCandados.porIngresar:
-          // Proximo estado
-          fechaIngreso = DateFormat('dd-MM-yy').format(DateTime.now());
-          fechaSalida = '';
-          responsable = '';
-          lugar = 'I';
-          accion = 'agregarRegistroHistorial';
-          break;
-        case EstadoCandados.mantenimiento:
-        case EstadoCandados.danados:
-          responsable = name[buttonOnPressed.indexWhere((e) => e)];
-          fechaSalida = DateFormat('dd-MM-yy').format(DateTime.now());
-          // Proximo estado
-          lugar = 'L';
-          break;
-        case EstadoCandados.listos:
-          // Proximo estado
-          lugar = 'M';
-          fechaSalida = '';
-          break;
-        default:
-          // Proximo estado
-          lugar = 'I';
-          fechaSalida = '';
-          break;
+      if (widget.whereGo == 'monitoreo') {
+        lugar = 'OP';
+        fechaSalida = DateFormat('dd-MM-yy').format(DateTime.now());
+      } else {
+        switch (widget.estado) {
+          case EstadoCandados.ingresado:
+            newDescripcionSalida =
+                '$newDescripcionSalida / ${name[buttonOnPressedResponsable.indexWhere((e) => e)]}';
+            // Proximo estado
+            lugar = 'M';
+            fechaSalida = '';
+            break;
+          case EstadoCandados.porIngresar:
+            // Proximo estado
+            fechaIngreso = DateFormat('dd-MM-yy').format(DateTime.now());
+            fechaSalida = '';
+            responsable = '';
+            if(widget.whereGo == 'puerto')
+            {
+              lugar = puertos[buttonOnPressedPuerto.indexWhere((e) => e)];
+              accion = 'modificarRegistro';
+            }else{
+              lugar = 'I';
+              accion = 'agregarRegistroHistorial';
+            }
+            break;
+          case EstadoCandados.mantenimiento:
+          case EstadoCandados.danados:
+            responsable = name[buttonOnPressedResponsable.indexWhere((e) => e)];
+            fechaSalida = DateFormat('dd-MM-yy').format(DateTime.now());
+            // Proximo estado
+            lugar = 'L';
+            break;
+          case EstadoCandados.listos:
+            // Proximo estado
+            lugar = 'M';
+            fechaSalida = '';
+            break;
+          default:
+            // Proximo estado
+            lugar = 'I';
+            fechaSalida = '';
+            break;
+        }
       }
+
       // Dependiendo de la accion  a realizar se realizan las modificaciones
-      if (accion == 'modificarRegistroHistorial') {
+      if (accion != 'agregarRegistroHistorial') {
         valoresNuevos = [
           newDescripcionIngreso,
           newDescripcionSalida,
@@ -666,34 +923,47 @@ class _CustomScanResumeState extends State<CustomScanResume>
         await modificarRegistro(accion, widget.candado.numero, valoresNuevos);
     if (checkModification) {
       // Si el candado es por ingresar se debe guardar en la base de datos para luego solicitar la informacion puesta en correo
-      if (widget.estado == EstadoCandados.porIngresar) {
-        // ignore: use_build_context_synchronously
-        updateIconAppBar().triggerNotification(context, true);
-        // check si hay datos en memoria
-        await _getDataDB();
-        // crear estructura para los candados en el cache
-        if (datosMemoria.isNotEmpty) {
-          candadosPorEnviar.add(
-              '$datosMemoria,${widget.candado.numero} - $newDescripcionIngreso');
-        } else {
-          candadosPorEnviar
-              .add('${widget.candado.numero} - $newDescripcionIngreso');
-        }
-        logger.i(candadosPorEnviar);
-        Note modelCandado = Note(
-          id: 2,
-          title: 'candados',
-          description: candadosPorEnviar.toString(),
-        );
+      if(widget.whereGo != 'puerto'){
+        if (widget.estado == EstadoCandados.porIngresar ||
+            widget.whereGo == 'monitoreo') {
+          // ignore: use_build_context_synchronously
+          updateIconAppBar().triggerNotification(context, true);
+          // check si hay datos en memoria
+          await _getDataDB();
+          // crear estructura para los candados en el cache
+          if (datosMemoria.isNotEmpty) {
+            if (widget.whereGo == 'monitoreo') {
+              candadosPorEnviar.add(
+                  '$datosMemoria,${widget.candado.numero} - $newDescripcionSalida');
+            } else {
+              candadosPorEnviar.add(
+                  '$datosMemoria,${widget.candado.numero} - $newDescripcionIngreso');
+            }
+          } else {
+            if (widget.whereGo == 'monitoreo') {
+              candadosPorEnviar
+                  .add('${widget.candado.numero} - $newDescripcionSalida');
+            } else {
+              candadosPorEnviar
+                  .add('${widget.candado.numero} - $newDescripcionIngreso');
+            }
+          }
+          logger.i(candadosPorEnviar);
+          Note modelCandado = Note(
+            id: 2,
+            title: 'candados',
+            description: candadosPorEnviar.toString(),
+          );
 
-        // Guardar informacion
-        if (widget.note == null) {
-          await DatabaseHelper.addNote(modelCandado, modelCandado.id);
-        } else {
-          await DatabaseHelper.updateNote(modelCandado, modelCandado.id);
+          // Guardar informacion
+          if (widget.note == null) {
+            await DatabaseHelper.addNote(modelCandado, modelCandado.id);
+          } else {
+            await DatabaseHelper.updateNote(modelCandado, modelCandado.id);
+          }
+          // Limpiar la variable de candados por enviar
+          candadosPorEnviar.clear();
         }
-        // Limpiar la variable de candados por enviar
-        candadosPorEnviar.clear();
       }
       // Cerrar el CustomDialog
       _animationController.reverse().then((_) {
@@ -710,9 +980,10 @@ class _CustomScanResumeState extends State<CustomScanResume>
     // ignore: use_build_context_synchronously
     customSnackBar(context, snackMessage, snackColor);
     if (snackColor == Colors.red) return;
-    // Actualizar la pagina de Taller
+    String page = '/${widget.whereGo ?? 'taller'}';
+    // Actualizar la pagina
     // ignore: use_build_context_synchronously
-    Navigator.pushNamedAndRemoveUntil(context, '/taller', (route) => false);
+    Navigator.pushNamedAndRemoveUntil(context, page, (route) => false);
   }
 
   @override

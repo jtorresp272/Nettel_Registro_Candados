@@ -7,8 +7,7 @@ Future<bool> validarCredenciales(String usuario, String pass) async {
   bool credencialesValidas = false;
 
   // URL para obtener datos del usuario dependiendo si es correcto el usuario o no
-  String url =
-      'https://script.google.com/macros/s/AKfycbybcacTddMlmtWAJVsAGLjTihjXVq4bgVtoJkUC0gXRb7YEjUDSH7HV0B0F2GUAt7tmTw/exec';
+  String url = 'https://script.google.com/macros/s/AKfycbxdZx1uxUJWRRu71vYijvsJzr6s8HvfUsPniRK5ajKY19rU3VXy9_GxH04ZoLP7qoNt_Q/exec';
 
   try {
     var response =

@@ -3,13 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/database/data_model.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
-import 'package:flutter_application_1/Funciones/notification_state.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:flutter_application_1/Funciones/servicios/apiForDataBase.dart';
 import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
 import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
-import 'package:flutter_application_1/widgets/CustomDialogScanQr.dart';
 import 'package:flutter_application_1/widgets/CustomListViewBuilder.dart';
 import 'package:flutter_application_1/widgets/CustomMenu.dart';
 import 'package:flutter_application_1/widgets/CustomQrScan.dart';
@@ -41,7 +39,7 @@ class Monitoreo extends StatefulWidget {
   State<Monitoreo> createState() => _MonitoreoState();
 }
 
-class _MonitoreoState extends State<Monitoreo> {
+class _MonitoreoState extends State<Monitoreo> with SingleTickerProviderStateMixin{
   // ignore: non_constant_identifier_names
   bool termino_ob_data = false;
   /* Variables globales */
@@ -53,8 +51,10 @@ class _MonitoreoState extends State<Monitoreo> {
   late FocusNode _searchFocusNodeLlegar;
   final TextEditingController _textControllerTaller = TextEditingController();
   final TextEditingController _textControllerLlegar = TextEditingController();
-
   late int _selectedIndex = 0; // Definición de _selectedIndex
+  
+  late TabController _tabController;
+  int _currentTabIndex = 0; // Variable para indicar la pestaña actual
 
   late Map<int, Map<int, bool>>
       _tabExpandedStates; // Definicion de _tabExpandedStates para dejar seteado el ultimo estado de cada tapBar
@@ -88,14 +88,13 @@ class _MonitoreoState extends State<Monitoreo> {
                 imageTipo: '',
                 imageDescripcion: ''), // Valor predeterminado
           );
-
+          // Candado encontrado en la lista local, mostrar el diálogo con la información
           if (scannedCandado.numero == scannedNumber) {
-            // Candado encontrado en la lista local, mostrar el diálogo con la información
             if (scannedCandado.lugar == 'L') {
               showDialog(
                 context: context,
                 builder: (context) => CustomScanResume(
-                    candado: scannedCandado, estado: EstadoCandados.listos),
+                    candado: scannedCandado, estado: EstadoCandados.listos,whereGo: 'monitoreo',),
               );
             } else {
               customSnackBar(context, 'El candado no esta listo', Colors.red);
@@ -127,6 +126,12 @@ class _MonitoreoState extends State<Monitoreo> {
       1: {},
       2: {},
     };
+    _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(() {
+      setState(() {
+        _currentTabIndex = _tabController.index; // Actualizar la pestaña actual
+      });
+    });
     _initializeData();
   }
 
@@ -218,6 +223,7 @@ class _MonitoreoState extends State<Monitoreo> {
                     Container(
                       color: Colors.white,
                       child: TabBar(
+                        controller: _tabController,
                         labelColor: getColorAlmostBlue(),
                         unselectedLabelColor: Colors
                             .black45, // Color del texto de las pestañas no seleccionadas
@@ -245,6 +251,7 @@ class _MonitoreoState extends State<Monitoreo> {
                     ),
                     Expanded(
                       child: TabBarView(
+                        controller: _tabController,
                         children: [
                           // Página 1: "Resumen"
                           CustomResumen(
@@ -273,6 +280,7 @@ class _MonitoreoState extends State<Monitoreo> {
                                 ),
                                 CustomListViewBuilder(
                                     whereFrom: 'Taller',
+                                    user: 'monitoreo',
                                     listaFiltrada: listaFiltradaTaller,
                                     expandedState: _tabExpandedStates[1]!,
                                     onExpandedChanged: (index) {
@@ -354,19 +362,19 @@ class _MonitoreoState extends State<Monitoreo> {
                   ),
                 ),
               ),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Colors.white,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.qr_code_scanner),
-              label: 'Escanear',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: getColorAlmostBlue(),
-          unselectedItemColor: Colors.grey,
-          onTap: _onItemTapped,
-        ));
+        
+        floatingActionButton: (_currentTabIndex != 0) ?
+        FloatingActionButton(  
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30.0)
+          ),
+          backgroundColor: getColorAlmostBlue(),
+          child: const Icon(Icons.qr_code_scanner,size: 30.0,color: Colors.white,),
+          onPressed: () {
+            _onItemTapped(0);
+          },
+        ):null,
+      );
   }
 
   @override
@@ -375,6 +383,7 @@ class _MonitoreoState extends State<Monitoreo> {
     _textControllerLlegar.dispose();
     _searchFocusNodeTaller.dispose();
     _searchFocusNodeLlegar.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 }
@@ -395,7 +404,7 @@ void restartPage(BuildContext context) async {
     // Estructura para enviar el correo
     final Email email = Email(
       body: datosFormateados,
-      subject: 'Listado de candados para ingresar a taller',
+      subject: 'Listado de candados para salida de taller',
       recipients: correosEnviar,
       isHTML: false,
     );

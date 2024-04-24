@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/notification_state.dart';
+import 'package:flutter_application_1/Screen/historial.dart';
 import 'package:flutter_application_1/Screen/monitoreo.dart';
 import 'package:flutter_application_1/Screen/taller.dart';
 import 'package:flutter_application_1/Screen/puerto.dart';
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
           '/monitoreo': (context) => const Monitoreo(),
           '/taller': (context) => const Taller(),
           '/puerto': (context) => const Puerto(),
+          '/historial': (context) => const Historial(),
           '/login': (context) => const LogIn(),
           '/splash': (context) => const Splash(),
         },
