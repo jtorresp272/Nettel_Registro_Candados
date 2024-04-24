@@ -3,10 +3,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/database/data_model.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
-import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
-import 'package:logger/logger.dart';
+import 'package:flutter_application_1/Funciones/servicios/apiForDataBase.dart';
 
 class customDrawer extends StatefulWidget {
   final String nameUser;
@@ -37,7 +35,6 @@ class _customDrawerState extends State<customDrawer> {
                 ? contras[2]
                 : "***";
     final Size screenSize = MediaQuery.of(context).size;
-    var logger = Logger();
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
         width: screenSize.width * 0.75,
@@ -189,7 +186,7 @@ class _customDrawerState extends State<customDrawer> {
               onTap: () async {
                 // Implementa lo que quieres hacer al seleccionar la opción 3
                 // Eliminar los datos guardados en memoria del login
-                await _deleteData();
+                await deleteData(id: 1, title: 'login');
                 Navigator.pushReplacementNamed(
                   context,
                   "/login",
@@ -215,14 +212,4 @@ class _customDrawerState extends State<customDrawer> {
           ],
         ));
   }
-}
-
-/* Funcion para borrar los datos guardados en memoria */
-Future<void> _deleteData() async {
-  Note modelDelete = const Note(
-    id: 1,
-    title: 'login',
-    description: '',
-  );
-  await DatabaseHelper.deleteNote(modelDelete, modelDelete.id);
 }

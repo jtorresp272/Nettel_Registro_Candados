@@ -1,10 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/database/data_model.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
-import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
+import 'package:flutter_application_1/Funciones/servicios/apiForDataBase.dart';
 import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
 import 'package:flutter_application_1/widgets/CustomDialogScanQr.dart';
@@ -16,7 +15,6 @@ import 'package:flutter_application_1/widgets/CustomScanResume.dart';
 import 'package:flutter_application_1/widgets/CustomSearch.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
-import 'package:logger/logger.dart';
 
 enum MenuNavigator {
   // ignore: constant_identifier_names
@@ -40,7 +38,6 @@ class Taller extends StatefulWidget {
 }
 
 class _TallerState extends State<Taller> {
-  var logger = Logger();
   // ignore: non_constant_identifier_names
   bool termino_ob_data = false;
 /* Variables globales */
@@ -151,7 +148,7 @@ class _TallerState extends State<Taller> {
   @override
   void initState() {
     super.initState();
-    _hasEmail(context);
+    hasEmail(context, 'candados');
     listaCandadosTaller.clear();
     listaFiltradaTaller.clear();
     listaCandadosLlegar.clear();
@@ -422,7 +419,10 @@ class _TallerState extends State<Taller> {
 /* funcion para resetear la pagina Taller */
 void restartPage(BuildContext context) async {
   // Inicia chequeo en la base de datos
-  await _initData();
+  _description = await getDataCandados('candados');
+  if (_description.isNotEmpty) {
+    datosEnviar = _description.split(',');
+  }
   if (datosEnviar.isNotEmpty) {
     // Formatear los datos como texto plano
     String datosFormateados = '';
@@ -438,7 +438,10 @@ void restartPage(BuildContext context) async {
     );
     try {
       await FlutterEmailSender.send(email);
-      await _deleteData();
+      await deleteData(id: 2, title: 'candados');
+      datosEnviar.clear();
+      _description = '';
+
       customSnackBar(context, 'Correo enviado existosamente', Colors.green);
     } catch (error) {
       // Ocurrió un error al enviar el correo
@@ -448,12 +451,8 @@ void restartPage(BuildContext context) async {
   }
 }
 
-/* Funcion para realizar las acciones de decisión de que pagina se dirige */
-Future<void> _initData() async {
-  await _getDataCandados();
-}
-
 /* Obtiene informacion de la base de datos */
+/*
 Future<void> _getDataCandados() async {
   final List<Note>? notes = await DatabaseHelper.getAllNote(2);
   if (notes != null && notes.isNotEmpty) {
@@ -471,8 +470,9 @@ Future<void> _getDataCandados() async {
         ''; // Si notes es nulo o está vacío, establece la descripción como '0'
   }
 }
-
+*/
 /* Funcion para borrar los datos guardados en memoria */
+/*
 Future<void> _deleteData() async {
   datosEnviar.clear();
   _description = '';
@@ -483,8 +483,9 @@ Future<void> _deleteData() async {
   );
   await DatabaseHelper.deleteNote(modelDelete, modelDelete.id);
 }
-
+*/
 /* Check si existe informacion por enviar en correo  */
+/*
 Future<void> _hasEmail(context) async {
   final List<Note>? notes = await DatabaseHelper.getAllNote(2);
   if (notes != null && notes.isNotEmpty) {
@@ -494,3 +495,4 @@ Future<void> _hasEmail(context) async {
     } catch (_) {}
   } else {}
 }
+*/
