@@ -4,7 +4,7 @@ import 'package:flutter_application_1/Funciones/notification_state.dart';
 import 'package:flutter_application_1/widgets/CustomDialogScanQr.dart';
 import 'package:flutter_application_1/widgets/CustomElevatedButton.dart';
 import 'package:flutter_application_1/widgets/CustomQrScan.dart';
-import 'package:flutter_application_1/widgets/CustomShowDialogPuerto.dart';
+import 'package:flutter_application_1/widgets/CustomAboutDialog.dart';
 import 'package:logger/logger.dart';
 import '../widgets/CustomAppBar.dart';
 import '../widgets/CustomMenu.dart';
@@ -118,7 +118,7 @@ class _PuertoState extends State<Puerto> {
                 onTap: () {
                   showDialog(
                     context: context,
-                    builder: (context) => const CustomAboutDialog(),
+                    builder: (context) => const CustomAboutDialog(title: 'Ingrese número'),
                   );
                 },
                 child: Text(
