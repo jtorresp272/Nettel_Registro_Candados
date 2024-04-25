@@ -19,6 +19,7 @@ class _Historial extends State<Historial> {
   void initState() {
     super.initState();
     datoHistorial = getMapHistorial();
+    logger.e(datoHistorial);
     nameCandado = getNameCandadoHistorial();
     _selectImage();
   }
@@ -89,229 +90,102 @@ class _Historial extends State<Historial> {
           ),
         ),
       ),
-      body: Container(
-          padding: const EdgeInsets.all(10.0),
-          alignment: Alignment.center,
-          child: Column(
-            children: [
-              Center(
-                child: Image.asset(
-                  image,
-                  fit: BoxFit.fitWidth,
-                  width: MediaQuery.of(context).size.width * 0.70,
-                  height: MediaQuery.of(context).size.height * 0.20,
-                ),
-              ),
-              Center(
-                child: Text(
-                  nameCandado,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 10.0,
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: datoHistorial.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final key = datoHistorial.keys.elementAt(index);
-                    final candadosHistorial = datoHistorial[key]!;
-                    String fechaIngreso = '';
-                    String fechaSalida = '';
-                    String Lugar = '';
-                    return Container(
-                      width: MediaQuery.of(context).size.width,
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      margin: const EdgeInsets.all(10.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10.0),
-                        border: Border.all(
-                          width: 2,
-                          color: getColorAlmostBlue(),
-                        ),
-                      ),
-                      child: ListTile(
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: candadosHistorial.map((candadoHistorial) {
-                            fechaIngreso =
-                                candadoHistorial.fechaIngreso.toString();
-                            fechaIngreso = fechaIngreso != 'null'
-                                ? fechaIngreso.substring(0, 10)
-                                : '';
-                            fechaSalida =
-                                candadoHistorial.fechaSalida.toString();
-                            fechaSalida = fechaSalida != 'null'
-                                ? fechaSalida.substring(0, 10)
-                                : '';
-                            Lugar = candadoHistorial.lugar;
-                            Lugar = Lugar.isEmpty
-                                ? 'Monitoreo'
-                                : ('EVILM').contains(Lugar)
-                                    ? 'Taller'
-                                    : 'Monitoreo';
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _informationBox(
-                                    columna1: 'Tipo',
-                                    columna2: 'Fecha',
-                                    columna3: 'Estado'),
-                                const Divider(),
-                                _informationBox(
-                                    columna1: 'Salida',
-                                    columna2: fechaSalida,
-                                    columna3: Lugar),
-                                const Divider(),
-                                _informationBox(
-                                    columna1: 'Ingreso',
-                                    columna2: fechaIngreso,
-                                    columna3: candadoHistorial.lugar),
+      body: Column(
+        children: [
+          const SizedBox(
+            height: 30.0,
+          ),
+          SizedBox(
+            height: 180.0,
+            width: MediaQuery.of(context).size.width * 0.8,
+            child: Image.asset(
+              image,
+              fit: BoxFit.fitWidth,
+            ),
+          ),
+          Text(
+            nameCandado,
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 30.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(
+            height: 20.0,
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              columns: const [
+                DataColumn(label: Text('Tipo')),
+                DataColumn(label: Text('Fecha')),
+                DataColumn(label: Text('Estado')),
+                DataColumn(label: Text('Acción')),
+              ],
+              rows: datoHistorial.entries.expand((entry) {
+                final id = entry.key;
+                final historialList = entry.value;
 
-                                /*
-                                if (fechaSalida.isNotEmpty)
-                                  RowWithText(
-                                      title: 'Fecha Salida',
-                                      subtitle: fechaSalida),
-                                if (fechaIngreso.isNotEmpty)
-                                  RowWithText(
-                                      title: 'Fecha Ingreso',
-                                      subtitle: fechaIngreso),
-                                RowWithText(title: 'Lugar', subtitle: Lugar),
-                                */
-                                const SizedBox(
-                                  height: 5.0,
-                                ),
-                                Center(
-                                  child: ElevatedButton(
-                                    style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateColor.resolveWith(
-                                                (states) =>
-                                                    getColorAlmostBlue())),
+                // Duplicar la generación de filas para que se repita dos veces
+                return [
+                  for (var i = 0; i < 2; i++)
+                    DataRow(cells: [
+                      DataCell(
+                          Text('Tipo_$i')), // Cambiar 'Tipo_$i' según necesites
+                      DataCell(Text(
+                          'Fecha_$i')), // Cambiar 'Fecha_$i' según necesites
+                      DataCell(Text(
+                          'Estado_$i')), // Cambiar 'Estado_$i' según necesites
+                      DataCell(ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Información Detallada'),
+                                content: _buildDialogContent(historialList[
+                                    i]), // Usar historialList[i] según necesites
+                                actions: [
+                                  TextButton(
                                     onPressed: () {
-                                      // Acción al presionar el botón para más información
-                                      // Puedes abrir un diálogo, navegar a otra pantalla, etc.
-                                      // Por ejemplo:
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            titlePadding: const EdgeInsets.only(
-                                                top: 10.0),
-                                            contentPadding:
-                                                const EdgeInsets.all(0.0),
-                                            backgroundColor:
-                                                MaterialStateColor.resolveWith(
-                                                    (states) => Colors.white),
-                                            title: Column(
-                                              children: [
-                                                Text(
-                                                  'Más Información',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    color: getColorAlmostBlue(),
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                Divider(
-                                                  color: getColorAlmostBlue(),
-                                                ),
-                                              ],
-                                            ),
-                                            content: _description(
-                                                candado: candadoHistorial),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: Text(
-                                                  'Cerrar',
-                                                  style: TextStyle(
-                                                      color:
-                                                          getColorAlmostBlue()),
-                                                ),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      );
+                                      Navigator.of(context).pop();
                                     },
-                                    child: const Text('Más Información',
-                                        style: TextStyle(color: Colors.white)),
+                                    child: Text('Cerrar'),
                                   ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          )),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: Text('Ver Detalles'),
+                      )),
+                    ]),
+                ];
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
     );
   }
-}
 
-Row _informationBox({
-  required String columna1,
-  required String columna2,
-  required String columna3,
-}) {
-  return Row(
-    crossAxisAlignment: CrossAxisAlignment.center,
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Container(
-        width: 70.0,
-        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-        child: Text(
-          columna1,
-          textAlign: TextAlign.center,
-        ),
-      ),
-      const SizedBox(
-        height: 40.0,
-        child: VerticalDivider(
-          width: 1, // Anchura del separador vertical
-          color: Colors.grey, // Color del separador vertical
-        ),
-      ),
-      Container(
-        width: 90.0,
-        padding: const EdgeInsets.symmetric(horizontal: 5.0),
-        child: Text(
-          columna2,
-          textAlign: TextAlign.center,
-        ),
-      ),
-      const SizedBox(
-        height: 40.0,
-        child: VerticalDivider(
-          width: 1, // Anchura del separador vertical
-          color: Colors.grey, // Color del separador vertical
-        ),
-      ),
-      Container(
-        width: 90.0,
-        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-        child: Text(
-          columna3,
-          textAlign: TextAlign.center,
-        ),
-      ),
-    ],
-  );
+  Widget _buildDialogContent(CandadoHistorial historial) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Tipo: ${historial.tipo}'),
+        Text('Fecha Ingreso: ${historial.fechaIngreso}'),
+        Text('Fecha Salida: ${historial.fechaSalida}'),
+        Text('Razón Ingreso: ${historial.razonIngreso}'),
+        Text('Razón Salida: ${historial.razonSalida}'),
+        Text('Responsable: ${historial.responsable}'),
+        Text('Lugar: ${historial.lugar}'),
+        // Agrega más información según sea necesario
+      ],
+    );
+  }
 }
 
 Container _description({required CandadoHistorial candado}) {
