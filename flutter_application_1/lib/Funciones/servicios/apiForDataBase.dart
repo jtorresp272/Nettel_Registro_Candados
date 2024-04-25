@@ -5,7 +5,7 @@ import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
 /* Funcion para borrar los datos guardados en memoria */
 Future<void> deleteData({required int id, required String title}) async {
   Note modelDelete = Note(
-    id: 1,
+    id: id,
     title: title,
     description: '',
   );

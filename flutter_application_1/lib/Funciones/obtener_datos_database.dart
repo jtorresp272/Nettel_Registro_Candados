@@ -37,17 +37,15 @@ class Candado {
 }
 
 class CandadoHistorial {
-  final int id;
   final String tipo;
   final String razonIngreso;
   final String razonSalida;
   final String responsable;
-  final DateTime fechaIngreso;
+  final DateTime? fechaIngreso;
   final DateTime? fechaSalida;
   final String lugar;
 
   CandadoHistorial({
-    required this.id,
     required this.tipo,
     required this.razonIngreso,
     required this.razonSalida,
@@ -59,21 +57,20 @@ class CandadoHistorial {
 
   @override
   String toString() {
-    return 'id: $id, tipo: $tipo, razonIngreso: $razonIngreso, razonSalida: $razonSalida, responsable: $responsable, fechaIngreso: $fechaIngreso, fechaSalida: $fechaSalida, lugar: $lugar';
+    return 'tipo: $tipo, razonIngreso: $razonIngreso, razonSalida: $razonSalida, responsable: $responsable, fechaIngreso: $fechaIngreso, fechaSalida: $fechaSalida, lugar: $lugar';
   }
 }
 
 final List<Candado> listaCandadosTaller = [];
 final List<Candado> listaCandadosPuerto = [];
 Map<int, List<CandadoHistorial>> mapCandadoHistorial = {};
-
+String nameCandadoHistorial = '';
 var logger = Logger();
 // Obtener información de un candado en especifico
 Future<Candado?> getDatoCandado(String numeroCandado) async {
   const urlBuscar =
       "https://script.google.com/macros/s/AKfycbxojXb67pxCBQCDoGkZuHpsYVqSH4U9JIVlPP4bKHQ37kMlimMUSPRJ_rKjDhGmKkBpGg/exec?accion=buscar&string=";
   final response = await http.get(Uri.parse(urlBuscar + numeroCandado));
-
   if (response.statusCode == 200) {
     final jsonData = json.decode(response.body);
     if (jsonData != null && jsonData.isNotEmpty) {
@@ -109,39 +106,44 @@ Future<Candado?> getDatoCandado(String numeroCandado) async {
 Future<bool> getDataHistorial({required String numero}) async {
   String url =
       "https://script.google.com/macros/s/AKfycbzzivR2HvtB4SnxEMD_XBzS4LQ_MKg5enddPab4fAu4t_86RQIgCBCUpZ3VI3z8O-1qSw/exec?numero=";
-
+  mapCandadoHistorial.clear();
   final response = await http.get(Uri.parse(url + numero));
+  nameCandadoHistorial = numero;
   if (response.statusCode == 200) {
     final jsonData = json.decode(response.body);
     if (jsonData != null && jsonData.isNotEmpty) {
-      for (var data in jsonData) {
-        int id = data["ID"];
-        String tipo = data["Tipo"];
-        String razonIngreso = data["Descripcion Ingreso"];
-        String razonSalida = data["Descripcion Salida"];
-        String responsable = data["Responsable"];
-        DateTime fechaIngreso = DateTime.parse(data["Fecha Ingreso"]);
-        DateTime? fechaSalida = _parseDateString(data['Fecha Salida']);
-        String lugar = data["lugar"];
-        
-        CandadoHistorial candado = CandadoHistorial(
-          id: id,
-          tipo: tipo,
-          razonIngreso: razonIngreso,
-          razonSalida: razonSalida,
-          responsable: responsable,
-          fechaIngreso: fechaIngreso,
-          fechaSalida: fechaSalida,
-          lugar: lugar,
-        );
+      if (response.body !=
+          '{"error":"No se encontraron filas con el número proporcionado."}') {
+        for (var data in jsonData) {
+          int id = data["ID"];
+          String tipo = data["Tipo"];
+          String razonIngreso = data["Descripcion Ingreso"];
+          String razonSalida = data["Descripcion Salida"];
+          String responsable = data["Responsable"];
+          DateTime? fechaIngreso = _parseDateString(data["Fecha Ingreso"]);
+          DateTime? fechaSalida = _parseDateString(data['Fecha Salida']);
+          String lugar = data["lugar"];
 
-        if (!mapCandadoHistorial.containsKey(id)) {
-          mapCandadoHistorial[id] = [];
+          CandadoHistorial candado = CandadoHistorial(
+            tipo: tipo,
+            razonIngreso: razonIngreso,
+            razonSalida: razonSalida,
+            responsable: responsable,
+            fechaIngreso: fechaIngreso,
+            fechaSalida: fechaSalida,
+            lugar: lugar,
+          );
+
+          if (!mapCandadoHistorial.containsKey(id)) {
+            mapCandadoHistorial[id] = [];
+          }
+          mapCandadoHistorial[id]!.add(candado);
         }
-        mapCandadoHistorial[id]!.add(candado);
+        return true;
+      } else {
+        return false;
       }
     }
-  } else {
     return false;
   }
   return true;
@@ -150,6 +152,10 @@ Future<bool> getDataHistorial({required String numero}) async {
 /* Retorna los datos almacenados previamente en la funcion getDataHistorial */
 Map<int, List<CandadoHistorial>> getMapHistorial() {
   return mapCandadoHistorial;
+}
+
+String getNameCandadoHistorial() {
+  return nameCandadoHistorial;
 }
 
 // Retorna todo el listado de la tabla del registro de candados

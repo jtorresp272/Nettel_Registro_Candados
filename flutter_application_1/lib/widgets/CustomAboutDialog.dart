@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/BuildClass/BuildDecorationTextField.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
-import 'package:flutter_application_1/Screen/historial.dart';
-import 'package:flutter_application_1/widgets/CustomDialog.dart';
 import 'package:flutter_application_1/widgets/CustomDialogScanQr.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 
@@ -31,6 +29,7 @@ class _CustomAboutDialogState extends State<CustomAboutDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      alignment: Alignment.center,
       surfaceTintColor: Colors.white,
       backgroundColor: Colors.white,
       title: Text(
@@ -43,8 +42,9 @@ class _CustomAboutDialogState extends State<CustomAboutDialog> {
       content: TextField(
         controller: _textController,
         autofocus: true,
-        keyboardType: TextInputType.number,
-        decoration: decorationTextField(text: '', hint: widget.hint ?? '0093'),
+        keyboardType: TextInputType.name,
+        decoration: decorationTextField(
+            text: 'número Candado', hint: widget.hint ?? '0093'),
       ),
       actions: [
         if (!wait)
@@ -78,19 +78,20 @@ class _CustomAboutDialogState extends State<CustomAboutDialog> {
                     wait = true;
                   });
                   final bool isData = await getDataHistorial(numero: text);
-                  
+
                   setState(() {
                     wait = false;
                   });
 
-                  if(isData)
-                  {
-                    Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  if (isData) {
                     Navigator.of(context).pushNamed('/historial');
-                  }else{
-                    customSnackBar(context, 'No se pudo encontrar el numero', Colors.red);
+                  } else {
+                    customSnackBar(
+                        context,
+                        'No se pudo encontrar el número o el número no tiene datos en el historial',
+                        Colors.red);
                   }
-                  
                 }
               }
             },

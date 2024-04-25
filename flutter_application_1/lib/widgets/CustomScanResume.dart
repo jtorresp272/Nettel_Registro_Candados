@@ -376,7 +376,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
                         if (!isDamage &&
                             !['V', 'E'].contains(widget.candado.lugar))
                           TextFormField(
-                            readOnly: widget.whereGo != 'taller',
+                            readOnly: widget.whereGo == 'monitoreo',
                             maxLines: null,
                             controller: _descripcionIngresoController,
                             decoration: decorationTextField(
@@ -739,39 +739,37 @@ class _CustomScanResumeState extends State<CustomScanResume>
                               ),
                               onPressed: () async {
                                 // Acción del botón
-                                if( widget.whereGo != 'puerto'){
-                                  if (buttonOnPressedResponsable.contains(true) ||
-                                    widget.estado ==
-                                        EstadoCandados.porIngresar ||
-                                    isDamage) {
-                                  setState(() {
-                                    waiting = true;
-                                  });
-                                  await _saveChanges();
-                                  setState(() {
-                                    waiting = false;
-                                  });
+                                if (widget.whereGo != 'puerto') {
+                                  if (buttonOnPressedResponsable
+                                          .contains(true) ||
+                                      widget.estado ==
+                                          EstadoCandados.porIngresar ||
+                                      isDamage) {
+                                    setState(() {
+                                      waiting = true;
+                                    });
+                                    await _saveChanges();
+                                    setState(() {
+                                      waiting = false;
+                                    });
                                   } else {
                                     customSnackBar(
                                         context,
                                         'Seleccione un responsable',
-                                       Colors.red);
+                                        Colors.red);
                                   }
-                                }else
-                                {
-                                  if (buttonOnPressedPuerto.contains(true)){
+                                } else {
+                                  if (buttonOnPressedPuerto.contains(true)) {
                                     setState(() {
-                                    waiting = true;
-                                  });
-                                  await _saveChanges();
-                                  setState(() {
-                                    waiting = false;
-                                  });
-                                  }else{
-                                    customSnackBar(
-                                        context,
-                                        'Seleccione un puerto',
-                                       Colors.red);
+                                      waiting = true;
+                                    });
+                                    await _saveChanges();
+                                    setState(() {
+                                      waiting = false;
+                                    });
+                                  } else {
+                                    customSnackBar(context,
+                                        'Seleccione un puerto', Colors.red);
                                   }
                                 }
                               },
@@ -863,11 +861,10 @@ class _CustomScanResumeState extends State<CustomScanResume>
             fechaIngreso = DateFormat('dd-MM-yy').format(DateTime.now());
             fechaSalida = '';
             responsable = '';
-            if(widget.whereGo == 'puerto')
-            {
+            if (widget.whereGo == 'puerto') {
               lugar = puertos[buttonOnPressedPuerto.indexWhere((e) => e)];
               accion = 'modificarRegistro';
-            }else{
+            } else {
               lugar = 'I';
               accion = 'agregarRegistroHistorial';
             }
@@ -923,7 +920,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
         await modificarRegistro(accion, widget.candado.numero, valoresNuevos);
     if (checkModification) {
       // Si el candado es por ingresar se debe guardar en la base de datos para luego solicitar la informacion puesta en correo
-      if(widget.whereGo != 'puerto'){
+      if (widget.whereGo != 'puerto') {
         if (widget.estado == EstadoCandados.porIngresar ||
             widget.whereGo == 'monitoreo') {
           // ignore: use_build_context_synchronously

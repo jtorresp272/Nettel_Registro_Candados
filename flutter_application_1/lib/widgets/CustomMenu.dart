@@ -3,8 +3,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Funciones/database/data_model.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/servicios/apiForDataBase.dart';
+import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
+import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 
 class customDrawer extends StatefulWidget {
   final String nameUser;
@@ -190,10 +193,10 @@ class _customDrawerState extends State<customDrawer> {
               ),
               onTap: () async {
                 if (widget.nameUser != 'Puerto') {
-                  await _hasEmail(context);
+                  bool hasEmail = await _hasEmail(context);
                   if (!hasEmail) {
                     // Eliminar los datos guardados en memoria del login
-                    await _deleteData();
+                    await deleteData(id: 1, title: 'login');
                     Navigator.pushReplacementNamed(
                       context,
                       "/login",
@@ -236,16 +239,16 @@ class _customDrawerState extends State<customDrawer> {
 }
 
 /* Check si existe informacion por enviar en correo  */
-Future<void> _hasEmail(context) async {
+Future<bool> _hasEmail(context) async {
   final List<Note>? notes = await DatabaseHelper.getAllNote(2);
   if (notes != null && notes.isNotEmpty) {
     try {
       final Note note = notes.firstWhere((note) => note.title == 'candados');
-      hasEmail = true;
+      return true;
     } catch (_) {
-      hasEmail = false;
+      return false;
     }
   } else {
-    hasEmail = false;
+    return false;
   }
 }

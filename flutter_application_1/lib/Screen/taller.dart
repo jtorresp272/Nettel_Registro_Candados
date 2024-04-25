@@ -146,7 +146,8 @@ class _TallerState extends State<Taller> {
       showDialog(
         context: context,
         builder: ((context) => const CustomAboutDialog(
-              title: 'Ingrese número', whoIs: 'taller',
+              title: 'Ingrese número candado',
+              whoIs: 'taller',
             )),
       );
     }
