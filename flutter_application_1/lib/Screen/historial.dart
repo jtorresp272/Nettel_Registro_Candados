@@ -184,10 +184,10 @@ class _Historial extends State<Historial> {
                                       title: 'Fecha Ingreso',
                                       subtitle: fechaIngreso),
                                 RowWithText(title: 'Lugar', subtitle: Lugar),
+                                */
                                 const SizedBox(
                                   height: 5.0,
                                 ),
-                                */
                                 Center(
                                   child: ElevatedButton(
                                     style: ButtonStyle(
