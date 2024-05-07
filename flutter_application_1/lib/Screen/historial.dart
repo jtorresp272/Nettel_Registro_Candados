@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/BuildClass/BuildRowWithText.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:logger/logger.dart';
@@ -11,20 +10,54 @@ class Historial extends StatefulWidget {
 }
 
 class _Historial extends State<Historial> {
-  late Map<int, List<CandadoHistorial>> datoHistorial = {};
+  late Map<String, List<String>> datoHistorial = {};
+  List<String> ingreso = [];
+  List<String> salida = [];
   late String nameCandado;
   var logger = Logger();
   late String image;
+  int auxId = 0;
+
   @override
   void initState() {
     super.initState();
-    datoHistorial = getMapHistorial();
+    _separateData(getMapHistorial());
+    logger.e(getMapHistorial());
     logger.e(datoHistorial);
     nameCandado = getNameCandadoHistorial();
-    _selectImage();
+    _selectImage(getMapHistorial());
   }
 
-  void _selectImage() {
+  void _separateData(Map<int, List<CandadoHistorial>> dato) {
+    dato.forEach((id, valores) {
+      for (var valores in valores) {
+        String fechaIngreso = valores.fechaIngreso != null
+            ? valores.fechaIngreso.toString().split(' ')[0]
+            : '';
+        String fechaSalida = valores.fechaSalida != null
+            ? valores.fechaSalida.toString().split(' ')[0]
+            : '';
+        auxId++;
+
+        if (valores.razonIngreso.isNotEmpty) {
+          if (valores.razonSalida.isEmpty) {
+            ingreso.add(
+                '$auxId,${valores.razonIngreso},$fechaIngreso,${valores.lugar}');
+          } else {
+            ingreso.add('$auxId,${valores.razonIngreso},$fechaIngreso');
+          }
+          datoHistorial.addAll({'Ingreso': ingreso});
+        }
+        if (valores.razonSalida.isNotEmpty) {
+          salida.add(
+              '$auxId,${valores.razonSalida},$fechaSalida,${valores.lugar}');
+          datoHistorial.addAll({'Salida': salida});
+        }
+      }
+    });
+  }
+
+  void _selectImage(Map<int, List<CandadoHistorial>> datoHistorial) {
     // Verificar si el mapa contiene la clave 1 (primer ID)
     if (datoHistorial.containsKey(1)) {
       // Obtener la lista de CandadoHistorial asociada al ID 1
@@ -68,7 +101,6 @@ class _Historial extends State<Historial> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: getColorAlmostBlue(),
         title: const Text(
@@ -81,8 +113,7 @@ class _Historial extends State<Historial> {
         ),
         leading: IconButton(
           onPressed: () {
-            // Regresar a la pantalla anterior
-            Navigator.of(context).pop();
+            Navigator.pop(context);
           },
           icon: const Icon(
             Icons.arrow_back,
@@ -90,203 +121,275 @@ class _Historial extends State<Historial> {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          const SizedBox(
-            height: 30.0,
-          ),
-          SizedBox(
-            height: 180.0,
-            width: MediaQuery.of(context).size.width * 0.8,
-            child: Image.asset(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(
+              height: 20.0,
+            ),
+            Image.asset(
               image,
-              fit: BoxFit.fitWidth,
+              fit: BoxFit.contain,
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: 200.0,
             ),
-          ),
-          Text(
-            nameCandado,
-            style: const TextStyle(
-              color: Colors.black,
-              fontSize: 30.0,
-              fontWeight: FontWeight.bold,
+            Text(
+              nameCandado,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 25.0,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          const SizedBox(
-            height: 20.0,
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              columns: const [
-                DataColumn(label: Text('Tipo')),
-                DataColumn(label: Text('Fecha')),
-                DataColumn(label: Text('Estado')),
-                DataColumn(label: Text('Acción')),
-              ],
-              rows: datoHistorial.entries.expand((entry) {
-                final id = entry.key;
-                final historialList = entry.value;
-
-                // Duplicar la generación de filas para que se repita dos veces
-                return [
-                  for (var i = 0; i < 2; i++)
-                    DataRow(cells: [
-                      DataCell(
-                          Text('Tipo_$i')), // Cambiar 'Tipo_$i' según necesites
-                      DataCell(Text(
-                          'Fecha_$i')), // Cambiar 'Fecha_$i' según necesites
-                      DataCell(Text(
-                          'Estado_$i')), // Cambiar 'Estado_$i' según necesites
-                      DataCell(ElevatedButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('Información Detallada'),
-                                content: _buildDialogContent(historialList[
-                                    i]), // Usar historialList[i] según necesites
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text('Cerrar'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                        child: Text('Ver Detalles'),
-                      )),
-                    ]),
-                ];
-              }).toList(),
+            const SizedBox(
+              height: 20.0,
             ),
-          ),
-        ],
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: DataTable(
+                  columnSpacing: 20.0,
+                  headingTextStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  columns: const [
+                    DataColumn(
+                        label: Text(
+                      'Tipo',
+                      textAlign: TextAlign.center,
+                    )),
+                    DataColumn(
+                        label: Text(
+                      'Fecha',
+                      textAlign: TextAlign.center,
+                    )),
+                    DataColumn(
+                        label: Text(
+                      'Estado',
+                      textAlign: TextAlign.center,
+                    )),
+                    DataColumn(
+                        label: Text(
+                      'Información',
+                      textAlign: TextAlign.center,
+                    )),
+                  ],
+                  rows: _buildRows(),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildDialogContent(CandadoHistorial historial) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Tipo: ${historial.tipo}'),
-        Text('Fecha Ingreso: ${historial.fechaIngreso}'),
-        Text('Fecha Salida: ${historial.fechaSalida}'),
-        Text('Razón Ingreso: ${historial.razonIngreso}'),
-        Text('Razón Salida: ${historial.razonSalida}'),
-        Text('Responsable: ${historial.responsable}'),
-        Text('Lugar: ${historial.lugar}'),
-        // Agrega más información según sea necesario
-      ],
-    );
+  List<DataRow> _buildRows() {
+    List<DataRow> rows = [];
+    List<String> ingreso = datoHistorial['Ingreso'] ?? [];
+    List<String> salida = datoHistorial['Salida'] ?? [];
+    int maxIterations =
+        ingreso.length > salida.length ? ingreso.length : salida.length;
+
+    for (int i = 0; i < maxIterations; i++) {
+      String ingresoData = i < ingreso.length ? ingreso[i] : '';
+      String salidaData = i < salida.length ? salida[i] : '';
+
+      List<String> ingresoValues = ingresoData.split(',');
+      List<String> salidaValues = salidaData.split(',');
+
+      rows.add(
+        DataRow(
+          cells: [
+            const DataCell(
+              Text(
+                'Ingreso',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            DataCell(
+              Text(
+                ingresoValues.length > 2 ? ingresoValues[2] : '',
+                textAlign: TextAlign.center,
+              ),
+            ), // Fecha
+            DataCell(Text(
+              ingresoValues.length > 3 ? ingresoValues[3] : '-',
+              textAlign: TextAlign.center,
+            )), // Estado
+            DataCell(
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: getColorAlmostBlue(),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                ),
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return _showMoreInfo(context, ingresoData);
+                      });
+                },
+                child: const Text(
+                  'Ver más',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12.0,
+                  ),
+                ),
+              ),
+            ), // Acción (puedes ajustar este valor según tu lógica)
+          ],
+        ),
+      );
+
+      if (salidaData.isNotEmpty) {
+        rows.add(
+          DataRow(
+            cells: [
+              const DataCell(Text(
+                'Salida',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              )),
+              DataCell(Text(
+                salidaValues.length > 2 ? salidaValues[2] : '',
+                textAlign: TextAlign.center,
+              )), // Fecha
+              DataCell(Text(
+                salidaValues.length > 3 ? salidaValues[3] : '',
+                textAlign: TextAlign.center,
+              )), // Estado
+              DataCell(
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: getColorAlmostBlue(),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                  ),
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return _showMoreInfo(context, salidaData);
+                        });
+                  },
+                  child: const Text(
+                    'Ver más',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12.0,
+                    ),
+                  ),
+                ),
+              ), // Acción (puedes ajustar este valor según tu lógica)
+            ],
+          ),
+        );
+      }
+    }
+
+    return rows;
   }
 }
 
-Container _description({required CandadoHistorial candado}) {
-  String estado = candado.lugar;
-  final String lugar = estado.isEmpty
-      ? 'Monitoreo'
-      : ('EVILM').contains(estado)
-          ? 'Taller'
-          : 'Monitoreo';
-  switch (estado) {
-    case 'E':
-      estado = 'Electronica Dañada';
-      break;
-    case 'V':
-      estado = 'Mecanica Dañada';
-      break;
-    case 'I':
-      estado = 'Ingresado';
-      break;
-    case 'L':
-      estado = 'Candado Listo';
-      break;
-    case 'M':
-      estado = 'Mecanica Lista';
-      break;
-    case 'OP':
-      estado = 'Candado operativo';
-      break;
-    default:
-      estado = '';
-      break;
-  }
-  return Container(
-    height: 400.0,
-    padding: const EdgeInsets.only(left: 10.0, right: 5.0),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(10.0),
+AlertDialog _showMoreInfo(context, String info) {
+  // Aquí puedes implementar la lógica para mostrar más información según el tipo de dato que recibas
+  // Por ejemplo, puedes abrir un diálogo o una nueva pantalla con los detalles de la información recibida.
+  logger.i('Mostrar más información: $info');
+  List<String> data = info.split(',');
+  return AlertDialog(
+    contentPadding: const EdgeInsets.all(20.0),
+    title: const Text(
+      'Información Detallada',
+      textAlign: TextAlign.center,
     ),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(
-          height: 15.0,
-        ),
-        if (candado.razonIngreso.isNotEmpty)
-          const Text(
-            'Descripcion de Ingreso:',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        if (candado.razonIngreso.isNotEmpty) Text(candado.razonIngreso),
-        if (candado.razonSalida.isNotEmpty) const Divider(),
-        const SizedBox(
-          height: 10.0,
-        ),
-        if (candado.razonSalida.isNotEmpty)
-          const Text(
-            'Descripcion de Salida:',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        if (candado.razonSalida.isNotEmpty) Text(candado.razonSalida),
-        if (candado.responsable.isNotEmpty) const Divider(),
-        if (candado.responsable.isNotEmpty)
-          const Text(
-            'Responsable:',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        if (candado.responsable.isNotEmpty) Text(candado.responsable),
-        const Divider(),
-        const Text(
-          'Lugar:',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(lugar),
-        const Divider(),
-        const Text(
-          'Estado:',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(estado),
-      ],
+    titleTextStyle: TextStyle(
+      color: getColorAlmostBlue(),
+      fontSize: 20.0,
+      fontWeight: FontWeight.bold,
     ),
+    content: SingleChildScrollView(
+      child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Descripcion:',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 15.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(
+              height: 5.0,
+            ),
+            Text(data[1]),
+            const SizedBox(
+              height: 20.0,
+            ),
+            const Text(
+              'Fecha:',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 15.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(
+              height: 5.0,
+            ),
+            Text(data[2]),
+            if (data.length > 3)
+              const SizedBox(
+                height: 20.0,
+              ),
+            if (data.length > 3)
+              const Text(
+                'Estado:',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            if (data.length > 3)
+              const SizedBox(
+                height: 5.0,
+              ),
+            if (data.length > 3) Text(data[3]),
+          ]),
+    ),
+    actions: [
+      ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateColor.resolveWith(
+              (states) => getColorAlmostBlue(),
+            ),
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text(
+            'Cerrar',
+            style: TextStyle(color: Colors.white),
+          ))
+    ],
   );
 }

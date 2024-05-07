@@ -29,7 +29,11 @@ String _description = '';
 List<String> datosEnviar = [];
 List<String> correosEnviar = [
   'jtorresp272@gmail.com',
-  'electronica@nettelcorp.com'
+  'electronica@nettelcorp.com',
+  'joperaciones@nettelcorp.com',
+  'pedidos@nettelcorp.com',
+  'rastreo@nettelcorp.com',
+  'joseparraga1@outlook.es'
 ];
 
 class Monitoreo extends StatefulWidget {
@@ -39,7 +43,8 @@ class Monitoreo extends StatefulWidget {
   State<Monitoreo> createState() => _MonitoreoState();
 }
 
-class _MonitoreoState extends State<Monitoreo> with SingleTickerProviderStateMixin{
+class _MonitoreoState extends State<Monitoreo>
+    with SingleTickerProviderStateMixin {
   // ignore: non_constant_identifier_names
   bool termino_ob_data = false;
   /* Variables globales */
@@ -52,7 +57,7 @@ class _MonitoreoState extends State<Monitoreo> with SingleTickerProviderStateMix
   final TextEditingController _textControllerTaller = TextEditingController();
   final TextEditingController _textControllerLlegar = TextEditingController();
   late int _selectedIndex = 0; // Definición de _selectedIndex
-  
+
   late TabController _tabController;
   int _currentTabIndex = 0; // Variable para indicar la pestaña actual
 
@@ -94,7 +99,10 @@ class _MonitoreoState extends State<Monitoreo> with SingleTickerProviderStateMix
               showDialog(
                 context: context,
                 builder: (context) => CustomScanResume(
-                    candado: scannedCandado, estado: EstadoCandados.listos,whereGo: 'monitoreo',),
+                  candado: scannedCandado,
+                  estado: EstadoCandados.listos,
+                  whereGo: 'monitoreo',
+                ),
               );
             } else {
               customSnackBar(context, 'El candado no esta listo', Colors.red);
@@ -202,179 +210,181 @@ class _MonitoreoState extends State<Monitoreo> with SingleTickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: CustomAppBar(
-          titulo: 'Consorcio Nettel',
-          subtitulo: 'Monitoreo',
-          reloadCallback: () {
-            setState(() {
-              restartPage(context);
-            });
-            updateIconAppBar().triggerNotification(context, false);
-          },
-        ),
-        resizeToAvoidBottomInset: false,
-        body: termino_ob_data
-            ? DefaultTabController(
-                initialIndex: 1,
-                length: 4,
-                child: Column(
-                  children: [
-                    Container(
-                      color: Colors.white,
-                      child: TabBar(
-                        controller: _tabController,
-                        labelColor: getColorAlmostBlue(),
-                        unselectedLabelColor: Colors
-                            .black45, // Color del texto de las pestañas no seleccionadas
-                        indicatorColor:
-                            getColorAlmostBlue(), // Color del indicador que resalta la pestaña seleccionada
-                        labelStyle: const TextStyle(
-                          fontSize: 18,
-                        ), // Estilo del texto de la pestaña seleccionada
-                        unselectedLabelStyle: const TextStyle(
-                          fontSize: 16,
-                        ), // Estilo del texto de las pestañas no seleccionadas
-                        tabs: const [
-                          Tab(
-                            icon: Icon(Icons.info),
-                          ),
-                          Tab(
-                            icon: Icon(Icons.construction),
-                          ),
-                          Tab(
-                            icon: Icon(Icons.local_shipping),
-                          ),
-                          Tab(icon: Icon(Icons.menu)),
-                        ],
-                      ),
+      backgroundColor: Colors.white,
+      appBar: CustomAppBar(
+        titulo: 'Consorcio Nettel',
+        subtitulo: 'Monitoreo',
+        reloadCallback: () {
+          setState(() {
+            restartPage(context);
+          });
+          updateIconAppBar().triggerNotification(context, false);
+        },
+      ),
+      resizeToAvoidBottomInset: false,
+      body: termino_ob_data
+          ? DefaultTabController(
+              initialIndex: 1,
+              length: 4,
+              child: Column(
+                children: [
+                  Container(
+                    color: Colors.white,
+                    child: TabBar(
+                      controller: _tabController,
+                      labelColor: getColorAlmostBlue(),
+                      unselectedLabelColor: Colors
+                          .black45, // Color del texto de las pestañas no seleccionadas
+                      indicatorColor:
+                          getColorAlmostBlue(), // Color del indicador que resalta la pestaña seleccionada
+                      labelStyle: const TextStyle(
+                        fontSize: 18,
+                      ), // Estilo del texto de la pestaña seleccionada
+                      unselectedLabelStyle: const TextStyle(
+                        fontSize: 16,
+                      ), // Estilo del texto de las pestañas no seleccionadas
+                      tabs: const [
+                        Tab(
+                          icon: Icon(Icons.info),
+                        ),
+                        Tab(
+                          icon: Icon(Icons.construction),
+                        ),
+                        Tab(
+                          icon: Icon(Icons.local_shipping),
+                        ),
+                        Tab(icon: Icon(Icons.menu)),
+                      ],
                     ),
-                    Expanded(
-                      child: TabBarView(
-                        controller: _tabController,
-                        children: [
-                          // Página 1: "Resumen"
-                          CustomResumen(
-                            listaTaller: listaCandadosTaller,
-                            listaLlegar: listaCandadosLlegar,
-                          ),
-                          // Página 2: "En Taller"
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                top: 20.0, left: 20.0, right: 20.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomSearchField(
-                                  controller: _textControllerTaller,
-                                  focusNode: _searchFocusNodeTaller,
-                                  onChanged: filtrarListaTaller,
-                                  onClear: () {
-                                    setState(() {
-                                      filtrarListaTaller('');
-                                      if (_textControllerTaller.text.isEmpty) {
-                                        _searchFocusNodeTaller.requestFocus();
-                                      }
-                                    });
-                                  },
-                                ),
-                                CustomListViewBuilder(
-                                    whereFrom: 'Taller',
-                                    user: 'monitoreo',
-                                    listaFiltrada: listaFiltradaTaller,
-                                    expandedState: _tabExpandedStates[1]!,
-                                    onExpandedChanged: (index) {
-                                      setState(() {
-                                        final currentState =
-                                            _tabExpandedStates[1]![index] ??
-                                                false;
-                                        _tabExpandedStates[1]![index] =
-                                            !currentState;
-                                      });
-                                    }),
-                              ],
-                            ),
-                          ),
-                          // Página 3: "Por Llegar"
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                top: 20.0, left: 20.0, right: 20.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomSearchField(
-                                  controller: _textControllerLlegar,
-                                  focusNode: _searchFocusNodeLlegar,
-                                  onChanged: filtrarListaLlegar,
-                                  onClear: () {
-                                    setState(() {
-                                      filtrarListaLlegar('');
-                                      if (_textControllerLlegar.text.isEmpty) {
-                                        _searchFocusNodeLlegar.requestFocus();
-                                      }
-                                    });
-                                  },
-                                ),
-                                CustomListViewBuilder(
-                                  whereFrom: 'Llegar',
-                                  listaFiltrada: listaFiltradaLlegar,
-                                  expandedState: _tabExpandedStates[2]!,
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        // Página 1: "Resumen"
+                        CustomResumen(
+                          listaTaller: listaCandadosTaller,
+                          listaLlegar: listaCandadosLlegar,
+                        ),
+                        // Página 2: "En Taller"
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 20.0, left: 20.0, right: 20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomSearchField(
+                                controller: _textControllerTaller,
+                                focusNode: _searchFocusNodeTaller,
+                                onChanged: filtrarListaTaller,
+                                onClear: () {
+                                  setState(() {
+                                    filtrarListaTaller('');
+                                    if (_textControllerTaller.text.isEmpty) {
+                                      _searchFocusNodeTaller.requestFocus();
+                                    }
+                                  });
+                                },
+                              ),
+                              CustomListViewBuilder(
+                                  whereFrom: 'Taller',
+                                  user: 'monitoreo',
+                                  listaFiltrada: listaFiltradaTaller,
+                                  expandedState: _tabExpandedStates[1]!,
                                   onExpandedChanged: (index) {
                                     setState(() {
                                       final currentState =
-                                          _tabExpandedStates[2]![index] ??
+                                          _tabExpandedStates[1]![index] ??
                                               false;
-                                      _tabExpandedStates[2]![index] =
+                                      _tabExpandedStates[1]![index] =
                                           !currentState;
                                     });
-                                  },
-                                ),
-                              ],
-                            ),
+                                  }),
+                            ],
                           ),
-                          // Usuario
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: customDrawer(
-                              nameUser: "Monitoreo",
-                              reloadCallback: () {
-                                setState(() {
-                                  restartPage(context);
-                                });
-                                updateIconAppBar()
-                                    .triggerNotification(context, false);
-                              },
-                            ),
+                        ),
+                        // Página 3: "Por Llegar"
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 20.0, left: 20.0, right: 20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomSearchField(
+                                controller: _textControllerLlegar,
+                                focusNode: _searchFocusNodeLlegar,
+                                onChanged: filtrarListaLlegar,
+                                onClear: () {
+                                  setState(() {
+                                    filtrarListaLlegar('');
+                                    if (_textControllerLlegar.text.isEmpty) {
+                                      _searchFocusNodeLlegar.requestFocus();
+                                    }
+                                  });
+                                },
+                              ),
+                              CustomListViewBuilder(
+                                whereFrom: 'Llegar',
+                                listaFiltrada: listaFiltradaLlegar,
+                                expandedState: _tabExpandedStates[2]!,
+                                onExpandedChanged: (index) {
+                                  setState(() {
+                                    final currentState =
+                                        _tabExpandedStates[2]![index] ?? false;
+                                    _tabExpandedStates[2]![index] =
+                                        !currentState;
+                                  });
+                                },
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                        // Usuario
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: customDrawer(
+                            nameUser: "Monitoreo",
+                            reloadCallback: () {
+                              setState(() {
+                                restartPage(context);
+                              });
+                              updateIconAppBar()
+                                  .triggerNotification(context, false);
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              )
-            : Center(
-                child: SizedBox(
-                  height: 100,
-                  width: 100,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 7.0,
-                    color: getColorAlmostBlue(),
                   ),
+                ],
+              ),
+            )
+          : Center(
+              child: SizedBox(
+                height: 100,
+                width: 100,
+                child: CircularProgressIndicator(
+                  strokeWidth: 7.0,
+                  color: getColorAlmostBlue(),
                 ),
               ),
-        
-        floatingActionButton: (_currentTabIndex != 0) ?
-        FloatingActionButton(  
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30.0)
-          ),
-          backgroundColor: getColorAlmostBlue(),
-          child: const Icon(Icons.qr_code_scanner,size: 30.0,color: Colors.white,),
-          onPressed: () {
-            _onItemTapped(0);
-          },
-        ):null,
-      );
+            ),
+      floatingActionButton: (_currentTabIndex != 0)
+          ? FloatingActionButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0)),
+              backgroundColor: getColorAlmostBlue(),
+              child: const Icon(
+                Icons.qr_code_scanner,
+                size: 30.0,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                _onItemTapped(0);
+              },
+            )
+          : null,
+    );
   }
 
   @override
