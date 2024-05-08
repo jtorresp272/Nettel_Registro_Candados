@@ -77,7 +77,8 @@ class _CustomAboutDialogState extends State<CustomAboutDialog> {
                   setState(() {
                     wait = true;
                   });
-                  final bool isData = await getDataHistorial(numero: text);
+                  final bool isData =
+                      await getDataHistorial(numero: text.toUpperCase());
 
                   setState(() {
                     wait = false;
