@@ -304,6 +304,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
                             style: const TextStyle(
                               fontSize: 30.0,
                               fontWeight: FontWeight.bold,
+                              color: Colors.black,
                             ),
                           ),
                         ),
@@ -311,7 +312,10 @@ class _CustomScanResumeState extends State<CustomScanResume>
                             child: Text(
                           DateFormat('yyyy-MM-dd')
                               .format(widget.candado.fechaIngreso),
-                          style: const TextStyle(fontSize: 20.0),
+                          style: const TextStyle(
+                            fontSize: 20.0,
+                            color: Colors.black,
+                          ),
                         )),
                       ],
                     ),
@@ -369,6 +373,9 @@ class _CustomScanResumeState extends State<CustomScanResume>
                         if (isDamage)
                           TextFormField(
                             maxLines: null,
+                            style: const TextStyle(
+                              color: Colors.black,
+                            ),
                             controller: _descripcionDanadoController,
                             decoration: decorationTextField(
                                 text: 'Descripción de daño', color: Colors.red),
@@ -378,6 +385,9 @@ class _CustomScanResumeState extends State<CustomScanResume>
                           TextFormField(
                             readOnly: widget.whereGo == 'monitoreo',
                             maxLines: null,
+                            style: const TextStyle(
+                              color: Colors.black,
+                            ),
                             controller: _descripcionIngresoController,
                             decoration: decorationTextField(
                                 text: 'Descripción de ingreso'),
@@ -570,6 +580,9 @@ class _CustomScanResumeState extends State<CustomScanResume>
                           TextFormField(
                             readOnly: widget.whereGo == 'monitoreo',
                             maxLines: null,
+                            style: const TextStyle(
+                              color: Colors.black,
+                            ),
                             controller: _descripcionSalidaController,
                             decoration: decorationTextField(
                                 text: 'Descripción de salida'),

@@ -5,6 +5,7 @@ import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:flutter_application_1/Funciones/servicios/apiForDataBase.dart';
 import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
+import 'package:flutter_application_1/Screen/bleConexion.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
 import 'package:flutter_application_1/widgets/CustomDialogScanQr.dart';
 import 'package:flutter_application_1/widgets/CustomMenu.dart';
@@ -15,6 +16,7 @@ import 'package:flutter_application_1/widgets/CustomScanResume.dart';
 import 'package:flutter_application_1/widgets/CustomSearch.dart';
 import 'package:flutter_application_1/widgets/CustomAboutDialog.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
+import 'package:flutter_application_1/widgets/CustomTheme.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 
 enum MenuNavigator {
@@ -22,13 +24,16 @@ enum MenuNavigator {
   ESCANER,
   // ignore: constant_identifier_names
   HISTORIAL,
+  // ignore: constant_identifier_names
+  BLUETOOTH,
 }
 
 String _description = '';
 List<String> datosEnviar = [];
 List<String> correosEnviar = [
   'jtorresp272@gmail.com',
-  'electronica@nettelcorp.com'
+  'electronica@nettelcorp.com',
+  'pedidos@nettelcorp.com',
 ];
 
 class Taller extends StatefulWidget {
@@ -52,6 +57,24 @@ class _TallerState extends State<Taller> {
   final TextEditingController _textControllerLlegar = TextEditingController();
 
   late int _selectedIndex = 0; // Definición de _selectedIndex
+  // Variable para determinar el modo que el usuario desee
+  int modo = 0;
+
+  // Variables para el TabBar
+
+  final int _selectedIndexTab = 1;
+  static const List<Tab> myTabs = <Tab>[
+    Tab(
+      icon: Icon(Icons.info),
+    ),
+    Tab(
+      icon: Icon(Icons.construction),
+    ),
+    Tab(
+      icon: Icon(Icons.local_shipping),
+    ),
+    Tab(icon: Icon(Icons.menu)),
+  ];
 
   late Map<int, Map<int, bool>>
       _tabExpandedStates; // Definicion de _tabExpandedStates para dejar seteado el ultimo estado de cada tapBar
@@ -150,6 +173,8 @@ class _TallerState extends State<Taller> {
               whoIs: 'taller',
             )),
       );
+    } else if (_selectedIndex == MenuNavigator.BLUETOOTH.index) {
+      Navigator.popAndPushNamed(context, '/bleConexion');
     }
   }
 
@@ -237,181 +262,253 @@ class _TallerState extends State<Taller> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: CustomAppBar(
-          titulo: 'Consorcio Nettel',
-          subtitulo: 'Taller',
-          reloadCallback: () {
-            setState(() {
-              restartPage(context);
-            });
-            updateIconAppBar().triggerNotification(context, false);
-          },
-        ),
-        resizeToAvoidBottomInset: false,
-        body: termino_ob_data
-            ? DefaultTabController(
-                initialIndex: 1,
-                length: 4,
-                child: Column(
-                  children: [
-                    Container(
-                      color: Colors.white,
-                      child: TabBar(
-                        labelColor: getColorAlmostBlue(),
-                        unselectedLabelColor: Colors
-                            .black45, // Color del texto de las pestañas no seleccionadas
-                        indicatorColor:
-                            getColorAlmostBlue(), // Color del indicador que resalta la pestaña seleccionada
-                        labelStyle: const TextStyle(
-                          fontSize: 18,
-                        ), // Estilo del texto de la pestaña seleccionada
-                        unselectedLabelStyle: const TextStyle(
-                          fontSize: 16,
-                        ), // Estilo del texto de las pestañas no seleccionadas
-                        tabs: const [
-                          Tab(
-                            icon: Icon(Icons.info),
-                          ),
-                          Tab(
-                            icon: Icon(Icons.construction),
-                          ),
-                          Tab(
-                            icon: Icon(Icons.local_shipping),
-                          ),
-                          Tab(icon: Icon(Icons.menu)),
-                        ],
+    // Variable para el color dependiendo del tema
+    final customColors = Theme.of(context).extension<CustomColors>()!;
+
+    return DefaultTabController(
+      initialIndex: _selectedIndexTab,
+      length: myTabs.length,
+      child: Builder(builder: (BuildContext context) {
+        final TabController tabController = DefaultTabController.of(context);
+        // Funcion para ocultar la lista de los candados
+        tabController.addListener(() {
+          if (!tabController.indexIsChanging) {
+            if (tabController.index == 0) {
+              setState(() {
+                _tabExpandedStates[1]![0] = false;
+                _tabExpandedStates[1]![1] = false;
+                _tabExpandedStates[1]![2] = false;
+                _tabExpandedStates[1]![3] = false;
+                _tabExpandedStates[1]![4] = false;
+              });
+            }
+          }
+        });
+
+        return Scaffold(
+            backgroundColor: Colors.white,
+            appBar: CustomAppBar(
+              mode: modo,
+              titulo: 'Consorcio Nettel',
+              subtitulo: 'Taller',
+              reloadCallback: () {
+                setState(() {
+                  restartPage(context);
+                });
+                updateIconAppBar().triggerNotification(context, false);
+              },
+            ),
+            resizeToAvoidBottomInset: false,
+            body: termino_ob_data
+                ? Column(
+                    children: [
+                      Container(
+                        color: modo == 0
+                            ? customColors.customOne!
+                            : customColors.customTwo!,
+                        child: TabBar(
+                          dividerColor: modo == 0
+                              ? customColors.customTwo!
+                              : customColors.customOne!,
+                          labelColor: modo == 0
+                              ? customColors.customTwo!
+                              : customColors.customOne!,
+                          unselectedLabelColor: modo == 0
+                              ? customColors.customThree
+                              : Colors
+                                  .black54, // Color del texto de las pestañas no seleccionadas
+                          indicatorColor: modo == 0
+                              ? customColors.customTwo!
+                              : customColors.customOne!,
+                          // Color del indicador que resalta la pestaña seleccionada
+                          labelStyle: const TextStyle(
+                            fontSize: 18,
+                          ), // Estilo del texto de la pestaña seleccionada
+                          unselectedLabelStyle: const TextStyle(
+                            fontSize: 16,
+                          ), // Estilo del texto de las pestañas no seleccionadas
+                          tabs: myTabs,
+                        ),
                       ),
-                    ),
-                    Expanded(
-                      child: TabBarView(
-                        children: [
-                          // Página 1: "Resumen"
-                          CustomResumen(
-                            listaTaller: listaCandadosTaller,
-                            listaLlegar: listaCandadosLlegar,
-                          ),
-                          // Página 2: "En Taller"
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                top: 20.0, left: 20.0, right: 20.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomSearchField(
-                                  controller: _textControllerTaller,
-                                  focusNode: _searchFocusNodeTaller,
-                                  onChanged: filtrarListaTaller,
-                                  onClear: () {
-                                    setState(() {
-                                      filtrarListaTaller('');
-                                      if (_textControllerTaller.text.isEmpty) {
-                                        _searchFocusNodeTaller.requestFocus();
+                      Expanded(
+                        child: TabBarView(
+                          //controller: _tabController,
+                          children: [
+                            // Página 1: "Resumen"
+                            CustomResumen(
+                              listaTaller: listaCandadosTaller,
+                              listaLlegar: listaCandadosLlegar,
+                              gotoBar: (value) {
+                                setState(() {
+                                  if (value.isNotEmpty) {
+                                    int index = 0;
+                                    bool state = true;
+                                    logger.i(value);
+
+                                    if (value != 'Total candados por llegar') {
+                                      switch (value) {
+                                        case 'Candados Operativos':
+                                          index = 0;
+                                          break;
+                                        case 'Mecanicas Listas':
+                                          index = 1;
+                                          break;
+                                        case 'Candados Ingresados':
+                                          index = 2;
+                                          break;
+                                        case 'Mecanicas Dañadas':
+                                          index = 3;
+                                          break;
+                                        case 'Electronicas Dañadas':
+                                          index = 4;
+                                          break;
+                                        default:
+                                          state = false;
+                                          break;
                                       }
-                                    });
-                                  },
-                                ),
-                                CustomListViewBuilder(
-                                    whereFrom: 'Taller',
-                                    listaFiltrada: listaFiltradaTaller,
-                                    expandedState: _tabExpandedStates[1]!,
+                                      tabController.index = 1;
+                                      _tabExpandedStates[tabController.index]![
+                                          index] = state;
+                                    } else {
+                                      tabController.index = 2;
+                                    }
+                                  }
+                                });
+                              },
+                            ),
+                            // Página 2: "En Taller"
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 20.0, left: 20.0, right: 20.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CustomSearchField(
+                                    controller: _textControllerTaller,
+                                    focusNode: _searchFocusNodeTaller,
+                                    onChanged: filtrarListaTaller,
+                                    onClear: () {
+                                      setState(() {
+                                        filtrarListaTaller('');
+                                        if (_textControllerTaller
+                                            .text.isEmpty) {
+                                          _searchFocusNodeTaller.requestFocus();
+                                        }
+                                      });
+                                    },
+                                  ),
+                                  CustomListViewBuilder(
+                                      whereFrom: 'Taller',
+                                      listaFiltrada: listaFiltradaTaller,
+                                      expandedState: _tabExpandedStates[1]!,
+                                      onExpandedChanged: (index) {
+                                        setState(() {
+                                          final currentState =
+                                              _tabExpandedStates[1]![index] ??
+                                                  false;
+                                          _tabExpandedStates[1]![index] =
+                                              !currentState;
+                                        });
+                                      }),
+                                ],
+                              ),
+                            ),
+                            // Página 3: "Por Llegar"
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 20.0, left: 20.0, right: 20.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CustomSearchField(
+                                    controller: _textControllerLlegar,
+                                    focusNode: _searchFocusNodeLlegar,
+                                    onChanged: filtrarListaLlegar,
+                                    onClear: () {
+                                      setState(() {
+                                        filtrarListaLlegar('');
+                                        if (_textControllerLlegar
+                                            .text.isEmpty) {
+                                          _searchFocusNodeLlegar.requestFocus();
+                                        }
+                                      });
+                                    },
+                                  ),
+                                  CustomListViewBuilder(
+                                    whereFrom: 'Llegar',
+                                    listaFiltrada: listaFiltradaLlegar,
+                                    expandedState: _tabExpandedStates[2]!,
                                     onExpandedChanged: (index) {
                                       setState(() {
                                         final currentState =
-                                            _tabExpandedStates[1]![index] ??
+                                            _tabExpandedStates[2]![index] ??
                                                 false;
-                                        _tabExpandedStates[1]![index] =
+                                        _tabExpandedStates[2]![index] =
                                             !currentState;
                                       });
-                                    }),
-                              ],
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          // Página 3: "Por Llegar"
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                top: 20.0, left: 20.0, right: 20.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomSearchField(
-                                  controller: _textControllerLlegar,
-                                  focusNode: _searchFocusNodeLlegar,
-                                  onChanged: filtrarListaLlegar,
-                                  onClear: () {
-                                    setState(() {
-                                      filtrarListaLlegar('');
-                                      if (_textControllerLlegar.text.isEmpty) {
-                                        _searchFocusNodeLlegar.requestFocus();
-                                      }
-                                    });
-                                  },
-                                ),
-                                CustomListViewBuilder(
-                                  whereFrom: 'Llegar',
-                                  listaFiltrada: listaFiltradaLlegar,
-                                  expandedState: _tabExpandedStates[2]!,
-                                  onExpandedChanged: (index) {
-                                    setState(() {
-                                      final currentState =
-                                          _tabExpandedStates[2]![index] ??
-                                              false;
-                                      _tabExpandedStates[2]![index] =
-                                          !currentState;
-                                    });
-                                  },
-                                ),
-                              ],
+                            // Usuario
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10.0),
+                              child: customDrawer(
+                                nameUser: "Taller",
+                                reloadCallback: () {
+                                  setState(() {
+                                    restartPage(context);
+                                  });
+                                  updateIconAppBar()
+                                      .triggerNotification(context, false);
+                                },
+                                mode: (value) {
+                                  setState(() {
+                                    //logger.i(value);
+                                    modo = value;
+                                  });
+                                },
+                              ),
                             ),
-                          ),
-                          // Usuario
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: customDrawer(
-                              nameUser: "Taller",
-                              reloadCallback: () {
-                                setState(() {
-                                  restartPage(context);
-                                });
-                                updateIconAppBar()
-                                    .triggerNotification(context, false);
-                              },
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                : Center(
+                    child: SizedBox(
+                      height: 100,
+                      width: 100,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 7.0,
+                        color: getColorAlmostBlue(),
                       ),
                     ),
-                  ],
-                ),
-              )
-            : Center(
-                child: SizedBox(
-                  height: 100,
-                  width: 100,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 7.0,
-                    color: getColorAlmostBlue(),
                   ),
+            bottomNavigationBar: BottomNavigationBar(
+              backgroundColor: Colors.white,
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.qr_code_scanner),
+                  label: 'Escanear',
                 ),
-              ),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Colors.white,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.qr_code_scanner),
-              label: 'Escanear',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.edit_document),
-              label: 'Historial',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: getColorAlmostBlue(),
-          unselectedItemColor: Colors.grey,
-          onTap: _onItemTapped,
-        ));
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.receipt_long_outlined),
+                  label: 'Historial',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.bluetooth),
+                  label: 'Conectar',
+                ),
+              ],
+              currentIndex: _selectedIndex,
+              selectedItemColor: getColorAlmostBlue(),
+              unselectedItemColor: Colors.grey,
+              onTap: _onItemTapped,
+            ));
+      }),
+    );
   }
 
   @override

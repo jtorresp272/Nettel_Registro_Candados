@@ -40,6 +40,9 @@ class _CustomAboutDialogState extends State<CustomAboutDialog> {
         ),
       ),
       content: TextField(
+        style: const TextStyle(
+          color: Colors.black,
+        ),
         controller: _textController,
         autofocus: true,
         keyboardType: TextInputType.name,

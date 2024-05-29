@@ -1,20 +1,22 @@
 // ignore_for_file: file_names, library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/notification_state.dart';
+import 'package:flutter_application_1/widgets/CustomTheme.dart';
 import 'package:provider/provider.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String titulo;
   final String subtitulo;
+  final int mode;
   final NotificationState? notificationState;
   final VoidCallback? reloadCallback;
 
-  const CustomAppBar({
+  CustomAppBar({
     super.key,
     required this.titulo,
     required this.subtitulo,
+    required this.mode,
     this.notificationState,
     this.reloadCallback,
   });
@@ -30,8 +32,16 @@ class _CustomAppBarState extends State<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
     final notificationState = Provider.of<NotificationState>(context);
+    // Variable para el color dependiendo del tema
+    final customColors = Theme.of(context).extension<CustomColors>()!;
 
     return AppBar(
+      backgroundColor:
+          widget.mode == 0 ? customColors.customOne! : customColors.customTwo!,
+      iconTheme: IconThemeData(
+          color: widget.mode == 0
+              ? customColors.customTwo!
+              : customColors.customOne!),
       actions: [
         if (widget.subtitulo != "Puerto")
           Stack(
@@ -65,32 +75,36 @@ class _CustomAppBarState extends State<CustomAppBar> {
             ],
           ),
         if (widget.subtitulo != "Puerto")
-        IconButton(
-          icon: const Icon(Icons.update_outlined),
-          onPressed: () {
-            setState(() {
-              String page = widget.subtitulo == 'Monitoreo' ? '/monitoreo':'/taller';  
-              // Actualizar la pagina de Taller
-              Navigator.pushNamedAndRemoveUntil(
-                  context, page, (route) => false);
-            });
-          },
-        ),
+          IconButton(
+            icon: const Icon(Icons.sync),
+            onPressed: () {
+              setState(() {
+                String page =
+                    widget.subtitulo == 'Monitoreo' ? '/monitoreo' : '/taller';
+                // Actualizar la pagina de Taller
+                Navigator.pushNamedAndRemoveUntil(
+                    context, page, (route) => false);
+              });
+            },
+          ),
       ],
-      backgroundColor: Colors.white,
-      iconTheme: IconThemeData(color: getColorAlmostBlue()),
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             widget.titulo,
             style: TextStyle(
-                color: getColorAlmostBlue(), fontWeight: FontWeight.bold),
+                color: widget.mode == 0
+                    ? customColors.customTwo!
+                    : customColors.customOne!,
+                fontWeight: FontWeight.bold),
           ),
           Text(
             widget.subtitulo,
             style: TextStyle(
-                color: getColorAlmostBlue(),
+                color: widget.mode == 0
+                    ? customColors.customTwo!
+                    : customColors.customOne!,
                 fontSize: 14.0,
                 fontWeight: FontWeight.bold),
           ),

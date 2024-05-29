@@ -133,7 +133,8 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                       ),
                     ),
                   ),
-                  if (lugares.contains(widget.candado.lugar) && user != 'monitoreo')
+                  if (lugares.contains(widget.candado.lugar) &&
+                      user != 'monitoreo')
                     Container(
                       width: 40.0,
                       height: 40.0,
@@ -146,7 +147,7 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                       child: Center(
                         child: IconButton(
                           color: isDamage ? Colors.white : Colors.black,
-                          icon: const Icon(Icons.error_outline_sharp),
+                          icon: const Icon(Icons.edit_document),
                           onPressed: () {
                             setState(() {
                               isDamage = !isDamage;
@@ -175,6 +176,7 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                   style: const TextStyle(
                     fontSize: 30.0,
                     fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                 ),
               ),
@@ -183,6 +185,7 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                   DateFormat('yyyy-MM-dd').format(widget.candado.fechaIngreso),
                   style: const TextStyle(
                     fontSize: 20.0,
+                    color: Colors.black,
                   ),
                 ),
               ),
@@ -245,16 +248,25 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                   maxLines: null,
                   controller: _descripcionDanadaController,
                   decoration: decorationTextField(
-                      text: 'Descripción de daño', color: Colors.red),
+                    text: 'Descripción de daño',
+                    color: Colors.red,
+                  ),
+                  style: const TextStyle(
+                    color: Colors.black,
+                  ),
                 ),
               if (!isDamage)
                 // Descripción de entrada
                 TextFormField(
                   maxLines: null,
+                  style: const TextStyle(
+                    color: Colors.black,
+                  ),
                   readOnly: !isEditable_1,
                   autofocus: !isEditable_1,
                   controller: _descripcionIngresoController,
-                  decoration: (lugares.contains(widget.candado.lugar) && user != 'monitoreo')
+                  decoration: (lugares.contains(widget.candado.lugar) &&
+                          user != 'monitoreo')
                       ? decorationTextFieldwithAction(
                           text: 'Descripción de ingreso',
                           isEnabled: isEditable_1,
@@ -276,18 +288,22 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
                 if (lugares.contains(widget.candado.lugar))
                   TextFormField(
                     maxLines: null,
+                    style: const TextStyle(
+                      color: Colors.black,
+                    ),
                     readOnly: !isEditable_2,
                     controller: _descripcionSalidaController,
-                    decoration: user != 'monitoreo' 
-                    ? decorationTextFieldwithAction(
-                      text: 'Descripción de salida',
-                      isEnabled: isEditable_2,
-                      onPressed: () {
-                        setState(() {
-                          isEditable_2 = !isEditable_2;
-                        });
-                      },
-                    ): decorationTextField(text: 'Descripción de salida'),
+                    decoration: user != 'monitoreo'
+                        ? decorationTextFieldwithAction(
+                            text: 'Descripción de salida',
+                            isEnabled: isEditable_2,
+                            onPressed: () {
+                              setState(() {
+                                isEditable_2 = !isEditable_2;
+                              });
+                            },
+                          )
+                        : decorationTextField(text: 'Descripción de salida'),
                   ),
             ],
           ),

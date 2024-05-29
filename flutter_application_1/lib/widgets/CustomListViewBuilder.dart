@@ -141,8 +141,8 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                                 index]; // Accede al candado específico en esta posición
                             return GestureDetector(
                               onTap: () {
-                                _showCandadoDialog(
-                                    context, candadoPress, widget.whereFrom,user);
+                                _showCandadoDialog(context, candadoPress,
+                                    widget.whereFrom, user);
                               },
                               child: Container(
                                 width: 120.0,
@@ -175,6 +175,7 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                                       style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16.0,
+                                        color: Colors.black,
                                       ),
                                     ),
                                     Text(
@@ -184,6 +185,7 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                                       ),
                                       style: const TextStyle(
                                         fontSize: 14.0,
+                                        color: Colors.black,
                                       ),
                                     ),
                                   ],
@@ -204,11 +206,13 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
     );
   }
 
-  void _showCandadoDialog(BuildContext context, Candado candado, String where,String? user) {
+  void _showCandadoDialog(
+      BuildContext context, Candado candado, String where, String? user) {
     final user0 = user ?? 'taller';
     showDialog(
       context: context,
-      builder: (context) => CustomCandadoDialog(candado: candado, where: where,user: user0),
+      builder: (context) =>
+          CustomCandadoDialog(candado: candado, where: where, user: user0),
     );
   }
 }

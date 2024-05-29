@@ -8,17 +8,32 @@ import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/servicios/apiForDataBase.dart';
 import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 
 class customDrawer extends StatefulWidget {
   final String nameUser;
   final VoidCallback? reloadCallback;
-  const customDrawer({super.key, required this.nameUser, this.reloadCallback});
+  final Function(int)? mode;
+  const customDrawer({
+    super.key,
+    required this.nameUser,
+    this.reloadCallback,
+    this.mode,
+  });
 
   @override
   State<customDrawer> createState() => _customDrawerState();
 }
 
+int mode = 0;
+
 class _customDrawerState extends State<customDrawer> {
+  void _handleContainerPressed(int modo) {
+    if (widget.mode != null) {
+      widget.mode!(modo);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     List<String> users = ['taller', 'monitoreo', 'puerto'];
@@ -158,15 +173,16 @@ class _customDrawerState extends State<customDrawer> {
               height: 10.0,
             ),
             if (widget.nameUser != 'Puerto')
+              //Enviar correo
               ListTile(
-                leading: const Icon(
+                leading: Icon(
                   Icons.email,
-                  color: Color.fromARGB(255, 68, 91, 164),
+                  color: getColorAlmostBlue(),
                 ),
-                title: const Text(
+                title: Text(
                   'Enviar correo',
                   style: TextStyle(
-                    color: Color.fromARGB(255, 68, 91, 164),
+                    color: getColorAlmostBlue(),
                   ),
                 ),
                 onTap: () {
@@ -180,15 +196,16 @@ class _customDrawerState extends State<customDrawer> {
                   });
                 },
               ),
+            //Cerrar sesión
             ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.exit_to_app,
-                color: Color.fromARGB(255, 68, 91, 164),
+                color: getColorAlmostBlue(),
               ),
-              title: const Text(
+              title: Text(
                 'Cerrar sesión',
                 style: TextStyle(
-                  color: Color.fromARGB(255, 68, 91, 164),
+                  color: getColorAlmostBlue(),
                 ),
               ),
               onTap: () async {
@@ -217,6 +234,35 @@ class _customDrawerState extends State<customDrawer> {
                 }
               },
             ),
+            // Modo
+            ListTile(
+              leading: Icon(
+                Icons.dark_mode,
+                color: getColorAlmostBlue(),
+              ),
+              title: Text(
+                'Tema Oscuro',
+                style: TextStyle(
+                  color: getColorAlmostBlue(),
+                ),
+              ),
+              trailing: ToggleSwitch(
+                  initialLabelIndex: mode,
+                  totalSwitches: 2,
+                  fontSize: 12.0,
+                  minHeight: 18.0,
+                  minWidth: 40.0,
+                  activeBgColor: [getColorAlmostBlue()],
+                  inactiveBgColor: Colors.grey.shade400,
+                  labels: const ['On', 'Off'],
+                  onToggle: (index) {
+                    setState(() {
+                      _handleContainerPressed(index!);
+                      mode = index;
+                    });
+                  }),
+            ),
+            // Salir de la aplicacion
             ListTile(
               leading: const Icon(
                 Icons.outbound,

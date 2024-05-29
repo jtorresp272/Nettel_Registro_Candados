@@ -28,7 +28,8 @@ class _PuertoState extends State<Puerto> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
+      appBar: CustomAppBar(
+        mode: 0,
         titulo: 'Consorcio Nettel',
         subtitulo: 'Puerto',
       ),
@@ -118,7 +119,8 @@ class _PuertoState extends State<Puerto> {
                 onTap: () {
                   showDialog(
                     context: context,
-                    builder: (context) => const CustomAboutDialog(title: 'Ingrese número'),
+                    builder: (context) =>
+                        const CustomAboutDialog(title: 'Ingrese número'),
                   );
                 },
                 child: Text(

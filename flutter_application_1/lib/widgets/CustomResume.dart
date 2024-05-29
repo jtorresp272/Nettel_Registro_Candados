@@ -10,17 +10,24 @@ Map<String, int> datosTaller = {};
 class CustomResumen extends StatelessWidget {
   final List<Candado> listaTaller;
   final List<Candado> listaLlegar;
+  final Function(String)? gotoBar;
 
   const CustomResumen({
     required this.listaTaller,
     required this.listaLlegar,
+    this.gotoBar,
     super.key,
   });
+
+  void _handleContainerPressed(String razon) {
+    if (gotoBar != null) {
+      gotoBar!(razon);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     datosTaller = contarDatosTaller(listaTaller);
-    //logger.i("Cantidad por llegar: $listaLlegar");
     // Lógica para obtener los datos de llegada si es necesario
     widthScreen = MediaQuery.of(context).size.width;
     // Aquí puedes usar los datos obtenidos para construir la interfaz de usuario
@@ -32,25 +39,40 @@ class CustomResumen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _CustomContainer(
-                razon: 'Candados Operativos',
-                dato: datosTaller['Candados Operativos']),
+              razon: 'Candados Operativos',
+              dato: datosTaller['Candados Operativos'],
+              onPressed: _handleContainerPressed,
+            ),
             _CustomContainer(
-                razon: 'Mecanicas Listas',
-                dato: datosTaller['Mecanicas Listas']),
+              razon: 'Mecanicas Listas',
+              dato: datosTaller['Mecanicas Listas'],
+              onPressed: _handleContainerPressed,
+            ),
             _CustomContainer(
-                razon: 'Candados Ingresados',
-                dato: datosTaller['Candados Ingresados']),
+              razon: 'Candados Ingresados',
+              dato: datosTaller['Candados Ingresados'],
+              onPressed: _handleContainerPressed,
+            ),
             _CustomContainer(
-                razon: 'Mecanicas Dañadas',
-                dato: datosTaller['Mecanicas Dañadas']),
+              razon: 'Mecanicas Dañadas',
+              dato: datosTaller['Mecanicas Dañadas'],
+              onPressed: _handleContainerPressed,
+            ),
             _CustomContainer(
-                razon: 'Electronicas Dañadas',
-                dato: datosTaller['Electronicas Dañadas']),
+              razon: 'Electronicas Dañadas',
+              dato: datosTaller['Electronicas Dañadas'],
+              onPressed: _handleContainerPressed,
+            ),
             _CustomContainer(
-                razon: 'Total electronicas en taller',
-                dato: datosTaller['Total electronicas en taller']),
+              razon: 'Total electronicas en taller',
+              dato: datosTaller['Total electronicas en taller'],
+              onPressed: _handleContainerPressed,
+            ),
             _CustomContainer(
-                razon: 'Total candados por llegar', dato: listaLlegar.length),
+              razon: 'Total candados por llegar',
+              dato: listaLlegar.length,
+              onPressed: _handleContainerPressed,
+            ),
           ],
         ),
       ),
@@ -59,7 +81,11 @@ class CustomResumen extends StatelessWidget {
 }
 
 // ignore: non_constant_identifier_names
-Widget _CustomContainer({String? razon, int? dato}) {
+Widget _CustomContainer({
+  String? razon,
+  int? dato,
+  required Function(String)? onPressed,
+}) {
   Color fillContainer;
   switch (razon) {
     case 'Candados Operativos':
@@ -88,49 +114,52 @@ Widget _CustomContainer({String? razon, int? dato}) {
       break;
   }
 
-  return Container(
-    decoration: BoxDecoration(
-        border: Border.all(
-          color: getColorAlmostBlue(),
-        ),
-        borderRadius: BorderRadius.circular(10.0)),
-    margin: const EdgeInsets.all(5.0),
-    padding: const EdgeInsets.all(10.0),
-    alignment: Alignment.center,
-    child: Row(
-      children: [
-        Container(
-          alignment: Alignment.center,
-          width: 75, // Ajusta el ancho según tus necesidades
-          height: 75, // Ajusta la altura según tus necesidades
-          decoration: BoxDecoration(
-            color: fillContainer, // Cambia el color según tus necesidades
-            borderRadius: BorderRadius.circular(
-                10.0), // Mitad del ancho o altura para bordes redondeados completos
+  return GestureDetector(
+    onTap: () => onPressed!(dato == 0 ? '' : razon!),
+    child: Container(
+      decoration: BoxDecoration(
+          border: Border.all(
+            color: getColorAlmostBlue(),
           ),
-          child: Text(
-            '${(dato != null) ? dato : 0}',
-            style: const TextStyle(
-              fontSize: 30.0, // Tamaño de fuente del texto
-              fontWeight: FontWeight.bold, // Peso de fuente en negrita
-              color: Colors.white, // Color del texto
+          borderRadius: BorderRadius.circular(10.0)),
+      margin: const EdgeInsets.all(5.0),
+      padding: const EdgeInsets.all(10.0),
+      alignment: Alignment.center,
+      child: Row(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            width: 75, // Ajusta el ancho según tus necesidades
+            height: 75, // Ajusta la altura según tus necesidades
+            decoration: BoxDecoration(
+              color: fillContainer, // Cambia el color según tus necesidades
+              borderRadius: BorderRadius.circular(
+                  10.0), // Mitad del ancho o altura para bordes redondeados completos
+            ),
+            child: Text(
+              '${(dato != null) ? dato : 0}',
+              style: const TextStyle(
+                fontSize: 30.0, // Tamaño de fuente del texto
+                fontWeight: FontWeight.bold, // Peso de fuente en negrita
+                color: Colors.white, // Color del texto
+              ),
             ),
           ),
-        ),
-        const SizedBox(width: 16.0), // Espacio entre los dos contenedores
-        // Contenedor derecho con el texto alineado a la derecha
-        Expanded(
-            child: Container(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  '$razon',
-                  style: TextStyle(
-                    fontSize: 15.0, // Tamaño de fuente del texto
-                    fontWeight: FontWeight.bold, // Peso de fuente en negrita
-                    color: getColorAlmostBlue(), // Color del texto
-                  ),
-                ))),
-      ],
+          const SizedBox(width: 16.0), // Espacio entre los dos contenedores
+          // Contenedor derecho con el texto alineado a la derecha
+          Expanded(
+              child: Container(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    '$razon',
+                    style: TextStyle(
+                      fontSize: 15.0, // Tamaño de fuente del texto
+                      fontWeight: FontWeight.bold, // Peso de fuente en negrita
+                      color: getColorAlmostBlue(), // Color del texto
+                    ),
+                  ))),
+        ],
+      ),
     ),
   );
 }

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/notification_state.dart';
+import 'package:flutter_application_1/Screen/bleConexion.dart';
 import 'package:flutter_application_1/Screen/historial.dart';
 import 'package:flutter_application_1/Screen/monitoreo.dart';
 import 'package:flutter_application_1/Screen/taller.dart';
 import 'package:flutter_application_1/Screen/puerto.dart';
 import 'package:flutter_application_1/Screen/login.dart';
 import 'package:flutter_application_1/Screen/splash.dart';
+import 'package:flutter_application_1/widgets/CustomTheme.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -21,13 +24,18 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => NotificationState(),
       child: MaterialApp(
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.system,
         debugShowCheckedModeBanner: false,
+        //supportedLocales: const [Locale('en','es')],
         initialRoute: '/splash',
         routes: {
           '/monitoreo': (context) => const Monitoreo(),
           '/taller': (context) => const Taller(),
           '/puerto': (context) => const Puerto(),
           '/historial': (context) => const Historial(),
+          '/bleConexion': (context) => const bleConexion(),
           '/login': (context) => const LogIn(),
           '/splash': (context) => const Splash(),
         },

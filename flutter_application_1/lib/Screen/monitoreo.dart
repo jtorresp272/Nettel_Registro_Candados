@@ -212,6 +212,7 @@ class _MonitoreoState extends State<Monitoreo>
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
+        mode: 0,
         titulo: 'Consorcio Nettel',
         subtitulo: 'Monitoreo',
         reloadCallback: () {
