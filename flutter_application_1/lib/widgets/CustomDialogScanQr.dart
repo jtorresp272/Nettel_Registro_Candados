@@ -9,7 +9,7 @@ class DialogScanQr extends StatelessWidget {
   final String scannedNumber;
   final String? who;
 
-  const DialogScanQr({super.key, required this.scannedNumber,this.who});
+  const DialogScanQr({super.key, required this.scannedNumber, this.who});
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +50,7 @@ class DialogScanQr extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
                   ),
                 ],
@@ -74,7 +75,10 @@ class DialogScanQr extends StatelessWidget {
           final Candado? scannedCandado = snapshot.data;
           if (scannedCandado != null) {
             return CustomScanResume(
-                candado: scannedCandado, estado: EstadoCandados.porIngresar,whereGo: who ?? 'taller',);
+              candado: scannedCandado,
+              estado: EstadoCandados.porIngresar,
+              whereGo: who ?? 'taller',
+            );
           } else {
             return AlertDialog(
               title: const Text('Candado no encontrado'),

@@ -29,6 +29,9 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      style: const TextStyle(
+        color: Colors.black,
+      ),
       keyboardType: widget.obscureText
           ? TextInputType.visiblePassword
           : TextInputType.emailAddress,
@@ -50,7 +53,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
         fillColor: Colors.white54,
         hintText: widget.hintText,
         hintStyle: const TextStyle(
-          color: Colors.black12,
+          color: Colors.black38,
         ),
         labelText: widget.text,
         labelStyle: TextStyle(

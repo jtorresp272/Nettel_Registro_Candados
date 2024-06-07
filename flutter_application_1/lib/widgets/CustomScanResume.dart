@@ -766,10 +766,9 @@ class _CustomScanResumeState extends State<CustomScanResume>
                                       waiting = false;
                                     });
                                   } else {
-                                    customSnackBar(
-                                        context,
-                                        'Seleccione un responsable',
-                                        Colors.red);
+                                    customSnackBar(context,
+                                        mensaje: 'Seleccione un responsable',
+                                        colorFondo: Colors.red);
                                   }
                                 } else {
                                   if (buttonOnPressedPuerto.contains(true)) {
@@ -782,7 +781,8 @@ class _CustomScanResumeState extends State<CustomScanResume>
                                     });
                                   } else {
                                     customSnackBar(context,
-                                        'Seleccione un puerto', Colors.red);
+                                        mensaje: 'Seleccione un puerto',
+                                        colorFondo: Colors.red);
                                   }
                                 }
                               },
@@ -830,7 +830,9 @@ class _CustomScanResumeState extends State<CustomScanResume>
     if (isDamage) {
       // Ningun check seleccionado
       if (!isElectDamage && !isMecDamage) {
-        customSnackBar(context, 'No se selecciono el tipo de daño', Colors.red);
+        customSnackBar(context,
+            mensaje: 'No se selecciono el tipo de daño',
+            colorFondo: Colors.red);
         return;
       }
       // Mecanica Dañada
@@ -988,7 +990,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
     }
     // mensaje para retroalimentar al usuario que la operacion fue exitosa o no
     // ignore: use_build_context_synchronously
-    customSnackBar(context, snackMessage, snackColor);
+    customSnackBar(context, mensaje: snackMessage, colorFondo: snackColor);
     if (snackColor == Colors.red) return;
     String page = '/${widget.whereGo ?? 'taller'}';
     // Actualizar la pagina

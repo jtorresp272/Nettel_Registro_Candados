@@ -103,6 +103,7 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                       horizontal: 10.0, vertical: 8.0),
                   decoration: BoxDecoration(
                     color: getColorAlmostBlue(),
+                    borderRadius: BorderRadius.circular(5.0),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,

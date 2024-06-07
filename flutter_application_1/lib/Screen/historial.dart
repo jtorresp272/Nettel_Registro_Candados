@@ -101,6 +101,7 @@ class _Historial extends State<Historial> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: getColorAlmostBlue(),
         title: const Text(
@@ -154,6 +155,7 @@ class _Historial extends State<Historial> {
                   columnSpacing: 20.0,
                   headingTextStyle: const TextStyle(
                     fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                   columns: const [
                     DataColumn(
@@ -218,11 +220,17 @@ class _Historial extends State<Historial> {
               Text(
                 ingresoValues.length > 2 ? ingresoValues[2] : '',
                 textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.black,
+                ),
               ),
             ), // Fecha
             DataCell(Text(
               ingresoValues.length > 3 ? ingresoValues[3] : '-',
               textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.black,
+              ),
             )), // Estado
             DataCell(
               ElevatedButton(
@@ -268,11 +276,19 @@ class _Historial extends State<Historial> {
               DataCell(Text(
                 salidaValues.length > 2 ? salidaValues[2] : '',
                 textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.black,
+                ),
               )), // Fecha
-              DataCell(Text(
-                salidaValues.length > 3 ? salidaValues[3] : '',
-                textAlign: TextAlign.center,
-              )), // Estado
+              DataCell(
+                Text(
+                  salidaValues.length > 3 ? salidaValues[3] : '',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.black,
+                  ),
+                ),
+              ), // Estado
               DataCell(
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(

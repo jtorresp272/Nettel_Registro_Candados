@@ -1,12 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/database/data_model.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:flutter_application_1/Funciones/servicios/apiForDataBase.dart';
-import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
 import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
+import 'package:flutter_application_1/api/emailHandler.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
 import 'package:flutter_application_1/widgets/CustomListViewBuilder.dart';
 import 'package:flutter_application_1/widgets/CustomMenu.dart';
@@ -15,7 +14,6 @@ import 'package:flutter_application_1/widgets/CustomResume.dart';
 import 'package:flutter_application_1/widgets/CustomScanResume.dart';
 import 'package:flutter_application_1/widgets/CustomSearch.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
 
 enum MenuNavigator {
   // ignore: constant_identifier_names
@@ -23,18 +21,6 @@ enum MenuNavigator {
   // ignore: constant_identifier_names
   HISTORIAL,
 }
-
-// Variables para el correo
-String _description = '';
-List<String> datosEnviar = [];
-List<String> correosEnviar = [
-  'jtorresp272@gmail.com',
-  'electronica@nettelcorp.com',
-  'joperaciones@nettelcorp.com',
-  'pedidos@nettelcorp.com',
-  'rastreo@nettelcorp.com',
-  'joseparraga1@outlook.es'
-];
 
 class Monitoreo extends StatefulWidget {
   const Monitoreo({super.key});
@@ -105,12 +91,15 @@ class _MonitoreoState extends State<Monitoreo>
                 ),
               );
             } else {
-              customSnackBar(context, 'El candado no esta listo', Colors.red);
+              customSnackBar(context,
+                  mensaje: 'El candado no esta listo', colorFondo: Colors.red);
             }
           } else
           // Candado no encontrado en la lista local
           {
-            customSnackBar(context, 'El candado no esta en taller', Colors.red);
+            customSnackBar(context,
+                mensaje: 'El candado no esta en taller',
+                colorFondo: Colors.red);
           }
         }
       });
@@ -217,9 +206,11 @@ class _MonitoreoState extends State<Monitoreo>
         subtitulo: 'Monitoreo',
         reloadCallback: () {
           setState(() {
-            restartPage(context);
+            watchDataBeforeSend(
+              context,
+              whoIs: 'Monitoreo',
+            );
           });
-          updateIconAppBar().triggerNotification(context, false);
         },
       ),
       resizeToAvoidBottomInset: false,
@@ -232,6 +223,7 @@ class _MonitoreoState extends State<Monitoreo>
                   Container(
                     color: Colors.white,
                     child: TabBar(
+                      dividerColor: getColorAlmostBlue(),
                       controller: _tabController,
                       labelColor: getColorAlmostBlue(),
                       unselectedLabelColor: Colors
@@ -347,10 +339,11 @@ class _MonitoreoState extends State<Monitoreo>
                             nameUser: "Monitoreo",
                             reloadCallback: () {
                               setState(() {
-                                restartPage(context);
+                                watchDataBeforeSend(
+                                  context,
+                                  whoIs: 'Monitoreo',
+                                );
                               });
-                              updateIconAppBar()
-                                  .triggerNotification(context, false);
                             },
                           ),
                         ),
@@ -400,6 +393,7 @@ class _MonitoreoState extends State<Monitoreo>
 }
 
 /* funcion para resetear la pagina Taller */
+/*
 void restartPage(BuildContext context) async {
   // Inicia chequeo en la base de datos
   _description = await getDataCandados('candados');
@@ -424,11 +418,13 @@ void restartPage(BuildContext context) async {
       await deleteData(id: 2, title: 'candados');
       datosEnviar.clear();
       _description = '';
-      customSnackBar(context, 'Correo enviado existosamente', Colors.green);
+      customSnackBar(context, mensaje: 'Correo enviado existosamente');
     } catch (error) {
       // Ocurrió un error al enviar el correo
-      customSnackBar(
-          context, 'Error al abrir la aplicacion de correos', Colors.red);
+      customSnackBar(context,
+          mensaje: 'Error al abrir la aplicacion de correos',
+          colorFondo: Colors.red);
     }
   }
 }
+*/

@@ -22,6 +22,7 @@ class CustomSearchField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: TextField(
+        style: const TextStyle(color: Colors.black),
         focusNode: focusNode,
         controller: controller,
         onChanged: onChanged,

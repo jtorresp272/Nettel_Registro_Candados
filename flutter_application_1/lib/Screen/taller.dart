@@ -5,7 +5,7 @@ import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:flutter_application_1/Funciones/servicios/apiForDataBase.dart';
 import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
-import 'package:flutter_application_1/Screen/bleConexion.dart';
+import 'package:flutter_application_1/api/emailHandler.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
 import 'package:flutter_application_1/widgets/CustomDialogScanQr.dart';
 import 'package:flutter_application_1/widgets/CustomMenu.dart';
@@ -15,9 +15,7 @@ import 'package:flutter_application_1/widgets/CustomResume.dart';
 import 'package:flutter_application_1/widgets/CustomScanResume.dart';
 import 'package:flutter_application_1/widgets/CustomSearch.dart';
 import 'package:flutter_application_1/widgets/CustomAboutDialog.dart';
-import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:flutter_application_1/widgets/CustomTheme.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
 
 enum MenuNavigator {
   // ignore: constant_identifier_names
@@ -27,14 +25,6 @@ enum MenuNavigator {
   // ignore: constant_identifier_names
   BLUETOOTH,
 }
-
-String _description = '';
-List<String> datosEnviar = [];
-List<String> correosEnviar = [
-  'jtorresp272@gmail.com',
-  'electronica@nettelcorp.com',
-  'pedidos@nettelcorp.com',
-];
 
 class Taller extends StatefulWidget {
   const Taller({super.key});
@@ -293,9 +283,11 @@ class _TallerState extends State<Taller> {
               subtitulo: 'Taller',
               reloadCallback: () {
                 setState(() {
-                  restartPage(context);
+                  watchDataBeforeSend(
+                    context,
+                    whoIs: 'Taller',
+                  );
                 });
-                updateIconAppBar().triggerNotification(context, false);
               },
             ),
             resizeToAvoidBottomInset: false,
@@ -458,7 +450,10 @@ class _TallerState extends State<Taller> {
                                 nameUser: "Taller",
                                 reloadCallback: () {
                                   setState(() {
-                                    restartPage(context);
+                                    watchDataBeforeSend(
+                                      context,
+                                      whoIs: 'Taller',
+                                    );
                                   });
                                   updateIconAppBar()
                                       .triggerNotification(context, false);
@@ -520,84 +515,3 @@ class _TallerState extends State<Taller> {
     super.dispose();
   }
 }
-
-/* funcion para resetear la pagina Taller */
-void restartPage(BuildContext context) async {
-  // Inicia chequeo en la base de datos
-  _description = await getDataCandados('candados');
-  if (_description.isNotEmpty) {
-    datosEnviar = _description.split(',');
-  }
-  if (datosEnviar.isNotEmpty) {
-    // Formatear los datos como texto plano
-    String datosFormateados = '';
-    for (int i = 0; i < datosEnviar.length; i++) {
-      datosFormateados += '${datosEnviar[i]}\n';
-    }
-    // Estructura para enviar el correo
-    final Email email = Email(
-      body: datosFormateados,
-      subject: 'Listado de candados para ingresar a taller',
-      recipients: correosEnviar,
-      isHTML: false,
-    );
-    try {
-      await FlutterEmailSender.send(email);
-      await deleteData(id: 2, title: 'candados');
-      datosEnviar.clear();
-      _description = '';
-
-      customSnackBar(context, 'Correo enviado existosamente', Colors.green);
-    } catch (error) {
-      // Ocurrió un error al enviar el correo
-      customSnackBar(
-          context, 'Error al abrir la aplicacion de correos', Colors.red);
-    }
-  }
-}
-
-/* Obtiene informacion de la base de datos */
-/*
-Future<void> _getDataCandados() async {
-  final List<Note>? notes = await DatabaseHelper.getAllNote(2);
-  if (notes != null && notes.isNotEmpty) {
-    try {
-      final Note note = notes.firstWhere((note) => note.title == 'candados');
-      _description = note.description;
-      _description = _description.substring(1, _description.length - 1);
-      datosEnviar = _description.split(',');
-    } on StateError catch (_) {
-      _description =
-          ''; // Si notes es nulo o está vacío, establece la descripción como '0'
-    }
-  } else {
-    _description =
-        ''; // Si notes es nulo o está vacío, establece la descripción como '0'
-  }
-}
-*/
-/* Funcion para borrar los datos guardados en memoria */
-/*
-Future<void> _deleteData() async {
-  datosEnviar.clear();
-  _description = '';
-  Note modelDelete = const Note(
-    id: 2,
-    title: 'candados',
-    description: '',
-  );
-  await DatabaseHelper.deleteNote(modelDelete, modelDelete.id);
-}
-*/
-/* Check si existe informacion por enviar en correo  */
-/*
-Future<void> _hasEmail(context) async {
-  final List<Note>? notes = await DatabaseHelper.getAllNote(2);
-  if (notes != null && notes.isNotEmpty) {
-    try {
-      notes.firstWhere((note) => note.title == 'candados');
-      updateIconAppBar().triggerNotification(context, true);
-    } catch (_) {}
-  } else {}
-}
-*/

@@ -125,6 +125,9 @@ class _customDrawerState extends State<customDrawer> {
                             builder: (BuildContext context) {
                               return Container(
                                 padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20.0)),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -219,10 +222,10 @@ class _customDrawerState extends State<customDrawer> {
                       "/login",
                     );
                   } else {
-                    customSnackBar(
-                        context,
-                        'No puede cerrar sesion si tiene un correo por enviar',
-                        Colors.red);
+                    customSnackBar(context,
+                        mensaje:
+                            'No puede cerrar sesion si tiene un correo por enviar',
+                        colorFondo: Colors.red);
                   }
                 } else {
                   // Eliminar los datos guardados en memoria del login

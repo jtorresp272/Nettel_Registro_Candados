@@ -23,7 +23,7 @@ class CustomAboutDialog extends StatefulWidget {
 }
 
 class _CustomAboutDialogState extends State<CustomAboutDialog> {
-  TextEditingController _textController = TextEditingController();
+  final TextEditingController _textController = TextEditingController();
   bool wait = false;
 
   @override
@@ -32,12 +32,22 @@ class _CustomAboutDialogState extends State<CustomAboutDialog> {
       alignment: Alignment.center,
       surfaceTintColor: Colors.white,
       backgroundColor: Colors.white,
-      title: Text(
-        widget.title,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          color: getColorAlmostBlue(),
-        ),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            widget.title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: getColorAlmostBlue(),
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(
+            height: 10.0,
+          ),
+        ],
       ),
       content: TextField(
         style: const TextStyle(
@@ -58,6 +68,9 @@ class _CustomAboutDialogState extends State<CustomAboutDialog> {
               style: TextStyle(color: getColorAlmostBlue()),
             ),
           ),
+        const SizedBox(
+          width: 20.0,
+        ),
         if (!wait)
           ElevatedButton(
             style: ButtonStyle(
@@ -91,10 +104,10 @@ class _CustomAboutDialogState extends State<CustomAboutDialog> {
                   if (isData) {
                     Navigator.of(context).pushNamed('/historial');
                   } else {
-                    customSnackBar(
-                        context,
-                        'No se pudo encontrar el número o el número no tiene datos en el historial',
-                        Colors.red);
+                    customSnackBar(context,
+                        mensaje:
+                            'No se pudo encontrar el número o el número no tiene datos en el historial',
+                        colorFondo: Colors.red);
                   }
                 }
               }

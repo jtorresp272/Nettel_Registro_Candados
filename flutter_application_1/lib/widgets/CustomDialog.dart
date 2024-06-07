@@ -363,7 +363,11 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
     if (isDamage) {
       // Ningun check seleccionado
       if (!isElectDamage && !isMecDamage) {
-        customSnackBar(context, 'No se selecciono el tipo de daño', Colors.red);
+        customSnackBar(
+          context,
+          mensaje: 'No se selecciono el tipo de daño',
+          colorFondo: Colors.red,
+        );
         return;
       }
       // Mecanica Dañada
@@ -433,7 +437,7 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
       snackColor = Colors.red;
     }
     // mensaje para retroalimentar al usuario que la operacion fue exitosa o no
-    customSnackBar(context, snackMessage, snackColor);
+    customSnackBar(context, mensaje: snackMessage, colorFondo: snackColor);
     if (snackColor == Colors.red) return;
     // Actualizar la pagina de Taller
     Navigator.pushNamedAndRemoveUntil(context, '/taller', (route) => false);

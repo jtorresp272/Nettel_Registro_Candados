@@ -43,11 +43,15 @@ dependencies:
   sqflite: ^2.0.2
   path: ^1.8.2
   provider: ^5.0.0
-  flutter_email_sender: ^5.1.0
+  # send emails
+  mailer: ^6.1.0
+  # google sign in
+  google_sign_in: ^5.0.4
   toggle_switch: ^2.3.0
   permission_handler: ^10.4.1
   flutter_reactive_ble: ^5.3.1
   sprintf: ^6.0.0
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -86,7 +90,8 @@ flutter:
     - assets/images/candado_cable.png
     - assets/images/cc_plastico.png
     - assets/images/CC_5.png
-
+    - assets/images/bluetooth_desactivado.png
+    - assets/images/ubicacion_desactivada.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

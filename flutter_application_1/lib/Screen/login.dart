@@ -86,12 +86,14 @@ class _LogInState extends State<LogIn> {
                       onPressed: () async {
                         //setState((){
                         if (user.isEmpty) {
-                          customSnackBar(context, 'Campo de usuario vacio',
-                              Colors.deepOrange);
+                          customSnackBar(context,
+                              mensaje: 'Campo de usuario vacio',
+                              colorFondo: Colors.deepOrange);
                           return;
                         } else if (pass.isEmpty) {
-                          customSnackBar(context, 'Campo de contraseña vacio',
-                              Colors.deepOrange);
+                          customSnackBar(context,
+                              mensaje: 'Campo de contraseña vacio',
+                              colorFondo: Colors.deepOrange);
                           return;
                         }
 
@@ -108,8 +110,9 @@ class _LogInState extends State<LogIn> {
 
                         if (!isValidCredentials) {
                           // ignore: use_build_context_synchronously
-                          customSnackBar(context, 'Verificar credenciales',
-                              Colors.redAccent);
+                          customSnackBar(context,
+                              mensaje: 'Verificar credenciales',
+                              colorFondo: Colors.redAccent);
                           return;
                         } else {
                           if (user == 'taller@nettelcorp.com') {

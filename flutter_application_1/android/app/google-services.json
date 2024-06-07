@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "54991705005",
+    "project_id": "registrocandadoemail",
+    "storage_bucket": "registrocandadoemail.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:54991705005:android:78e531c109b9ccd0f18724",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "54991705005-15kmtjmrmh75m2ushq5kdijknsfodctu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBW_g-liiXsypuP4Mt4Gwvgf45NZK-j42s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "54991705005-15kmtjmrmh75m2ushq5kdijknsfodctu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

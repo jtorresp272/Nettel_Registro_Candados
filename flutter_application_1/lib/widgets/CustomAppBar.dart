@@ -76,7 +76,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
           ),
         if (widget.subtitulo != "Puerto")
           IconButton(
-            icon: const Icon(Icons.sync),
+            icon: const Icon(Icons.refresh),
             onPressed: () {
               setState(() {
                 String page =
