@@ -99,6 +99,7 @@ class BleProvider with ChangeNotifier {
       onError: (error) {
         logger.e('ErrorWhile connecting: $error');
         isConnected = false;
+        notifyListeners();
       },
     );
 
@@ -106,9 +107,10 @@ class BleProvider with ChangeNotifier {
     return isConnected;
   }
 
-  void disconnectFromDevice() {
-    connectionSubscription?.cancel();
+  Future<void> disconnectFromDevice() async {
+    await connectionSubscription?.cancel();
     connectedDevice = null;
+    isConnected = false;
     notifyListeners();
   }
 
@@ -136,8 +138,8 @@ class BleProvider with ChangeNotifier {
 /* Retorna el nombre del servicio */
   String getServiceName(Uuid service) {
     Map<Uuid, String> name = {
-      Uuid.parse("6e400001-b5a3-f393-e0a9-e50e24dcca9e"): "Nordic Service",
       Uuid.parse("4a4f0001-4156-4920-9a23-4e657454454c"): "Nettel service",
+      Uuid.parse("6e400001-b5a3-f393-e0a9-e50e24dcca9e"): "Nordic Service",
       Uuid.parse("00001800-0000-1000-8000-00805f9b34fb"): "Generic Access",
       Uuid.parse("00001801-0000-1000-8000-00805f9b34fb"): "Generic Attribute",
       Uuid.parse("0000fe59-0000-1000-8000-00805f9b34fb"): "DFU service",
@@ -148,23 +150,29 @@ class BleProvider with ChangeNotifier {
 
   Uuid getCharacteristic(String name) {
     Map<String, Uuid> uuid = {
-      "nettelRead": Uuid.parse('4a4f0002-4156-4920-9a23-4e657454454c'),
-      "nettelWrite": Uuid.parse('4a4f0003-4156-4920-9a23-4e657454454c'),
-      "nordicRead": Uuid.parse('6a400003-b5a3-f393-e0a9-e50e24dcca9e'),
-      "nordicWrite": Uuid.parse('6a400002-b5a3-f393-e0a9-e50e24dcca9e'),
+      "nettelRead": Uuid.parse("4a4f0002-4156-4920-9a23-4e657454454c"),
+      "nettelWrite": Uuid.parse("4a4f0003-4156-4920-9a23-4e657454454c"),
+      "nordicRead": Uuid.parse("6e400002-b5a3-f393-e0a9-e50e24dcca9e"),
+      "nordicWrite": Uuid.parse("6e400003-b5a3-f393-e0a9-e50e24dcca9e"),
     };
 
     return uuid[name] ?? Uuid.parse('');
   }
 
-  Future<List<int>> readNettelCharacteristic(BleDevice device) async {
-    return await flutterReactiveBle.readCharacteristic(
-      QualifiedCharacteristic(
-        characteristicId: getCharacteristic("nettelWrite"),
-        serviceId: Uuid.parse("4a4f0001-4156-4920-9a23-4e657454454c"),
-        deviceId: device.id,
-      ),
+  Stream<List<int>> subscribeToNettelCharacteristic(
+    BleDevice device,
+  ) {
+    final characteristic = QualifiedCharacteristic(
+      characteristicId: getCharacteristic("nettelWrite"),
+      serviceId: Uuid.parse("4a4f0001-4156-4920-9a23-4e657454454c"),
+      deviceId: device.id,
     );
+    try {
+      return flutterReactiveBle.subscribeToCharacteristic(characteristic);
+    } catch (e) {
+      logger.e('Error reading characteristic $e');
+      return const Stream.empty();
+    }
   }
 
   Future<void> writeNettelCharacteristic(
@@ -176,6 +184,51 @@ class BleProvider with ChangeNotifier {
           deviceId: device.id),
       value: value,
     );
+  }
+
+  Stream<List<int>> subscribeToNordicCharacteristic(
+    BleDevice device,
+  ) {
+    final characteristic = QualifiedCharacteristic(
+      characteristicId: getCharacteristic("nordicWrite"),
+      serviceId: Uuid.parse("6e400001-b5a3-f393-e0a9-e50e24dcca9e"),
+      deviceId: device.id,
+    );
+    try {
+      return flutterReactiveBle.subscribeToCharacteristic(characteristic);
+    } catch (e) {
+      logger.e('Error reading characteristic $e');
+      return const Stream.empty();
+    }
+  }
+
+  Future<int> requestMTU(BleDevice device) async {
+    try {
+      int mtu =
+          await flutterReactiveBle.requestMtu(deviceId: device.id, mtu: 498);
+      logger.i('Cantidad de mtu: $mtu');
+      return mtu;
+    } catch (e) {
+      logger.e('Error pidiendo mas MTU $e');
+      return 0;
+    }
+  }
+
+  Future<void> writeNordicCharacteristic(
+    BleDevice device,
+    List<int> value,
+  ) async {
+    try {
+      await flutterReactiveBle.writeCharacteristicWithoutResponse(
+        QualifiedCharacteristic(
+            characteristicId: getCharacteristic("nordicRead"),
+            serviceId: Uuid.parse("6e400001-b5a3-f393-e0a9-e50e24dcca9e"),
+            deviceId: device.id),
+        value: value,
+      );
+    } catch (e) {
+      logger.e('Error writing characterisitic $e');
+    }
   }
 
   @override
