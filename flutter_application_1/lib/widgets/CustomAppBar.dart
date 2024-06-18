@@ -36,6 +36,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
     final customColors = Theme.of(context).extension<CustomColors>()!;
 
     return AppBar(
+      automaticallyImplyLeading: false,
       backgroundColor:
           widget.mode == 0 ? customColors.customOne! : customColors.customTwo!,
       iconTheme: IconThemeData(

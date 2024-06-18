@@ -25,9 +25,10 @@ class _bleConexionState extends State<bleConexion> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvoked: (_) {
+    return WillPopScope(
+      onWillPop: () async {
         Navigator.popAndPushNamed(context, '/taller');
+        return false;
       },
       child: Scaffold(
           backgroundColor: Colors.white,
@@ -54,9 +55,7 @@ class _bleConexionState extends State<bleConexion> {
                 ),
               ],
             ),
-            //leadingWidth: 40.0,
-            automaticallyImplyLeading: false,
-            /*
+            leadingWidth: 40.0,
             leading: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5.0),
               child: IconButton(
@@ -70,7 +69,6 @@ class _bleConexionState extends State<bleConexion> {
                 ),
               ),
             ),
-            */
             actions: [
               if (isBleEnabled && isLocationEnabled)
                 Padding(
@@ -250,7 +248,7 @@ class _bleConexionState extends State<bleConexion> {
                                             ),
                                           ),
                                           Positioned(
-                                            top: 7.0,
+                                            top: 8.0,
                                             left: 7.0,
                                             child: Text(
                                               textAlign: TextAlign.right,

@@ -1,17 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
 import 'package:flutter_application_1/ble/bleHandler.dart';
-
-enum MessageType { sent, received }
-
-class Message {
-  final String content;
-  final MessageType type;
-
-  Message(this.content, this.type);
-}
+import 'package:provider/provider.dart';
 
 class BleTerminalPage extends StatefulWidget {
   final BleDevice device;
@@ -22,26 +15,25 @@ class BleTerminalPage extends StatefulWidget {
       : super(key: key);
 
   @override
-  _BleTerminalPageState createState() => _BleTerminalPageState();
+  BleTerminalPageState createState() => BleTerminalPageState();
 }
 
 /* La clave esta con AutomaticKeepAliveClientMixin es para poder seguir visualizando la información al cambiar la pantalla */
-class _BleTerminalPageState extends State<BleTerminalPage>
+class BleTerminalPageState extends State<BleTerminalPage>
     with AutomaticKeepAliveClientMixin {
   late BleDevice device;
   late BleProvider provider;
   final TextEditingController _controller = TextEditingController();
-  late StreamSubscription<List<int>> _notificationSubscription;
-  final List<Message> _messages = [];
+  StreamSubscription<List<int>>? _notificationSubscription;
   final ScrollController _scrollController = ScrollController();
+  int intentcount = 0; // variable parar reintentar subscribirse
 
   @override
   void initState() {
     super.initState();
     device = widget.device;
     provider = widget.provider;
-    _subscribeToNotifications();
-    _requestMTU();
+    //resubscribeToNotifications(device);
   }
 
   void _scrollToBottom() {
@@ -65,19 +57,14 @@ class _BleTerminalPageState extends State<BleTerminalPage>
     });
   }
 
-  /* Solicita espacio para obtener mas datos */
-  void _requestMTU() {
-    provider.requestMTU(device);
-  }
-
   /* Funcion para recibir informacion de la caracteristica ble del nordic */
-  void _subscribeToNotifications() {
+  void _subscribeToNotifications(BleDevice newDevice) {
     _notificationSubscription =
-        provider.subscribeToNordicCharacteristic(device).listen((data) {
+        provider.subscribeToNordicCharacteristic(newDevice).listen((data) {
       setState(() {
-        _messages
-            .add(Message(String.fromCharCodes(data), MessageType.received));
+        provider.addMessage(Message(utf8.decode(data), MessageType.received));
       });
+
       _scrollToBottom();
     }, onError: (error) {
       logger.e('Error subscribing to notifications: $error');
@@ -92,14 +79,31 @@ class _BleTerminalPageState extends State<BleTerminalPage>
     await provider.writeNordicCharacteristic(device, commandBytes);
 
     setState(() {
-      _messages.add(Message(message, MessageType.sent));
+      provider.addMessage(Message(message, MessageType.sent));
     });
+
     _scrollToBottom();
+  }
+
+  Future<void> resubscribeToNotifications(BleDevice newDevice) async {
+    _notificationSubscription?.cancel;
+
+    try {
+      // verificar si existen servicios antes de subscribirse a una caracteristica
+      await provider.flutterReactiveBle.discoverServices(device.id);
+      _subscribeToNotifications(newDevice);
+    } catch (e) {
+      logger.e('Service discovery failed: $e');
+      intentcount++;
+      if (intentcount < 2) {
+        resubscribeToNotifications(newDevice);
+      }
+    }
   }
 
   @override
   void dispose() {
-    _notificationSubscription.cancel();
+    _notificationSubscription?.cancel();
     _scrollController.dispose();
     super.dispose();
   }
@@ -110,57 +114,74 @@ class _BleTerminalPageState extends State<BleTerminalPage>
     return Scaffold(
       backgroundColor: Colors.black,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(
+              provider.isConnected ? 'Conectado' : 'Desconectado',
+              style: const TextStyle(
+                color: Colors.amber,
+                fontSize: 10.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
-                itemCount: _messages.length,
+                itemCount: provider.messages.length,
                 itemBuilder: (context, index) {
                   return Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      _messages[index].content.trim(),
+                      provider.messages[index].content.trim(),
                       style: TextStyle(
-                        color: _messages[index].type == MessageType.sent
+                        color: provider.messages[index].type == MessageType.sent
                             ? Colors.blue
                             : Colors.green,
-                        fontSize: 12.0,
+                        fontSize: 10.0,
                       ),
                     ),
                   );
                 },
               ),
             ),
+            const Divider(),
             Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      decoration: const InputDecoration(
-                        labelText: 'Comando',
-                        labelStyle: TextStyle(
-                          color: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+              child: SizedBox(
+                height: 50.0,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _controller,
+                        decoration: const InputDecoration(
+                          hintText: 'Comando',
+                          hintStyle: TextStyle(
+                            color: Colors.white54,
+                          ),
+                          border: OutlineInputBorder(),
+                          labelStyle: TextStyle(
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.send,
-                      color: Colors.white,
+                    IconButton(
+                      icon: const Icon(
+                        Icons.send,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        if (_controller.text.isNotEmpty) {
+                          _sendMessage(_controller.text);
+                          _controller.clear();
+                        }
+                      },
                     ),
-                    onPressed: () {
-                      if (_controller.text.isNotEmpty) {
-                        _sendMessage(_controller.text);
-                        _controller.clear();
-                      }
-                    },
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],

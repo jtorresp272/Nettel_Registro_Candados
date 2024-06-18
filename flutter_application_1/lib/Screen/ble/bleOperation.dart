@@ -1,7 +1,9 @@
 // ignore_for_file: camel_case_types
 
-import 'package:flutter/foundation.dart';
+//import 'dart:html';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Screen/ble/bleNettelTerminal.dart';
 import 'package:flutter_application_1/ble/bleHandler.dart';
@@ -21,6 +23,9 @@ class _bleOperationState extends State<bleOperation> {
   late BleDevice device;
   late BleProvider provider;
   bool isConnected = false;
+  bool reconnection = false;
+  final GlobalKey<BleTerminalPageState> bleTerminalKey =
+      GlobalKey<BleTerminalPageState>();
 
   @override
   void initState() {
@@ -32,22 +37,48 @@ class _bleOperationState extends State<bleOperation> {
 
   @override
   void dispose() {
+    provider.stopReconnection(); // detener la reconexión al salir
     super.dispose();
   }
 
   Future<void> _connectToDevice() async {
     await provider.connectToDevice(device).then((connected) {
+      //provider.requestMTU(device);
+      //bleTerminalKey.currentState?.resubscribeToNotifications(device);
+      if (connected) {
+        bleTerminalKey.currentState?.resubscribeToNotifications(device);
+      }
       setState(() {
-        isConnected = connected;
+        //isConnected = connected;
       });
     });
   }
 
   Future<void> _disconnectAndNavigate() async {
-    if (isConnected) {
+    if (provider.isConnected) {
       await provider.disconnectFromDevice();
     }
+
+    provider.stopReconnection();
+    provider.clearMessage();
     Navigator.popAndPushNamed(context, '/bleConexion');
+  }
+
+  Future<void> _reconnect() async {
+    await provider.reconnectToDevice().then((newdevice) {
+      if (mounted) {
+        setState(() {
+          if (newdevice != null) {
+            reconnection = true;
+            device = newdevice;
+            bleTerminalKey.currentState?.resubscribeToNotifications(device);
+            logger.w('reconexión');
+          } else {
+            reconnection = false;
+          }
+        });
+      }
+    });
   }
 
   @override
@@ -85,8 +116,7 @@ class _bleOperationState extends State<bleOperation> {
               ],
             ),
             automaticallyImplyLeading: false,
-            //leadingWidth: 35.0,
-            /*
+            leadingWidth: 35.0,
             leading: Padding(
               padding: const EdgeInsets.only(left: 5.0),
               child: IconButton(
@@ -98,11 +128,23 @@ class _bleOperationState extends State<bleOperation> {
                 ),
               ),
             ),
-            */
             actions: [
               TextButton(
-                onPressed: _disconnectAndNavigate,
-                child: isConnected
+                onPressed: () async {
+                  // Si esta conectado saldra la palabra desconectar
+                  if (provider.isConnected) {
+                    await provider.disconnectFromDevice();
+                    setState(() {
+                      reconnection = true;
+                    });
+                  } else {
+                    setState(() {
+                      reconnection = false;
+                    });
+                    await _reconnect();
+                  }
+                },
+                child: provider.isConnected
                     ? const Text(
                         'Desconectar',
                         style: TextStyle(
@@ -110,10 +152,18 @@ class _bleOperationState extends State<bleOperation> {
                             fontSize: 14.0,
                             fontWeight: FontWeight.bold),
                       )
-                    : const CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: BorderSide.strokeAlignOutside,
-                      ),
+                    : reconnection
+                        ? const Text(
+                            'Conectar',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.bold),
+                          )
+                        : const CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: BorderSide.strokeAlignOutside,
+                          ),
               ),
             ],
             bottom: const TabBar(
@@ -212,7 +262,7 @@ class _bleOperationState extends State<bleOperation> {
 
   Widget _buildNettelTab() {
     return Center(
-      child: isConnected
+      child: provider.isConnected
           ? Text('Data from ${device.name}')
           : const Text('No data available'),
     );
@@ -220,12 +270,10 @@ class _bleOperationState extends State<bleOperation> {
 
   Widget _buildNordicTab() {
     return Center(
-      child: isConnected
-          ? BleTerminalPage(
-              device: device,
-              provider: provider,
-            )
-          : const Text('No settings available'),
-    );
+        child: BleTerminalPage(
+      key: bleTerminalKey,
+      device: device,
+      provider: provider,
+    ));
   }
 }

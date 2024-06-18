@@ -4,6 +4,15 @@ import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:flutter/material.dart';
 
+enum MessageType { sent, received }
+
+class Message {
+  final String content;
+  final MessageType type;
+
+  Message(this.content, this.type);
+}
+
 class BleDevice {
   final String id;
   final String name;
@@ -30,6 +39,20 @@ class BleProvider with ChangeNotifier {
   List<BleDevice> devices = [];
   BleDevice? connectedDevice;
   bool isConnected = false;
+  String? targetDeviceName;
+  final List<Message> _messages = [];
+  List<Message> get messages => List.unmodifiable(_messages);
+  bool shouldStopReconnection = false;
+
+  Future<void> addMessage(Message message) async {
+    _messages.add(message);
+    notifyListeners();
+  }
+
+  void clearMessage() {
+    _messages.clear();
+    notifyListeners();
+  }
 
   void startScan() {
     stopScan();
@@ -70,12 +93,14 @@ class BleProvider with ChangeNotifier {
   void stopScan() {
     scanSubscription?.cancel();
     scanSubscription = null;
+    shouldStopReconnection = false;
     notifyListeners();
   }
 
   Future<bool> connectToDevice(BleDevice device) async {
     connectionSubscription?.cancel();
     isConnected = false;
+    targetDeviceName = device.name;
     connectionSubscription = flutterReactiveBle
         .connectToDevice(
       id: device.id,
@@ -88,22 +113,31 @@ class BleProvider with ChangeNotifier {
         if (update.connectionState == DeviceConnectionState.connected) {
           connectedDevice = device;
           isConnected = true;
+
           notifyListeners();
         } else if (update.connectionState ==
             DeviceConnectionState.disconnected) {
           connectedDevice = null;
           isConnected = false;
           notifyListeners();
+          handleDisconnection();
         }
       },
       onError: (error) {
         logger.e('ErrorWhile connecting: $error');
         isConnected = false;
         notifyListeners();
+        handleDisconnection();
       },
     );
 
-    await Future.delayed(const Duration(seconds: 3));
+    shouldStopReconnection = false;
+    await Future.delayed(const Duration(seconds: 3), () {
+      if (device.name.isNotEmpty) {
+        requestMTU(device); // Pedir mas mtu
+      }
+    });
+
     return isConnected;
   }
 
@@ -111,7 +145,50 @@ class BleProvider with ChangeNotifier {
     await connectionSubscription?.cancel();
     connectedDevice = null;
     isConnected = false;
+    shouldStopReconnection = false;
     notifyListeners();
+  }
+
+  void handleDisconnection() {
+    // Lógica para manejar la desconexión
+    if (targetDeviceName != null) {
+      reconnectToDevice();
+    } else {
+      // Aquí puedes manejar otros casos de desconexión
+      isConnected = false;
+    }
+  }
+
+  Future<BleDevice?> reconnectToDevice() async {
+    if (targetDeviceName != null) {
+      logger.i('Attempting to reconnect to device: $targetDeviceName');
+      startScan();
+      await for (var device
+          in flutterReactiveBle.scanForDevices(withServices: [])) {
+        if (device.name == targetDeviceName) {
+          await connectToDevice(BleDevice(
+            id: device.id,
+            name: device.name,
+            rssi: device.rssi,
+            manufacturerData: device.manufacturerData,
+            serviceUuids: device.serviceUuids,
+          ));
+          if (isConnected) {
+            return connectedDevice;
+          }
+        }
+        if (shouldStopReconnection) {
+          shouldStopReconnection = false;
+          logger.w('Reconnection stopped by user. $shouldStopReconnection');
+          break;
+        }
+      }
+    }
+    return null;
+  }
+
+  void stopReconnection() {
+    shouldStopReconnection = true;
   }
 
   void selectDevice(BleDevice selectedDevice) {
@@ -202,18 +279,6 @@ class BleProvider with ChangeNotifier {
     }
   }
 
-  Future<int> requestMTU(BleDevice device) async {
-    try {
-      int mtu =
-          await flutterReactiveBle.requestMtu(deviceId: device.id, mtu: 498);
-      logger.i('Cantidad de mtu: $mtu');
-      return mtu;
-    } catch (e) {
-      logger.e('Error pidiendo mas MTU $e');
-      return 0;
-    }
-  }
-
   Future<void> writeNordicCharacteristic(
     BleDevice device,
     List<int> value,
@@ -228,6 +293,18 @@ class BleProvider with ChangeNotifier {
       );
     } catch (e) {
       logger.e('Error writing characterisitic $e');
+    }
+  }
+
+  Future<int> requestMTU(BleDevice device) async {
+    try {
+      int mtu =
+          await flutterReactiveBle.requestMtu(deviceId: device.id, mtu: 498);
+      logger.i('Cantidad de mtu: $mtu');
+      return mtu;
+    } catch (e) {
+      logger.e('Error pidiendo mas MTU $e');
+      return 0;
     }
   }
 
