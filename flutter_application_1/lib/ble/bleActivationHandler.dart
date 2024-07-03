@@ -48,4 +48,37 @@ class systemHelper {
       return false;
     }
   }
+
+  static Future<bool> pairWithDevice(String deviceAddress) async {
+    try {
+      final result = await _bluetoothChannel
+          .invokeMethod('pairWithDevice', {'deviceAddress': deviceAddress});
+      logger.w("bonded with $deviceAddress is $result");
+      return result;
+    } on PlatformException catch (e) {
+      logger.w("Failed to pair Bluetooth: '${e.message} $deviceAddress'.");
+      return false;
+    }
+  }
+
+  static Future<void> unpairWithDevice(String deviceName) async {
+    try {
+      final result = await _bluetoothChannel
+          .invokeMethod('unpairWithDevice', {'deviceName': deviceName});
+      logger.w("unbonded with $deviceName is $result");
+    } on PlatformException catch (e) {
+      logger.w("Failed to pair Bluetooth: '${e.message}'.");
+    }
+  }
+
+  static Future<bool> isDevicePaired(String deviceName) async {
+    try {
+      final bool isPaired = await _bluetoothChannel
+          .invokeMethod('isDevicePaired', {'deviceName': deviceName});
+      return isPaired;
+    } on PlatformException catch (e) {
+      logger.w("Failed to check device pairing: '${e.message}'.");
+      return false;
+    }
+  }
 }

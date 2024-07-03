@@ -7,6 +7,7 @@ import 'package:flutter_application_1/Screen/ble/bleOperation.dart';
 import 'package:flutter_application_1/ble/bleActivationHandler.dart';
 import 'package:flutter_application_1/ble/bleDeviceInfo.dart';
 import 'package:flutter_application_1/ble/bleHandler.dart';
+import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -23,13 +24,98 @@ class bleConexion extends StatefulWidget {
 class _bleConexionState extends State<bleConexion> {
   bool isScanStarted = false;
   bool isConnected = false;
-  //bool tapContainer = false;
   Map<String, bool> tapContainer = {};
+  Map<String, List<Color>> containerGradientColor = {
+    "inRangeCompact": [
+      Colors.white,
+      getColorAlmostBlue().withOpacity(0.5),
+      getColorAlmostBlue().withOpacity(0.8),
+    ],
+    "outRangeCompact": [
+      Colors.white,
+      Colors.grey.withOpacity(0.8),
+      Colors.grey.withOpacity(0.5),
+    ],
+    "inRange": [
+      Colors.white,
+      Colors.white,
+      Colors.white,
+      getColorAlmostBlue().withOpacity(0.5),
+      getColorAlmostBlue().withOpacity(0.8),
+    ],
+    "outRange": [
+      Colors.white,
+      Colors.white,
+      Colors.white,
+      Colors.grey.withOpacity(0.8),
+      Colors.grey.withOpacity(0.5),
+    ],
+  };
+
+  /* Funcion para el menu que esta del lado derecho del boton conectar */
+  void _showPopupMenu(BuildContext context, Offset offset, BleDevice device,
+      BleProvider provider) {
+    final RelativeRect position = RelativeRect.fromLTRB(
+        offset.dx, offset.dy, offset.dx + 1, offset.dy + 1);
+    showMenu(context: context, position: position, items: [
+      PopupMenuItem(
+        value: 0,
+        child: Text(device.isbonded
+            ? 'Borrar datos vinculacion'
+            : 'Vincular y Conectar'),
+      ),
+      const PopupMenuItem(
+        value: 1,
+        child: Text('dos'),
+      ),
+      const PopupMenuItem(
+        value: 2,
+        child: Text('tres'),
+      ),
+    ]).then((value) async {
+      if (value != null) {
+        switch (value) {
+          case 0:
+            if (!device.outOfRange) {
+              device.isbonded
+                  ? await systemHelper.unpairWithDevice(device.name)
+                  : Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BleOperation(
+                          device: device,
+                          provider: provider,
+                          withBond: true,
+                        ),
+                      ),
+                    );
+            } else {
+              customSnackBar(
+                context,
+                mensaje: 'No se pueden eliminar los datos',
+                colorFondo: Colors.red,
+                colorText: Colors.white,
+              );
+            }
+            break;
+          case 1:
+            logger.i('dos');
+            break;
+          case 2:
+            logger.i('tres');
+            break;
+          default:
+            break;
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        Provider.of<BleProvider>(context, listen: false).stopScan();
         Navigator.popAndPushNamed(context, '/taller');
         return false;
       },
@@ -63,6 +149,7 @@ class _bleConexionState extends State<bleConexion> {
               padding: const EdgeInsets.symmetric(horizontal: 5.0),
               child: IconButton(
                 onPressed: () {
+                  Provider.of<BleProvider>(context, listen: false).stopScan();
                   Navigator.popAndPushNamed(context, '/taller');
                 },
                 icon: const Icon(
@@ -78,8 +165,6 @@ class _bleConexionState extends State<bleConexion> {
                   padding: const EdgeInsets.only(right: 10.0),
                   child: TextButton(
                     onPressed: () {
-                      //isScanStarted ? stopScan() : startScan();
-
                       isScanStarted
                           ? context.read<BleProvider>().stopScan()
                           : context.read<BleProvider>().startScan();
@@ -229,303 +314,451 @@ class _bleConexionState extends State<bleConexion> {
                                   margin: const EdgeInsets.all(3.0),
                                   padding: const EdgeInsets.all(5.0),
                                   decoration: BoxDecoration(
-                                    //color: Colors.white.withBlue(50),
                                     border: Border.all(
-                                        width: 1.0, color: Colors.black26),
+                                      width: 1.2,
+                                      color: !device.outOfRange
+                                          ? getColorAlmostBlue()
+                                          : Colors.grey,
+                                    ),
                                     borderRadius: BorderRadius.circular(10.0),
+                                    gradient: tapContainer[device.id] ?? false
+                                        ? LinearGradient(
+                                            begin: Alignment.bottomCenter,
+                                            end: Alignment.topCenter,
+                                            colors: !device.outOfRange
+                                                ? containerGradientColor[
+                                                    "inRange"]!
+                                                : containerGradientColor[
+                                                    "outRange"]!,
+                                          )
+                                        : LinearGradient(
+                                            begin: Alignment.bottomCenter,
+                                            end: Alignment.topCenter,
+                                            colors: !device.outOfRange
+                                                ? containerGradientColor[
+                                                    "inRangeCompact"]!
+                                                : containerGradientColor[
+                                                    "outRangeCompact"]!,
+                                          ),
                                   ),
-                                  child: Row(
+                                  child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height *
+                                      Row(
+                                        children: [
+                                          SizedBox(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
                                                 0.1,
-                                        width:
-                                            MediaQuery.of(context).size.width *
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
                                                 0.2,
-                                        child: Image.asset(image),
-                                      ),
-                                      Expanded(
-                                        flex: 3,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              device.name,
-                                              style: const TextStyle(
-                                                  color: Colors.black),
-                                            ),
-                                            Text(
-                                              device.id,
-                                              style: const TextStyle(
-                                                fontSize: 14.0,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
+                                            child: Image.asset(image),
+                                          ),
+                                          Expanded(
+                                            flex: 2,
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                Stack(
-                                                  children: [
-                                                    Positioned(
-                                                      child: Icon(
-                                                        bLevel < 35
-                                                            ? CupertinoIcons
-                                                                .battery_25_percent
-                                                            : CupertinoIcons
-                                                                .battery_75_percent,
-                                                        color: bLevel < 35
-                                                            ? Colors.red
-                                                            : Colors.green,
-                                                        size: 32.0,
-                                                        textDirection:
-                                                            TextDirection.rtl,
-                                                      ),
-                                                    ),
-                                                    Positioned(
-                                                      top: 8.0,
-                                                      left: 7.0,
-                                                      child: Text(
-                                                        textAlign:
-                                                            TextAlign.right,
-                                                        battery,
+                                                Text(
+                                                  device.name,
+                                                  style: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          right: 10.0),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        device.id,
                                                         style: const TextStyle(
-                                                          fontSize: 10.0,
+                                                          fontSize: 14.0,
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        device.isbonded
+                                                            ? 'Vinculado'
+                                                            : 'Desvinculado',
+                                                        style: const TextStyle(
                                                           color: Colors.black,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                         ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    Stack(
+                                                      children: [
+                                                        Positioned(
+                                                          child: Icon(
+                                                            bLevel < 35
+                                                                ? CupertinoIcons
+                                                                    .battery_25_percent
+                                                                : CupertinoIcons
+                                                                    .battery_75_percent,
+                                                            color: bLevel < 35
+                                                                ? Colors.red
+                                                                : Colors.green,
+                                                            size: 32.0,
+                                                            textDirection:
+                                                                TextDirection
+                                                                    .rtl,
+                                                          ),
+                                                        ),
+                                                        Positioned(
+                                                          top: 8.0,
+                                                          left: 7.0,
+                                                          child: Text(
+                                                            textAlign:
+                                                                TextAlign.right,
+                                                            battery,
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 10.0,
+                                                              color:
+                                                                  Colors.black,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 12.0,
+                                                    ),
+                                                    Icon(
+                                                      getApState(device
+                                                                  .manufacturerData) ==
+                                                              0
+                                                          ? CupertinoIcons
+                                                              .lock_open_fill
+                                                          : CupertinoIcons
+                                                              .lock_fill,
+                                                      size: 15.0,
+                                                      color: Colors.black,
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 5.0,
+                                                    ),
+                                                    Text(
+                                                      getAlarmState(device
+                                                                  .manufacturerData) ==
+                                                              0
+                                                          ? getApState(device
+                                                                      .manufacturerData) ==
+                                                                  0
+                                                              ? 'Abierto'
+                                                              : 'Cerrado'
+                                                          : 'Alarmado',
+                                                      textAlign:
+                                                          TextAlign.right,
+                                                      style: const TextStyle(
+                                                        fontSize: 12.0,
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 12.0,
+                                                    ),
+                                                    const Icon(
+                                                      CupertinoIcons
+                                                          .chart_bar_fill,
+                                                      color: Colors.black,
+                                                      size: 15,
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 5.0,
+                                                    ),
+                                                    Text(
+                                                      '${device.rssi} dBm',
+                                                      style: const TextStyle(
+                                                        color: Colors.black,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
-                                                const SizedBox(
-                                                  width: 12.0,
-                                                ),
-                                                Icon(
-                                                  getApState(device
-                                                              .manufacturerData) ==
-                                                          0
-                                                      ? CupertinoIcons
-                                                          .lock_open_fill
-                                                      : CupertinoIcons
-                                                          .lock_fill,
-                                                  size: 15.0,
-                                                  color: Colors.black,
-                                                ),
-                                                const SizedBox(
-                                                  width: 5.0,
-                                                ),
-                                                Text(
-                                                  getAlarmState(device
-                                                              .manufacturerData) ==
-                                                          0
-                                                      ? getApState(device
-                                                                  .manufacturerData) ==
-                                                              0
-                                                          ? 'Abierto'
-                                                          : 'Cerrado'
-                                                      : 'Alarmado',
-                                                  textAlign: TextAlign.right,
-                                                  style: const TextStyle(
-                                                    fontSize: 12.0,
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
                                               ],
                                             ),
-
-                                            // Despues de presionar el container
-                                            Visibility(
-                                              visible:
-                                                  tapContainer[device.id] ??
-                                                      false,
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  if (device.manufacturerData
-                                                      .isNotEmpty)
+                                          ),
+                                        ],
+                                      ),
+                                      // Despues de presionar el container
+                                      Visibility(
+                                        visible:
+                                            tapContainer[device.id] ?? false,
+                                        // Row general
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            // Row solo para el estado de los sensores
+                                            Row(
+                                              children: [
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    if (device.manufacturerData
+                                                        .isNotEmpty)
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          estado(
+                                                            texto: 'Sensores',
+                                                            titulo: true,
+                                                          ),
+                                                          estado(
+                                                            texto: 'Estado',
+                                                            titulo: true,
+                                                          ),
+                                                        ],
+                                                      ),
                                                     Row(
                                                       mainAxisAlignment:
                                                           MainAxisAlignment
                                                               .start,
                                                       children: [
-                                                        estado(
-                                                          texto: 'Sensores',
-                                                          titulo: true,
+                                                        // Sensores
+                                                        Column(
+                                                          children: [
+                                                            // Apertura
+                                                            sensor(
+                                                              texto: 'Apertura',
+                                                              color: getApState(
+                                                                          device
+                                                                              .manufacturerData) ==
+                                                                      0
+                                                                  ? Colors.red
+                                                                  : Colors
+                                                                      .green,
+                                                            ),
+
+                                                            // Corte
+                                                            if (device.name.contains(
+                                                                    'CA') ||
+                                                                device.name
+                                                                    .contains(
+                                                                        'N01') ||
+                                                                device.name
+                                                                    .contains(
+                                                                        'N03'))
+                                                              sensor(
+                                                                texto: 'Corte',
+                                                                color: getCoState(device
+                                                                            .manufacturerData) ==
+                                                                        0
+                                                                    ? Colors.red
+                                                                    : Colors
+                                                                        .green,
+                                                              ),
+                                                            // Separacion
+                                                            if (device.name
+                                                                .contains('CA'))
+                                                              sensor(
+                                                                texto:
+                                                                    'Separación',
+                                                                color: getSeState(device
+                                                                            .manufacturerData) ==
+                                                                        0
+                                                                    ? Colors.red
+                                                                    : Colors
+                                                                        .green,
+                                                              ),
+                                                            // Tapa
+                                                            sensor(
+                                                              texto: 'Tapa',
+                                                              color: getTaState(
+                                                                          device
+                                                                              .manufacturerData) ==
+                                                                      0
+                                                                  ? Colors.red
+                                                                  : Colors
+                                                                      .green,
+                                                            ),
+                                                          ],
                                                         ),
-                                                        estado(
-                                                          texto: 'Estado',
-                                                          titulo: true,
+                                                        const SizedBox(
+                                                          width: 15.0,
                                                         ),
+                                                        // Estado
+                                                        Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            // Apertura
+                                                            estado(
+                                                              texto: getApState(
+                                                                          device
+                                                                              .manufacturerData) ==
+                                                                      0
+                                                                  ? 'OP'
+                                                                  : 'CL',
+                                                            ),
+                                                            // Corte
+                                                            if (device.name.contains(
+                                                                    'CA') ||
+                                                                device.name
+                                                                    .contains(
+                                                                        'N01') ||
+                                                                device.name
+                                                                    .contains(
+                                                                        'N03'))
+                                                              estado(
+                                                                texto: getCoState(
+                                                                            device.manufacturerData) ==
+                                                                        0
+                                                                    ? 'OP'
+                                                                    : 'CL',
+                                                              ),
+                                                            // Separación
+                                                            if (device.name
+                                                                .contains('CA'))
+                                                              estado(
+                                                                texto: getSeState(
+                                                                            device.manufacturerData) ==
+                                                                        0
+                                                                    ? 'OP'
+                                                                    : 'CL',
+                                                              ),
+                                                            // Tapa
+                                                            estado(
+                                                              texto: getTaState(
+                                                                          device
+                                                                              .manufacturerData) ==
+                                                                      0
+                                                                  ? 'OP'
+                                                                  : 'CL',
+                                                            ),
+                                                          ],
+                                                        )
                                                       ],
                                                     ),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      // Sensores
-                                                      Column(
-                                                        children: [
-                                                          // Apertura
-                                                          sensor(
-                                                            texto: 'Apertura',
-                                                            color: getApState(device
-                                                                        .manufacturerData) ==
-                                                                    0
-                                                                ? Colors.red
-                                                                : Colors.green,
-                                                          ),
-
-                                                          // Corte
-                                                          if (device.name
-                                                                  .contains(
-                                                                      'CA') ||
-                                                              device.name
-                                                                  .contains(
-                                                                      'N01') ||
-                                                              device.name
-                                                                  .contains(
-                                                                      'N03'))
-                                                            sensor(
-                                                              texto: 'Corte',
-                                                              color: getCoState(
-                                                                          device
-                                                                              .manufacturerData) ==
-                                                                      0
-                                                                  ? Colors.red
-                                                                  : Colors
-                                                                      .green,
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                            // Boton para conexión
+                                            Container(
+                                              height: 35.0,
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: Colors.black,
+                                                    width: 1.5),
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                              ),
+                                              child: Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                mainAxisSize: MainAxisSize.min,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: [
+                                                  // Boton conectar
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      if (!device.outOfRange) {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                BleOperation(
+                                                              device: device,
+                                                              provider:
+                                                                  provider,
+                                                              withBond: false,
                                                             ),
-                                                          // Separacion
-                                                          if (device.name
-                                                              .contains('CA'))
-                                                            sensor(
-                                                              texto:
-                                                                  'Separación',
-                                                              color: getSeState(
-                                                                          device
-                                                                              .manufacturerData) ==
-                                                                      0
-                                                                  ? Colors.red
-                                                                  : Colors
-                                                                      .green,
-                                                            ),
-                                                          // Tapa
-                                                          sensor(
-                                                            texto: 'Tapa',
-                                                            color: getTaState(device
-                                                                        .manufacturerData) ==
-                                                                    0
-                                                                ? Colors.red
-                                                                : Colors.green,
                                                           ),
-                                                        ],
+                                                        );
+                                                      } else {
+                                                        customSnackBar(
+                                                          context,
+                                                          mensaje:
+                                                              'No se puede conectar con el dispositivo',
+                                                          colorFondo:
+                                                              Colors.red,
+                                                          colorText:
+                                                              Colors.black,
+                                                        );
+                                                      }
+                                                    },
+                                                    child: Container(
+                                                      alignment:
+                                                          Alignment.center,
+                                                      height: 35.0,
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 5.0),
+                                                      child: const Text(
+                                                        'CONECTAR',
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 15.0,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
                                                       ),
-                                                      const SizedBox(
-                                                        width: 15.0,
+                                                    ),
+                                                  ),
+                                                  const VerticalDivider(
+                                                    endIndent: 3.0,
+                                                    indent: 3.0,
+                                                    thickness: 1,
+                                                    color: Colors.grey,
+                                                  ),
+                                                  // Menu extra
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            right: 5.0),
+                                                    child: GestureDetector(
+                                                      onTapDown: (TapDownDetails
+                                                          details) {
+                                                        _showPopupMenu(
+                                                            context,
+                                                            details
+                                                                .globalPosition,
+                                                            device,
+                                                            provider);
+                                                      },
+                                                      child: const Icon(
+                                                        Icons.more_vert,
+                                                        color: Colors.black,
                                                       ),
-                                                      // Estado
-                                                      Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          // Apertura
-                                                          estado(
-                                                            texto: getApState(device
-                                                                        .manufacturerData) ==
-                                                                    0
-                                                                ? 'OP'
-                                                                : 'CL',
-                                                          ),
-                                                          // Corte
-                                                          if (device.name
-                                                                  .contains(
-                                                                      'CA') ||
-                                                              device.name
-                                                                  .contains(
-                                                                      'N01') ||
-                                                              device.name
-                                                                  .contains(
-                                                                      'N03'))
-                                                            estado(
-                                                              texto: getCoState(
-                                                                          device
-                                                                              .manufacturerData) ==
-                                                                      0
-                                                                  ? 'OP'
-                                                                  : 'CL',
-                                                            ),
-                                                          // Separación
-                                                          if (device.name
-                                                              .contains('CA'))
-                                                            estado(
-                                                              texto: getSeState(
-                                                                          device
-                                                                              .manufacturerData) ==
-                                                                      0
-                                                                  ? 'OP'
-                                                                  : 'CL',
-                                                            ),
-                                                          // Tapa
-                                                          estado(
-                                                            texto: getTaState(device
-                                                                        .manufacturerData) ==
-                                                                    0
-                                                                ? 'OP'
-                                                                : 'CL',
-                                                          ),
-                                                        ],
-                                                      )
-                                                    ],
+                                                    ),
                                                   ),
                                                 ],
                                               ),
                                             ),
                                           ],
-                                        ),
-                                      ),
-                                      // Boton para conexión
-                                      Expanded(
-                                        flex: 1,
-                                        child: Container(
-                                          margin: const EdgeInsets.all(5.0),
-                                          //height: 25.0,
-                                          //width: 10.0,
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                              color: Colors.black26,
-                                            ),
-                                            shape: BoxShape.rectangle,
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
-                                          ),
-                                          child: IconButton(
-                                            onPressed: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      bleOperation(
-                                                    device: device,
-                                                    provider: provider,
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                            icon: Icon(
-                                              Icons.bluetooth,
-                                              size: 25.0,
-                                              color: getColorAlmostBlue(),
-                                            ),
-                                          ),
                                         ),
                                       ),
                                     ],
@@ -641,241 +874,3 @@ SizedBox estado({required String texto, bool titulo = false}) {
     ),
   );
 }
-
-
-/*
-return ExpansionTile(
-                              collapsedTextColor: Colors.black,
-                              textColor: Colors.black,
-                              title: Text(
-                                device.name,
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    device.id,
-                                    style: const TextStyle(
-                                      fontSize: 14.0,
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Stack(
-                                        children: [
-                                          Positioned(
-                                            child: Icon(
-                                              bLevel < 35
-                                                  ? CupertinoIcons
-                                                      .battery_25_percent
-                                                  : CupertinoIcons
-                                                      .battery_75_percent,
-                                              color: bLevel < 35
-                                                  ? Colors.red
-                                                  : Colors.green,
-                                              size: 32.0,
-                                              textDirection: TextDirection.rtl,
-                                            ),
-                                          ),
-                                          Positioned(
-                                            top: 8.0,
-                                            left: 7.0,
-                                            child: Text(
-                                              textAlign: TextAlign.right,
-                                              battery,
-                                              style: const TextStyle(
-                                                fontSize: 10.0,
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        width: 12.0,
-                                      ),
-                                      Icon(
-                                        getApState(device.manufacturerData) == 0
-                                            ? CupertinoIcons.lock_open_fill
-                                            : CupertinoIcons.lock_fill,
-                                        size: 15.0,
-                                        color: Colors.black,
-                                      ),
-                                      const SizedBox(
-                                        width: 5.0,
-                                      ),
-                                      Text(
-                                        getAlarmState(
-                                                    device.manufacturerData) ==
-                                                0
-                                            ? getApState(device
-                                                        .manufacturerData) ==
-                                                    0
-                                                ? 'Abierto'
-                                                : 'Cerrado'
-                                            : 'Alarmado',
-                                        textAlign: TextAlign.right,
-                                        style: const TextStyle(
-                                          fontSize: 12.0,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              leading: Image.asset(image),
-                              trailing: Container(
-                                height: 35.0,
-                                decoration: BoxDecoration(
-                                  color: getColorAlmostBlue(),
-                                  shape: BoxShape.rectangle,
-                                  borderRadius: BorderRadius.circular(5.0),
-                                ),
-                                child: TextButton(
-                                  onPressed: () {
-                                    //provider.connectToDevice(device);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => bleOperation(
-                                          device: device,
-                                          provider: provider,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: const Text(
-                                    'CONECTAR',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                              childrenPadding:
-                                  const EdgeInsets.only(left: 60.0),
-                              children: [
-                                if (device.manufacturerData.isNotEmpty)
-                                  ListTile(
-                                    title: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        estado(
-                                          texto: 'Sensores',
-                                          titulo: true,
-                                        ),
-                                        const SizedBox(
-                                          width: 40.0,
-                                        ),
-                                        estado(
-                                          texto: 'Estado',
-                                          titulo: true,
-                                        ),
-                                      ],
-                                    ),
-                                    subtitle: Row(
-                                      children: [
-                                        // Sensores
-                                        Column(
-                                          children: [
-                                            // Apertura
-                                            sensor(
-                                              texto: 'Apertura',
-                                              color: getApState(device
-                                                          .manufacturerData) ==
-                                                      0
-                                                  ? Colors.red
-                                                  : Colors.green,
-                                            ),
-
-                                            // Corte
-                                            if (device.name.contains('CA') ||
-                                                device.name.contains('N01') ||
-                                                device.name.contains('N03'))
-                                              sensor(
-                                                texto: 'Corte',
-                                                color: getCoState(device
-                                                            .manufacturerData) ==
-                                                        0
-                                                    ? Colors.red
-                                                    : Colors.green,
-                                              ),
-                                            // Separacion
-                                            if (device.name.contains('CA'))
-                                              sensor(
-                                                texto: 'Separación',
-                                                color: getSeState(device
-                                                            .manufacturerData) ==
-                                                        0
-                                                    ? Colors.red
-                                                    : Colors.green,
-                                              ),
-                                            // Tapa
-                                            sensor(
-                                              texto: 'Tapa',
-                                              color: getTaState(device
-                                                          .manufacturerData) ==
-                                                      0
-                                                  ? Colors.red
-                                                  : Colors.green,
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(
-                                          width: 40.0,
-                                        ),
-                                        // Estado
-                                        Column(
-                                          children: [
-                                            // Apertura
-                                            estado(
-                                              texto: getApState(device
-                                                          .manufacturerData) ==
-                                                      0
-                                                  ? 'ABIERTO'
-                                                  : 'CERRADO',
-                                            ),
-                                            // Corte
-                                            if (device.name.contains('CA') ||
-                                                device.name.contains('N01') ||
-                                                device.name.contains('N03'))
-                                              estado(
-                                                texto: getCoState(device
-                                                            .manufacturerData) ==
-                                                        0
-                                                    ? 'ABIERTO'
-                                                    : 'CERRADO',
-                                              ),
-                                            // Separación
-                                            if (device.name.contains('CA'))
-                                              estado(
-                                                texto: getSeState(device
-                                                            .manufacturerData) ==
-                                                        0
-                                                    ? 'ABIERTO'
-                                                    : 'CERRADO',
-                                              ),
-                                            // Tapa
-                                            estado(
-                                              texto: getTaState(device
-                                                          .manufacturerData) ==
-                                                      0
-                                                  ? 'ABIERTO'
-                                                  : 'CERRADO',
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                              ],
-                              onExpansionChanged: (e) {
-                                if (e) {
-                                  provider.selectDevice(device);
-                                }
-                              },
-                            );
- */

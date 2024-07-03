@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
+import 'package:flutter_application_1/ble/bleActivationHandler.dart';
+import 'package:flutter_application_1/ble/bleDeviceInfo.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:flutter/material.dart';
 
-enum MessageType { sent, received }
+enum MessageType { sent, received, process }
 
 class Message {
   final String content;
@@ -20,6 +22,8 @@ class BleDevice {
   final List<int> manufacturerData;
   final List<Uuid> serviceUuids;
   bool isSelected;
+  bool outOfRange;
+  bool isbonded;
 
   BleDevice({
     required this.id,
@@ -28,6 +32,8 @@ class BleDevice {
     required this.manufacturerData,
     required this.serviceUuids,
     this.isSelected = false,
+    this.outOfRange = false,
+    this.isbonded = false,
   });
 }
 
@@ -39,10 +45,15 @@ class BleProvider with ChangeNotifier {
   List<BleDevice> devices = [];
   BleDevice? connectedDevice;
   bool isConnected = false;
+  bool reconnection = false;
   String? targetDeviceName;
   final List<Message> _messages = [];
   List<Message> get messages => List.unmodifiable(_messages);
   bool shouldStopReconnection = false;
+  List<String> foundDevicesId = [];
+  Timer? checkTimer;
+  bool isBonded = false;
+  Map<String, bool> devicesScanned = {};
 
   Future<void> addMessage(Message message) async {
     _messages.add(message);
@@ -57,47 +68,82 @@ class BleProvider with ChangeNotifier {
   void startScan() {
     stopScan();
     devices.clear();
+    foundDevicesId.clear();
     notifyListeners();
 
-    scanSubscription =
-        flutterReactiveBle.scanForDevices(withServices: []).listen((device) {
-      final existingDeviceIndex = devices.indexWhere((d) => d.id == device.id);
+    scanSubscription = flutterReactiveBle
+        .scanForDevices(withServices: []).listen((device) async {
+      if (getDeviceName(device.manufacturerData) == "Consorcio Nettel") {
+        bool isbonded = await systemHelper.isDevicePaired(device.name);
 
-      if (existingDeviceIndex != -1) {
-        // If the device already exists, update it with the latest data
-        devices[existingDeviceIndex] = BleDevice(
-          id: device.id,
-          name: device.name,
-          rssi: device.rssi,
-          manufacturerData: device.manufacturerData,
-          serviceUuids: device.serviceUuids,
-          isSelected: devices[existingDeviceIndex].isSelected,
-        );
-      } else {
-        // If the device doesn't exist, add it to the list
-        devices.add(BleDevice(
-          id: device.id,
-          name: device.name,
-          rssi: device.rssi,
-          manufacturerData: device.manufacturerData,
-          serviceUuids: device.serviceUuids,
-        ));
+        final existingDeviceIndex =
+            devices.indexWhere((d) => d.id == device.id);
+
+        if (existingDeviceIndex != -1) {
+          // If the device already exists, update it with the latest data
+          devices[existingDeviceIndex] = BleDevice(
+            id: device.id,
+            name: device.name,
+            rssi: device.rssi,
+            manufacturerData: device.manufacturerData,
+            serviceUuids: device.serviceUuids,
+            isSelected: devices[existingDeviceIndex].isSelected,
+            outOfRange: false,
+            isbonded: isbonded,
+          );
+        } else {
+          // If the device doesn't exist, add it to the list
+          devices.add(BleDevice(
+            id: device.id,
+            name: device.name,
+            rssi: device.rssi,
+            manufacturerData: device.manufacturerData,
+            serviceUuids: device.serviceUuids,
+            outOfRange: false,
+            isbonded: isbonded,
+          ));
+        }
+
+        if (!foundDevicesId.contains(device.id)) {
+          foundDevicesId.add(device.id);
+        }
+        // check si el dispositivo esta actualizando
+        notifyListeners();
       }
-      notifyListeners();
     }, onError: (error) {
       logger.e('Error while scanning: $error');
       stopScan();
     });
+
+    checkTimer?.cancel();
+    checkTimer = Timer.periodic(const Duration(milliseconds: 1500), (timer) {
+      markDevicesOutOfRange();
+    });
+  }
+
+  // Funcion que revisa si el dispositivo sigue en el aire o no
+  void markDevicesOutOfRange() {
+    devices.forEach((device) {
+      if (foundDevicesId.contains(device.id)) {
+        device.outOfRange = false;
+      } else {
+        device.outOfRange = true;
+      }
+    });
+
+    foundDevicesId.clear();
+    notifyListeners();
   }
 
   void stopScan() {
     scanSubscription?.cancel();
     scanSubscription = null;
     shouldStopReconnection = false;
+    devicesScanned.clear();
     notifyListeners();
   }
 
-  Future<bool> connectToDevice(BleDevice device) async {
+  Future<bool> connectToDevice(BleDevice device, [bool bonded = false]) async {
     connectionSubscription?.cancel();
     isConnected = false;
     targetDeviceName = device.name;
@@ -109,25 +155,30 @@ class BleProvider with ChangeNotifier {
       ),
     )
         .listen(
-      (update) {
+      (update) async {
         if (update.connectionState == DeviceConnectionState.connected) {
           connectedDevice = device;
           isConnected = true;
-
+          reconnection = false;
+          if (bonded) {
+            await systemHelper.pairWithDevice(device.id);
+          }
           notifyListeners();
         } else if (update.connectionState ==
             DeviceConnectionState.disconnected) {
           connectedDevice = null;
           isConnected = false;
+          reconnection = true;
           notifyListeners();
-          handleDisconnection();
+          addMessage(Message('Desconectado', MessageType.process));
         }
       },
       onError: (error) {
         logger.e('ErrorWhile connecting: $error');
         isConnected = false;
+        reconnection = true;
+        //handleDisconnection();
         notifyListeners();
-        handleDisconnection();
       },
     );
 
@@ -145,39 +196,47 @@ class BleProvider with ChangeNotifier {
     await connectionSubscription?.cancel();
     connectedDevice = null;
     isConnected = false;
+    reconnection = true;
     shouldStopReconnection = false;
     notifyListeners();
   }
 
   void handleDisconnection() {
     // Lógica para manejar la desconexión
+    logger.w('me desconecte');
     if (targetDeviceName != null) {
-      reconnectToDevice();
+      isConnected = false;
+      reconnection = true;
     } else {
       // Aquí puedes manejar otros casos de desconexión
       isConnected = false;
+      reconnection = true;
     }
   }
 
   Future<BleDevice?> reconnectToDevice() async {
+    reconnection = false;
+    BleDevice finDevice;
     if (targetDeviceName != null) {
       logger.i('Attempting to reconnect to device: $targetDeviceName');
       startScan();
       await for (var device
           in flutterReactiveBle.scanForDevices(withServices: [])) {
         if (device.name == targetDeviceName) {
-          await connectToDevice(BleDevice(
+          finDevice = BleDevice(
             id: device.id,
             name: device.name,
             rssi: device.rssi,
             manufacturerData: device.manufacturerData,
             serviceUuids: device.serviceUuids,
-          ));
+          );
+          await connectToDevice(finDevice);
           if (isConnected) {
-            return connectedDevice;
+            return finDevice;
           }
         }
         if (shouldStopReconnection) {
+          //reconnection = true;
           shouldStopReconnection = false;
           logger.w('Reconnection stopped by user. $shouldStopReconnection');
           break;
