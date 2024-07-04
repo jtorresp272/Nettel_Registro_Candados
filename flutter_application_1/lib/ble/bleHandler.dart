@@ -8,11 +8,14 @@ import 'package:flutter/material.dart';
 
 enum MessageType { sent, received, process }
 
+enum CharacteristicType { nordic, nettel, both }
+
 class Message {
   final String content;
   final MessageType type;
+  final CharacteristicType characteristic;
 
-  Message(this.content, this.type);
+  Message(this.content, this.type, this.characteristic);
 }
 
 class BleDevice {
@@ -170,7 +173,8 @@ class BleProvider with ChangeNotifier {
           isConnected = false;
           reconnection = true;
           notifyListeners();
-          addMessage(Message('Desconectado', MessageType.process));
+          addMessage(Message(
+              'Desconectado', MessageType.process, CharacteristicType.both));
         }
       },
       onError: (error) {

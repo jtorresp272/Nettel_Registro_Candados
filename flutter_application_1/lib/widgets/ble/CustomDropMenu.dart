@@ -1,19 +1,5 @@
 import 'package:flutter/material.dart';
 
-Map<String, Object> Opciones = {
-  'claveM': 0,
-  'claveA': 0,
-  'eKey': '',
-  'secret': '',
-  'iv': '',
-  'proximity': false,
-  'open': false,
-  'time': 0,
-  'imei': '',
-  'gps': '',
-  'sensors': '',
-};
-
 List<String> menu = [
   'claveM',
   'claveA',
@@ -60,15 +46,15 @@ class customDropState extends State<customDrop> {
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.all(10.0),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
+            borderRadius: BorderRadius.circular(5.0),
             borderSide: const BorderSide(color: Colors.black54, width: 1.0),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
+            borderRadius: BorderRadius.circular(5.0),
             borderSide: const BorderSide(color: Colors.black54, width: 1.0),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
+            borderRadius: BorderRadius.circular(5.0),
             borderSide: const BorderSide(color: Colors.black54, width: 1.0),
           ),
         ),

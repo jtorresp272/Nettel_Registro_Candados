@@ -1,30 +1,28 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
 import 'package:flutter_application_1/ble/bleHandler.dart';
 import 'package:provider/provider.dart';
 
-class BleTerminalPage extends StatefulWidget {
+class BleNordicTerminalPage extends StatefulWidget {
   final BleDevice device;
   final BleProvider provider;
 
-  const BleTerminalPage(
+  const BleNordicTerminalPage(
       {Key? key, required this.device, required this.provider})
       : super(key: key);
 
   @override
-  BleTerminalPageState createState() => BleTerminalPageState();
+  State<BleNordicTerminalPage> createState() => BleNordicTerminalPageState();
 }
 
 /* La clave esta con AutomaticKeepAliveClientMixin es para poder seguir visualizando la información al cambiar la pantalla */
-class BleTerminalPageState extends State<BleTerminalPage>
+class BleNordicTerminalPageState extends State<BleNordicTerminalPage>
     with AutomaticKeepAliveClientMixin {
   late BleDevice device;
   late BleProvider provider;
   final TextEditingController _controller = TextEditingController();
-  StreamSubscription<List<int>>? _notificationSubscription;
+
   final ScrollController _scrollController = ScrollController();
   int intentcount = 0; // variable parar reintentar subscribirse
 
@@ -35,26 +33,7 @@ class BleTerminalPageState extends State<BleTerminalPage>
     provider = Provider.of<BleProvider>(context, listen: false);
   }
 
-  void connectedMessage() {
-    setState(() {
-      provider.addMessage(
-          Message('Conectado a ${device.name}', MessageType.process));
-    });
-  }
-
-  void connectingMessage() {
-    setState(() {
-      provider.addMessage(Message('Conectando...', MessageType.process));
-    });
-  }
-
-  void desconnectedMessage() {
-    setState(() {
-      provider.addMessage(Message('Desconectado', MessageType.process));
-    });
-  }
-
-  void _scrollToBottom() {
+  void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
@@ -74,55 +53,22 @@ class BleTerminalPageState extends State<BleTerminalPage>
     });
   }
 
-  /* Funcion para recibir informacion de la caracteristica ble del nordic */
-  void _subscribeToNotifications(BleDevice newDevice) {
-    logger.i('Entre a la subscripcion');
-    _notificationSubscription =
-        provider.subscribeToNordicCharacteristic(newDevice).listen((data) {
-      setState(() {
-        provider.addMessage(Message(utf8.decode(data), MessageType.received));
-      });
-
-      _scrollToBottom();
-    }, onError: (error) {
-      logger.e('Error subscribing to notifications: $error');
-    });
-  }
-
   Future<void> _sendMessage(String message) async {
     // Convert message to bytes and write to the characteristic
     final List<int> commandBytes = message.codeUnits;
 
-    //logger.w('mensaje: $message comando: $commandBytes');
     await provider.writeNordicCharacteristic(device, commandBytes);
 
     setState(() {
-      provider.addMessage(Message(message, MessageType.sent));
+      provider.addMessage(
+          Message(message, MessageType.sent, CharacteristicType.nordic));
     });
 
-    _scrollToBottom();
-  }
-
-  Future<void> resubscribeToNotifications(BleDevice newDevice) async {
-    _notificationSubscription?.cancel;
-    device = newDevice;
-    try {
-      // verificar si existen servicios antes de subscribirse a una caracteristica
-      await provider.flutterReactiveBle.discoverServices(device.id);
-      _subscribeToNotifications(device);
-    } catch (e) {
-      logger.e('Service discovery failed: $e');
-      intentcount++;
-      if (intentcount < 3) {
-        await Future.delayed(const Duration(seconds: 2));
-        resubscribeToNotifications(device);
-      }
-    }
+    scrollToBottom();
   }
 
   @override
   void dispose() {
-    _notificationSubscription?.cancel();
     _scrollController.dispose();
     super.dispose();
   }
@@ -143,62 +89,88 @@ class BleTerminalPageState extends State<BleTerminalPage>
                   controller: _scrollController,
                   itemCount: provider.messages.length,
                   itemBuilder: (context, index) {
-                    return Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        provider.messages[index].content.trim(),
-                        style: TextStyle(
-                          color:
-                              provider.messages[index].type == MessageType.sent
-                                  ? Colors.blue
-                                  : provider.messages[index].type ==
-                                          MessageType.process
-                                      ? Colors.amber
-                                      : Colors.green,
-                          fontSize: 10.0,
+                    final message = provider.messages[index];
+                    if (message.characteristic == CharacteristicType.nordic ||
+                        message.characteristic == CharacteristicType.both) {
+                      return Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          provider.messages[index].characteristic ==
+                                      CharacteristicType.both ||
+                                  provider.messages[index].characteristic ==
+                                      CharacteristicType.nordic
+                              ? provider.messages[index].content.trim()
+                              : '',
+                          style: TextStyle(
+                            color: provider.messages[index].type ==
+                                    MessageType.sent
+                                ? Colors.blue
+                                : provider.messages[index].type ==
+                                        MessageType.process
+                                    ? Colors.amber
+                                    : Colors.green,
+                            fontSize: 10.0,
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    } else {
+                      const SizedBox.shrink();
+                    }
                   },
                 );
               }),
             ),
-            const Divider(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5.0),
-              child: SizedBox(
-                height: 50.0,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _controller,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          label: Text('Comando'),
-                          labelStyle: TextStyle(color: Colors.white54),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.white,
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.all(10.0),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                child: SizedBox(
+                  height: 60.0,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _controller,
+                          style: const TextStyle(color: Colors.black),
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            label: Text('Comando'),
+                            labelStyle: TextStyle(color: Colors.black54),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.black,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.send,
-                        color: Colors.white,
+                      const SizedBox(
+                        width: 5.0,
                       ),
-                      onPressed: () {
-                        if (_controller.text.isNotEmpty) {
-                          _sendMessage(_controller.text);
-                          _controller.clear();
-                        }
-                      },
-                    ),
-                  ],
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5.0, horizontal: 10.0),
+                        height: 60.0,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black54),
+                          borderRadius: BorderRadius.circular(5.0),
+                        ),
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.send,
+                            color: Colors.black,
+                          ),
+                          onPressed: () {
+                            if (_controller.text.isNotEmpty) {
+                              _sendMessage(_controller.text);
+                              _controller.clear();
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

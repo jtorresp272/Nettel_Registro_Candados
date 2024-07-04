@@ -49,6 +49,7 @@ class SelectionWidgetState extends State<SelectionWidget> {
   int indexView = 0;
   // Variable json para poder agregar los valores a solicitar
   Json json = Json(key: '', valor: '');
+  List<String> jsonStrings = ['eKey', 'secret', 'iv', 'imei', 'gps', 'sensors'];
   bool isConfig = false;
 
   @override
@@ -56,6 +57,49 @@ class SelectionWidgetState extends State<SelectionWidget> {
     super.dispose();
     jsonList.clear();
     indexView = 0;
+  }
+
+  // Actualizar campos de clave y valor
+  void updateField(int item) {
+    controllerClave.text = jsonList[item].key;
+    String preValue = jsonList[item].valor;
+    if (jsonStrings.contains(jsonList[item].key)) {
+      preValue = preValue.replaceAll('"', '');
+    }
+    controllerValor.text = preValue;
+
+    teclado = selectTypeKeyboard(controllerClave.text = jsonList[item].key);
+  }
+
+  // Agregar valor al json
+  void addToJson(String key, String value) {
+    // check si el key se encuentra en el listado para determinar si el dato debe ser String o no
+    if (jsonStrings.contains(key)) {
+      value = '"$value"';
+    }
+    Json json = Json(key: key, valor: value);
+    // Buscar si el inidice del objeto existe basandose en la clave
+    int index = jsonList.indexWhere((element) => element.key == json.key);
+
+    if (index != -1) {
+      // Reemplazar
+      jsonList[index] = json;
+    } else {
+      // Agregar
+      jsonList.add(json);
+    }
+  }
+
+  // Remover valores del json
+  void removeFromJson(String key, String value) {
+    Json json = Json(key: key, valor: value);
+    // Buscar si el inidice del objeto existe basandose en la clave
+    int index = jsonList.indexWhere((element) => element.key == json.key);
+
+    if (index != -1) {
+      // Eliminar
+      jsonList.removeAt(index);
+    }
   }
 
   @override
@@ -85,6 +129,10 @@ class SelectionWidgetState extends State<SelectionWidget> {
                     setState(() {
                       isConfig = !isConfig;
                       addToJson('config', isConfig.toString());
+                      if (controllerClave.text == 'config') {
+                        controllerValor.text = isConfig.toString();
+                      }
+                      // Enviar la lista actualizada
                       widget.addValue('$jsonList');
                     });
                   },
@@ -109,20 +157,19 @@ class SelectionWidgetState extends State<SelectionWidget> {
                 const SizedBox(
                   width: 20.0,
                 ),
-                Visibility(
-                  visible: isConfig,
-                  child: const Expanded(
-                    child: Text(
-                      'Se solicitara información de las opciones agregadas',
-                      overflow: TextOverflow.clip,
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 12.0,
-                        fontStyle: FontStyle.italic,
-                      ),
+                Expanded(
+                  child: Text(
+                    isConfig
+                        ? 'Se configurara los valores de las opciones agregadas'
+                        : 'Se solicitara información de las opciones agregadas',
+                    overflow: TextOverflow.clip,
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12.0,
+                      fontStyle: FontStyle.italic,
                     ),
                   ),
-                )
+                ),
               ],
             ),
             const SizedBox(
@@ -178,6 +225,7 @@ class SelectionWidgetState extends State<SelectionWidget> {
                               border: Border.all(
                                 color: Colors.black,
                               ),
+                              borderRadius: BorderRadius.circular(5.0),
                             ),
                             child: GestureDetector(
                               onTap: () {
@@ -188,6 +236,7 @@ class SelectionWidgetState extends State<SelectionWidget> {
                                     } else {
                                       indexView--;
                                     }
+                                    updateField(indexView);
                                   });
                                 }
                               },
@@ -203,6 +252,7 @@ class SelectionWidgetState extends State<SelectionWidget> {
                               border: Border.all(
                                 color: Colors.black,
                               ),
+                              borderRadius: BorderRadius.circular(5.0),
                             ),
                             child: GestureDetector(
                               onTap: () {
@@ -213,6 +263,8 @@ class SelectionWidgetState extends State<SelectionWidget> {
                                     } else {
                                       indexView = 0;
                                     }
+
+                                    updateField(indexView);
                                   });
                                 }
                               },
@@ -314,14 +366,25 @@ class SelectionWidgetState extends State<SelectionWidget> {
                         vertical: 5.0, horizontal: 10.0),
                     height: 50.0,
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black54),
+                      border: Border.all(
+                        color: Colors.black54,
+                      ),
+                      borderRadius: BorderRadius.circular(5.0),
                     ),
                     child: GestureDetector(
                       onTap: () {
                         if (controllerValor.text.isNotEmpty) {
+                          json.key = controllerClave.text;
                           json.valor = controllerValor.text;
                           if (checkValue(json)) {
                             addToJson(json.key, json.valor);
+                            if (json.key == 'config') {
+                              if (json.valor == 'true') {
+                                isConfig = true;
+                              } else {
+                                isConfig = false;
+                              }
+                            }
                             setState(() {
                               widget.addValue('$jsonList');
                             });
@@ -391,7 +454,9 @@ bool checkValue(Json json) {
       return true;
     }
     return false;
-  } else if (json.key == 'proximity' || json.key == 'open') {
+  } else if (json.key == 'proximity' ||
+      json.key == 'open' ||
+      json.key == 'config') {
     if (json.valor == 'true' || json.valor == 'false') {
       return true;
     }
@@ -405,29 +470,4 @@ bool checkValue(Json json) {
     return true;
   }
   return false;
-}
-
-void addToJson(String key, String value) {
-  Json json = Json(key: key, valor: value);
-  // Buscar si el inidice del objeto existe basandose en la clave
-  int index = jsonList.indexWhere((element) => element.key == json.key);
-
-  if (index != -1) {
-    // Reemplazar
-    jsonList[index] = json;
-  } else {
-    // Agregar
-    jsonList.add(json);
-  }
-}
-
-void removeFromJson(String key, String value) {
-  Json json = Json(key: key, valor: value);
-  // Buscar si el inidice del objeto existe basandose en la clave
-  int index = jsonList.indexWhere((element) => element.key == json.key);
-
-  if (index != -1) {
-    // Eliminar
-    jsonList.removeAt(index);
-  }
 }

@@ -1,12 +1,14 @@
 // ignore_for_file: camel_case_types
 
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Screen/ble/bleNettelTerminal.dart';
 import 'package:flutter_application_1/Screen/ble/bleNordicTerminal.dart';
 import 'package:flutter_application_1/ble/bleHandler.dart';
-import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:provider/provider.dart';
 
 class BleOperation extends StatefulWidget {
@@ -29,9 +31,16 @@ class BleOperationState extends State<BleOperation> {
   late BleProvider provider;
   late bool withBond;
   bool isConnected = false;
-  //bool reconnection = false;
-  final GlobalKey<BleTerminalPageState> bleTerminalKey =
-      GlobalKey<BleTerminalPageState>();
+
+  final GlobalKey<BleNordicTerminalPageState> bleNordicTerminalKey =
+      GlobalKey<BleNordicTerminalPageState>();
+
+  final GlobalKey<BleNettelTerminalPageState> bleNettelTerminalKey =
+      GlobalKey<BleNettelTerminalPageState>();
+
+  StreamSubscription<List<int>>? _notificationNettelSubscription;
+  StreamSubscription<List<int>>? _notificationNordicSubscription;
+  int intentcount = 0;
 
   @override
   void initState() {
@@ -44,23 +53,111 @@ class BleOperationState extends State<BleOperation> {
 
   @override
   void dispose() {
+    _notificationNettelSubscription?.cancel();
+    _notificationNordicSubscription?.cancel();
     provider.stopReconnection(); // detener la reconexión al salir
     super.dispose();
   }
 
+  /* Mensajes para el terminal de ambas caracteristicas */
+  void connectedMessage() {
+    setState(() {
+      provider.addMessage(Message('Conectado a ${device.name}',
+          MessageType.process, CharacteristicType.both));
+    });
+  }
+
+  void connectingMessage() {
+    setState(() {
+      provider.addMessage(Message(
+          'Conectando...', MessageType.process, CharacteristicType.both));
+    });
+  }
+
+  void disconnectedMessage() {
+    setState(() {
+      provider.addMessage(Message(
+          'Desconectado', MessageType.process, CharacteristicType.both));
+    });
+  }
+
+  /* Funcion para conectarse con el dispositivo ble */
   Future<void> _connectToDevice() async {
-    bleTerminalKey.currentState?.connectingMessage();
     bool connected = await provider.connectToDevice(device, withBond);
     if (connected) {
-      bleTerminalKey.currentState?.resubscribeToNotifications(device);
-      bleTerminalKey.currentState?.connectedMessage();
+      resubscribeToNettelNotifications(device);
+      connectedMessage();
     } else {
-      bleTerminalKey.currentState?.desconnectedMessage();
+      disconnectedMessage();
     }
 
     setState(() {});
   }
 
+  // Reconexion con el dispositivo
+  Future<void> _reconnect() async {
+    connectingMessage();
+    await provider.reconnectToDevice().then((newdevice) {
+      if (mounted) {
+        setState(() {
+          if (newdevice != null) {
+            device = newdevice;
+            resubscribeToNettelNotifications(newdevice);
+
+            connectedMessage();
+          }
+        });
+      }
+    });
+  }
+
+  /* Funcion para recibir informacion de la caracteristica ble del dispositivo */
+  void _subscribeToNotifications(BleDevice newDevice) {
+    _notificationNettelSubscription =
+        provider.subscribeToNettelCharacteristic(newDevice).listen((data) {
+      setState(() {
+        provider.addMessage(Message(utf8.decode(data), MessageType.received,
+            CharacteristicType.nettel));
+      });
+
+      bleNettelTerminalKey.currentState?.scrollToBottom();
+    }, onError: (error) {
+      logger.e('Error subscribing to notifications: $error');
+    });
+
+    _notificationNordicSubscription =
+        provider.subscribeToNordicCharacteristic(newDevice).listen((data) {
+      setState(() {
+        provider.addMessage(Message(utf8.decode(data), MessageType.received,
+            CharacteristicType.nordic));
+      });
+
+      bleNordicTerminalKey.currentState?.scrollToBottom();
+    }, onError: (error) {
+      logger.e('Error subscribing to notifications: $error');
+    });
+  }
+
+  // Funcion para volverse a subscribir a las notificaciones de las caracteristicas
+  Future<void> resubscribeToNettelNotifications(BleDevice newDevice) async {
+    _notificationNettelSubscription?.cancel;
+    _notificationNordicSubscription?.cancel;
+    device = newDevice;
+    try {
+      await provider.flutterReactiveBle.discoverAllServices(device.id);
+
+      _subscribeToNotifications(device);
+    } catch (e) {
+      logger.e('Service discovery failed: $e');
+      intentcount++;
+      if (intentcount < 3) {
+        await Future.delayed(const Duration(seconds: 2));
+        resubscribeToNettelNotifications(device);
+      }
+    }
+  }
+
+  // Desconectar del dispositivo y salir de la pantalla
   Future<void> _disconnectAndNavigate() async {
     if (provider.isConnected) {
       await provider.disconnectFromDevice();
@@ -71,25 +168,6 @@ class BleOperationState extends State<BleOperation> {
     Navigator.popAndPushNamed(context, '/bleConexion');
   }
 
-  Future<void> _reconnect() async {
-    bleTerminalKey.currentState?.connectingMessage();
-    await provider.reconnectToDevice().then((newdevice) {
-      if (mounted) {
-        setState(() {
-          if (newdevice != null) {
-            //provider.reconnection = true;
-            device = newdevice;
-            bleTerminalKey.currentState?.resubscribeToNotifications(device);
-            logger.w('reconexión ${device.id}');
-            bleTerminalKey.currentState?.connectedMessage();
-          } else {
-            //provider.reconnection = false;
-          }
-        });
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -98,7 +176,7 @@ class BleOperationState extends State<BleOperation> {
         return false;
       },
       child: DefaultTabController(
-        length: 3,
+        length: 2,
         child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
@@ -144,7 +222,7 @@ class BleOperationState extends State<BleOperation> {
                     // Si esta conectado saldra la palabra desconectar
                     if (isConnected) {
                       await provider.disconnectFromDevice();
-                      bleTerminalKey.currentState?.desconnectedMessage();
+                      disconnectedMessage();
                     } else {
                       await _reconnect();
                     }
@@ -183,9 +261,6 @@ class BleOperationState extends State<BleOperation> {
                 Tab(
                   text: 'Nettel',
                 ),
-                Tab(
-                  text: 'Extras',
-                ),
               ],
             ),
           ),
@@ -193,7 +268,6 @@ class BleOperationState extends State<BleOperation> {
             children: [
               _buildNordicTab(),
               _buildNettelTab(),
-              _buildExtraTab(),
             ],
           ),
         ),
@@ -201,83 +275,20 @@ class BleOperationState extends State<BleOperation> {
     );
   }
 
-  Widget _buildExtraTab() {
-    return Center(
-      child: isConnected
-          ? FutureBuilder<List<DiscoveredService>>(
-              future: provider.flutterReactiveBle.discoverServices(device.id),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(
-                    child: Text('No services found'),
-                  );
-                } else {
-                  return ListView(
-                    children: snapshot.data!.map((service) {
-                      String nameService =
-                          provider.getServiceName(service.serviceId);
-
-                      return nameService.contains('Generic') ||
-                              nameService.contains('DFU')
-                          ? ExpansionTile(
-                              childrenPadding:
-                                  const EdgeInsets.only(left: 20.0),
-                              title: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    nameService,
-                                    style: const TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    '${service.serviceId}',
-                                    style: const TextStyle(
-                                        color: Colors.black, fontSize: 13.0),
-                                  ),
-                                ],
-                              ),
-                              children:
-                                  service.characteristics.map((characteristic) {
-                                return ListTile(
-                                  title: Text(
-                                    'Characteristic: ${characteristic.characteristicId}',
-                                    style: const TextStyle(color: Colors.black),
-                                  ),
-                                  //subtitle:
-                                  //    Text('Properties: ${characteristic.properties}'),
-                                );
-                              }).toList(),
-                            )
-                          : const SizedBox.shrink();
-                    }).toList(),
-                  );
-                }
-              },
-            )
-          : const Text('No data available'),
-    );
-  }
-
   Widget _buildNettelTab() {
     return Center(
-      child: provider.isConnected
-          ? BleNettelTerminalPage(device: device, provider: provider)
-          : const Text('No data available'),
+      child: BleNettelTerminalPage(
+        key: bleNettelTerminalKey,
+        device: device,
+        provider: provider,
+      ),
     );
   }
 
   Widget _buildNordicTab() {
     return Center(
-        child: BleTerminalPage(
-      key: bleTerminalKey,
+        child: BleNordicTerminalPage(
+      key: bleNordicTerminalKey,
       device: device,
       provider: provider,
     ));
