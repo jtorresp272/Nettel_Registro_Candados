@@ -164,7 +164,8 @@ class _TallerState extends State<Taller> {
             )),
       );
     } else if (_selectedIndex == MenuNavigator.BLUETOOTH.index) {
-      Navigator.popAndPushNamed(context, '/bleConexion');
+      Navigator.of(context).pushNamed('/bleConexion');
+      //Navigator.popAndPushNamed(context, '/bleConexion');
     }
   }
 

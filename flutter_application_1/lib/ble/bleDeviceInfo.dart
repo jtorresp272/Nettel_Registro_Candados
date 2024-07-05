@@ -1,6 +1,8 @@
 // ignore_for_file: file_names
 
 /* Funcion para obtener el nombre del dispositivo */
+import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
+
 String getDeviceName(List<int> manufacturerData) {
   if (manufacturerData.length < 2) {
     return 'Unknown';
@@ -60,10 +62,10 @@ int getCoState(List<int> manufacturerData) {
   // Iterate over each bit
   for (int i = 0; i < sen.length; i++) {
     sensorBit.add(int.parse(sen[i]));
+
     //logger.e("Bit $i: ${sensorBit[i]}");
     // Perform your logic for each bit here
   }
-
   return sensorBit[5];
 }
 

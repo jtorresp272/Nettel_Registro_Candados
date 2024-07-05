@@ -162,10 +162,14 @@ class BleOperationState extends State<BleOperation> {
     if (provider.isConnected) {
       await provider.disconnectFromDevice();
     }
+    if (provider.reconnection) {
+      provider.stopReconnection();
+    }
 
-    provider.stopReconnection();
     provider.clearMessage();
-    Navigator.popAndPushNamed(context, '/bleConexion');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.pop(context, true);
+    });
   }
 
   @override
