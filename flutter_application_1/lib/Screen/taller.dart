@@ -5,6 +5,7 @@ import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:flutter_application_1/Funciones/servicios/apiForDataBase.dart';
 import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
+import 'package:flutter_application_1/Funciones/verificar_credenciales.dart';
 import 'package:flutter_application_1/api/emailHandler.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
 import 'package:flutter_application_1/widgets/CustomDialogScanQr.dart';
@@ -16,15 +17,6 @@ import 'package:flutter_application_1/widgets/CustomScanResume.dart';
 import 'package:flutter_application_1/widgets/CustomSearch.dart';
 import 'package:flutter_application_1/widgets/CustomAboutDialog.dart';
 import 'package:flutter_application_1/widgets/CustomTheme.dart';
-
-enum MenuNavigator {
-  // ignore: constant_identifier_names
-  ESCANER,
-  // ignore: constant_identifier_names
-  HISTORIAL,
-  // ignore: constant_identifier_names
-  BLUETOOTH,
-}
 
 class Taller extends StatefulWidget {
   const Taller({super.key});
@@ -69,6 +61,79 @@ class _TallerState extends State<Taller> {
   late Map<int, Map<int, bool>>
       _tabExpandedStates; // Definicion de _tabExpandedStates para dejar seteado el ultimo estado de cada tapBar
 
+  void _actionWithNumber({required String numeroCandado}) {
+    String scannedNumber = numeroCandado;
+    // Buscar en la lista local de Taller
+    Candado scannedCandado = listaCandadosTaller.firstWhere(
+      (e) => e.numero == scannedNumber,
+      orElse: () => Candado(
+          numero: '',
+          tipo: '',
+          razonIngreso: '',
+          razonSalida: '',
+          responsable: '',
+          fechaIngreso: DateTime.now(),
+          fechaSalida: null,
+          lugar: '',
+          imageTipo: '',
+          imageDescripcion: ''), // Valor predeterminado
+    );
+
+    // Si no se encontró en la lista de Taller, buscar en la lista Por Llegar
+    if (scannedCandado.numero != scannedNumber) {
+      scannedCandado = listaCandadosLlegar.firstWhere(
+        (e) => e.numero == scannedNumber,
+        orElse: () => Candado(
+            numero: '',
+            tipo: '',
+            razonIngreso: '',
+            razonSalida: '',
+            responsable: '',
+            fechaIngreso: DateTime.now(),
+            fechaSalida: null,
+            lugar: '',
+            imageTipo: '',
+            imageDescripcion: ''), // Valor predeterminado
+      );
+    }
+
+    if (scannedCandado.numero == scannedNumber) {
+      // Candado encontrado en la lista local, mostrar el diálogo con la información
+      EstadoCandados estado;
+      switch (scannedCandado.lugar) {
+        case 'I':
+          estado = EstadoCandados.ingresado;
+          break;
+        case 'M':
+          estado = EstadoCandados.mantenimiento;
+          break;
+        case 'V':
+        case 'E':
+          estado = EstadoCandados.danados;
+          break;
+        case 'L':
+          estado = EstadoCandados.listos;
+          break;
+        default:
+          estado = EstadoCandados.porIngresar;
+          break;
+      }
+
+      showDialog(
+        context: context,
+        builder: (context) =>
+            CustomScanResume(candado: scannedCandado, estado: estado),
+      );
+    } else
+    // Candado no encontrado en la lista local, obtener datos de la API
+    {
+      showDialog(
+        context: context,
+        builder: (context) => DialogScanQr(scannedNumber: scannedNumber),
+      );
+    }
+  }
+
 // Void para las botones del bottomNavigatorBar
   void _onItemTapped(int index) {
     setState(() {
@@ -82,78 +147,20 @@ class _TallerState extends State<Taller> {
       ))
           .then((result) {
         if (result != null) {
-          String scannedNumber = result as String;
-          // Buscar en la lista local de Taller
-          Candado scannedCandado = listaCandadosTaller.firstWhere(
-            (e) => e.numero == scannedNumber,
-            orElse: () => Candado(
-                numero: '',
-                tipo: '',
-                razonIngreso: '',
-                razonSalida: '',
-                responsable: '',
-                fechaIngreso: DateTime.now(),
-                fechaSalida: null,
-                lugar: '',
-                imageTipo: '',
-                imageDescripcion: ''), // Valor predeterminado
-          );
-
-          // Si no se encontró en la lista de Taller, buscar en la lista Por Llegar
-          if (scannedCandado.numero != scannedNumber) {
-            scannedCandado = listaCandadosLlegar.firstWhere(
-              (e) => e.numero == scannedNumber,
-              orElse: () => Candado(
-                  numero: '',
-                  tipo: '',
-                  razonIngreso: '',
-                  razonSalida: '',
-                  responsable: '',
-                  fechaIngreso: DateTime.now(),
-                  fechaSalida: null,
-                  lugar: '',
-                  imageTipo: '',
-                  imageDescripcion: ''), // Valor predeterminado
-            );
-          }
-
-          if (scannedCandado.numero == scannedNumber) {
-            // Candado encontrado en la lista local, mostrar el diálogo con la información
-            EstadoCandados estado;
-            switch (scannedCandado.lugar) {
-              case 'I':
-                estado = EstadoCandados.ingresado;
-                break;
-              case 'M':
-                estado = EstadoCandados.mantenimiento;
-                break;
-              case 'V':
-              case 'E':
-                estado = EstadoCandados.danados;
-                break;
-              case 'L':
-                estado = EstadoCandados.listos;
-                break;
-              default:
-                estado = EstadoCandados.porIngresar;
-                break;
-            }
-
-            showDialog(
-              context: context,
-              builder: (context) =>
-                  CustomScanResume(candado: scannedCandado, estado: estado),
-            );
-          } else
-          // Candado no encontrado en la lista local, obtener datos de la API
-          {
-            showDialog(
-              context: context,
-              builder: (context) => DialogScanQr(scannedNumber: scannedNumber),
-            );
-          }
+          _actionWithNumber(numeroCandado: result as String);
         }
       });
+    } else if (_selectedIndex == MenuNavigator.MANUAL.index) {
+      showDialog(
+        context: context,
+        builder: (context) => CustomAboutDialog(
+          title: 'Ingrese número',
+          whoIs: 'manual',
+          manual: (value) {
+            _actionWithNumber(numeroCandado: value);
+          },
+        ),
+      );
     } else if (_selectedIndex == MenuNavigator.HISTORIAL.index) {
       // Acciones para el índice 1 (Historial)
       showDialog(
@@ -456,8 +463,6 @@ class _TallerState extends State<Taller> {
                                       whoIs: 'Taller',
                                     );
                                   });
-                                  updateIconAppBar()
-                                      .triggerNotification(context, false);
                                 },
                                 mode: (value) {
                                   setState(() {
@@ -486,14 +491,22 @@ class _TallerState extends State<Taller> {
               backgroundColor: Colors.white,
               items: const <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
+                  backgroundColor: Colors.white,
                   icon: Icon(Icons.qr_code_scanner),
                   label: 'Escanear',
                 ),
                 BottomNavigationBarItem(
+                  backgroundColor: Colors.white,
+                  icon: Icon(Icons.drive_file_rename_outline),
+                  label: 'Ingresar',
+                ),
+                BottomNavigationBarItem(
+                  backgroundColor: Colors.white,
                   icon: Icon(Icons.receipt_long_outlined),
                   label: 'Historial',
                 ),
                 BottomNavigationBarItem(
+                  backgroundColor: Colors.white,
                   icon: Icon(Icons.bluetooth),
                   label: 'Conectar',
                 ),
@@ -501,6 +514,10 @@ class _TallerState extends State<Taller> {
               currentIndex: _selectedIndex,
               selectedItemColor: getColorAlmostBlue(),
               unselectedItemColor: Colors.grey,
+              unselectedLabelStyle: const TextStyle(
+                color: Colors.grey,
+              ),
+              showUnselectedLabels: true,
               onTap: _onItemTapped,
             ));
       }),

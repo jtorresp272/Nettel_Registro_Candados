@@ -46,7 +46,7 @@ class DialogScanQr extends StatelessWidget {
                   ),
                   const SizedBox(height: 20.0),
                   const Text(
-                    'Buscando candado...',
+                    'Buscando candado en el servidor...',
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.bold,
@@ -60,14 +60,19 @@ class DialogScanQr extends StatelessWidget {
         } else if (snapshot.hasError) {
           return AlertDialog(
             title: const Text('Error'),
-            content: Text(
-                'Ocurrió un error al buscar el candado: ${snapshot.error}'),
+            content: const Text(
+                'Ocurrió un error al buscar el candado, verifique que el número ingresado en el correcto'), //snapshot.error
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('Cerrar'),
+                child: Text(
+                  'Cerrar',
+                  style: TextStyle(
+                    color: getColorAlmostBlue(),
+                  ),
+                ),
               ),
             ],
           );

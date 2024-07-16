@@ -11,11 +11,13 @@ class CustomAboutDialog extends StatefulWidget {
   final String title;
   final String? hint;
   final String? whoIs;
+  final Function(String)? manual;
   const CustomAboutDialog({
     super.key,
     required this.title,
     this.hint,
     this.whoIs,
+    this.manual,
   });
 
   @override
@@ -80,7 +82,7 @@ class _CustomAboutDialogState extends State<CustomAboutDialog> {
             onPressed: () async {
               String text = _textController.text;
               if (text.isNotEmpty && text.length > 3) {
-                if (widget.whoIs != 'taller') {
+                if (widget.whoIs != 'taller' && widget.whoIs != 'manual') {
                   Navigator.of(context).pop();
                   showDialog(
                     context: context,
@@ -89,6 +91,9 @@ class _CustomAboutDialogState extends State<CustomAboutDialog> {
                       who: 'puerto',
                     ),
                   );
+                } else if (widget.whoIs == 'manual') {
+                  Navigator.of(context).pop();
+                  widget.manual!(text);
                 } else {
                   setState(() {
                     wait = true;
@@ -99,7 +104,6 @@ class _CustomAboutDialogState extends State<CustomAboutDialog> {
                   setState(() {
                     wait = false;
                   });
-
                   Navigator.of(context).pop();
                   if (isData) {
                     Navigator.of(context).pushNamed('/historial');

@@ -5,7 +5,9 @@ import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:flutter_application_1/Funciones/servicios/apiForDataBase.dart';
 import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
+import 'package:flutter_application_1/Funciones/verificar_credenciales.dart';
 import 'package:flutter_application_1/api/emailHandler.dart';
+import 'package:flutter_application_1/widgets/CustomAboutDialog.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
 import 'package:flutter_application_1/widgets/CustomListViewBuilder.dart';
 import 'package:flutter_application_1/widgets/CustomMenu.dart';
@@ -14,13 +16,6 @@ import 'package:flutter_application_1/widgets/CustomResume.dart';
 import 'package:flutter_application_1/widgets/CustomScanResume.dart';
 import 'package:flutter_application_1/widgets/CustomSearch.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
-
-enum MenuNavigator {
-  // ignore: constant_identifier_names
-  ESCANER,
-  // ignore: constant_identifier_names
-  HISTORIAL,
-}
 
 class Monitoreo extends StatefulWidget {
   const Monitoreo({super.key});
@@ -50,6 +45,46 @@ class _MonitoreoState extends State<Monitoreo>
   late Map<int, Map<int, bool>>
       _tabExpandedStates; // Definicion de _tabExpandedStates para dejar seteado el ultimo estado de cada tapBar
 
+  void _actionWithNumber({required String numeroCandado}) {
+    String scannedNumber = numeroCandado;
+    // Buscar en la lista local de Taller
+    Candado scannedCandado = listaCandadosTaller.firstWhere(
+      (e) => e.numero == scannedNumber,
+      orElse: () => Candado(
+          numero: '',
+          tipo: '',
+          razonIngreso: '',
+          razonSalida: '',
+          responsable: '',
+          fechaIngreso: DateTime.now(),
+          fechaSalida: null,
+          lugar: '',
+          imageTipo: '',
+          imageDescripcion: ''), // Valor predeterminado
+    );
+    // Candado encontrado en la lista local, mostrar el diálogo con la información
+    if (scannedCandado.numero == scannedNumber) {
+      if (scannedCandado.lugar == 'L') {
+        showDialog(
+          context: context,
+          builder: (context) => CustomScanResume(
+            candado: scannedCandado,
+            estado: EstadoCandados.listos,
+            whereGo: 'monitoreo',
+          ),
+        );
+      } else {
+        customSnackBar(context,
+            mensaje: 'El candado no esta listo', colorFondo: Colors.red);
+      }
+    } else
+    // Candado no encontrado en la lista local
+    {
+      customSnackBar(context,
+          mensaje: 'El candado no esta en taller', colorFondo: Colors.red);
+    }
+  }
+
   // Void para las botones del bottomNavigatorBar
   void _onItemTapped(int index) {
     setState(() {
@@ -63,48 +98,21 @@ class _MonitoreoState extends State<Monitoreo>
       ))
           .then((result) {
         if (result != null) {
-          String scannedNumber = result as String;
-          // Buscar en la lista local de Taller
-          Candado scannedCandado = listaCandadosTaller.firstWhere(
-            (e) => e.numero == scannedNumber,
-            orElse: () => Candado(
-                numero: '',
-                tipo: '',
-                razonIngreso: '',
-                razonSalida: '',
-                responsable: '',
-                fechaIngreso: DateTime.now(),
-                fechaSalida: null,
-                lugar: '',
-                imageTipo: '',
-                imageDescripcion: ''), // Valor predeterminado
-          );
-          // Candado encontrado en la lista local, mostrar el diálogo con la información
-          if (scannedCandado.numero == scannedNumber) {
-            if (scannedCandado.lugar == 'L') {
-              showDialog(
-                context: context,
-                builder: (context) => CustomScanResume(
-                  candado: scannedCandado,
-                  estado: EstadoCandados.listos,
-                  whereGo: 'monitoreo',
-                ),
-              );
-            } else {
-              customSnackBar(context,
-                  mensaje: 'El candado no esta listo', colorFondo: Colors.red);
-            }
-          } else
-          // Candado no encontrado en la lista local
-          {
-            customSnackBar(context,
-                mensaje: 'El candado no esta en taller',
-                colorFondo: Colors.red);
-          }
+          _actionWithNumber(numeroCandado: result as String);
         }
       });
-    } else if (_selectedIndex == MenuNavigator.HISTORIAL.index) {
+    } else if (_selectedIndex == MenuNavigator.MANUAL.index) {
       // Acciones para el índice 1 (Historial)
+      showDialog(
+        context: context,
+        builder: (context) => CustomAboutDialog(
+          title: 'Ingrese número',
+          whoIs: 'manual',
+          manual: (value) {
+            _actionWithNumber(numeroCandado: value);
+          },
+        ),
+      );
     }
   }
 
@@ -363,19 +371,29 @@ class _MonitoreoState extends State<Monitoreo>
                 ),
               ),
             ),
-      floatingActionButton: (_currentTabIndex != 0)
-          ? FloatingActionButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0)),
-              backgroundColor: getColorAlmostBlue(),
-              child: const Icon(
-                Icons.qr_code_scanner,
-                size: 30.0,
-                color: Colors.white,
+      bottomNavigationBar: (_currentTabIndex != 0 && _currentTabIndex != 3)
+          ? BottomNavigationBar(
+              backgroundColor: Colors.white,
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  backgroundColor: Colors.white,
+                  icon: Icon(Icons.qr_code_scanner),
+                  label: 'Escanear',
+                ),
+                BottomNavigationBarItem(
+                  backgroundColor: Colors.white,
+                  icon: Icon(Icons.drive_file_rename_outline),
+                  label: 'Ingresar',
+                ),
+              ],
+              currentIndex: _selectedIndex,
+              selectedItemColor: getColorAlmostBlue(),
+              unselectedItemColor: Colors.grey,
+              unselectedLabelStyle: const TextStyle(
+                color: Colors.grey,
               ),
-              onPressed: () {
-                _onItemTapped(0);
-              },
+              showUnselectedLabels: true,
+              onTap: _onItemTapped,
             )
           : null,
     );
@@ -391,40 +409,3 @@ class _MonitoreoState extends State<Monitoreo>
     super.dispose();
   }
 }
-
-/* funcion para resetear la pagina Taller */
-/*
-void restartPage(BuildContext context) async {
-  // Inicia chequeo en la base de datos
-  _description = await getDataCandados('candados');
-  if (_description.isNotEmpty) {
-    datosEnviar = _description.split(',');
-  }
-  if (datosEnviar.isNotEmpty) {
-    // Formatear los datos como texto plano
-    String datosFormateados = '';
-    for (int i = 0; i < datosEnviar.length; i++) {
-      datosFormateados += '${datosEnviar[i]}\n';
-    }
-    // Estructura para enviar el correo
-    final Email email = Email(
-      body: datosFormateados,
-      subject: 'Listado de candados para salida de taller',
-      recipients: correosEnviar,
-      isHTML: false,
-    );
-    try {
-      await FlutterEmailSender.send(email);
-      await deleteData(id: 2, title: 'candados');
-      datosEnviar.clear();
-      _description = '';
-      customSnackBar(context, mensaje: 'Correo enviado existosamente');
-    } catch (error) {
-      // Ocurrió un error al enviar el correo
-      customSnackBar(context,
-          mensaje: 'Error al abrir la aplicacion de correos',
-          colorFondo: Colors.red);
-    }
-  }
-}
-*/

@@ -2,12 +2,24 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:logger/logger.dart';
 
+enum MenuNavigator {
+  // ignore: constant_identifier_names
+  ESCANER,
+  // ignore: constant_identifier_names
+  MANUAL,
+  // ignore: constant_identifier_names
+  HISTORIAL,
+  // ignore: constant_identifier_names
+  BLUETOOTH,
+}
+
 Future<bool> validarCredenciales(String usuario, String pass) async {
   var logger = Logger();
   bool credencialesValidas = false;
 
   // URL para obtener datos del usuario dependiendo si es correcto el usuario o no
-  String url = 'https://script.google.com/macros/s/AKfycbxdZx1uxUJWRRu71vYijvsJzr6s8HvfUsPniRK5ajKY19rU3VXy9_GxH04ZoLP7qoNt_Q/exec';
+  String url =
+      'https://script.google.com/macros/s/AKfycbxdZx1uxUJWRRu71vYijvsJzr6s8HvfUsPniRK5ajKY19rU3VXy9_GxH04ZoLP7qoNt_Q/exec';
 
   try {
     var response =
