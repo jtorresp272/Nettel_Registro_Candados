@@ -67,11 +67,11 @@ Future<bool> checkAndSendEmail(BuildContext context,
       colorText: Colors.white,
     );
     return true;
-  } on MailerException catch (_) {
+  } on MailerException catch (e) {
     // Ocurrió un error al enviar el correo
     customSnackBar(
       context,
-      mensaje: 'Error al abrir la aplicacion de correos',
+      mensaje: 'Error al abrir la aplicacion de correos: $e',
       colorFondo: Colors.red,
     );
     return false;

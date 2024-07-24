@@ -98,12 +98,25 @@ class _customDrawerState extends State<customDrawer> {
                         const SizedBox(
                           width: 20.0,
                         ),
-                        Text(
-                          widget.nameUser,
-                          style: TextStyle(
-                            color: getColorAlmostBlue(),
-                            fontSize: 20.0,
-                          ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Joshue Torres',
+                              style: TextStyle(
+                                color: getColorAlmostBlue(),
+                                fontSize: 20.0,
+                              ),
+                            ),
+                            Text(
+                              widget.nameUser,
+                              style: TextStyle(
+                                color: getColorAlmostBlue(),
+                                fontSize: 16.0,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -131,6 +144,36 @@ class _customDrawerState extends State<customDrawer> {
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
+                                    Container(
+                                      width: 100, // Ancho del círculo
+                                      height: 100, // Altura del círculo
+                                      decoration: BoxDecoration(
+                                        shape:
+                                            BoxShape.circle, // Forma circular
+                                        border: Border.all(
+                                          color: Colors.black26,
+                                        ),
+                                      ),
+                                      child: ClipOval(
+                                        child: Image.asset(
+                                          'assets/images/logo_login.png',
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      
+                                      width: 20.0,
+                                    ),
+                                    ListTile(
+                                      title: const Text('Joshue Arturo'),
+                                      subtitle: const Text('Cargo: Supervisor'),
+                                      titleTextStyle: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16.0,
+                                      ),
+                                      textColor: getColorAlmostBlue(),
+                                    ),
                                     ListTile(
                                       leading: const Icon(Icons.person),
                                       title: const Text('Usuario'),

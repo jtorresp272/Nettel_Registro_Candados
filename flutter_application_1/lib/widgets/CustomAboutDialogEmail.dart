@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 
 class CustomAboutDialogEmail extends StatefulWidget {
@@ -36,11 +37,14 @@ class _CustomAboutDialogEmailState extends State<CustomAboutDialogEmail> {
         children: [
           SizedBox(
             width: MediaQuery.of(context).size.width * 0.7,
-            child: Text(
-              datos,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 15.0,
+            height: MediaQuery.of(context).size.width * 0.7,
+            child: SingleChildScrollView(
+              child: Text(
+                datos,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 15.0,
+                ),
               ),
             ),
           ),

@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/ble/bleHandler.dart';
 import 'package:provider/provider.dart';
 
@@ -25,7 +27,7 @@ class BleNordicTerminalPageState extends State<BleNordicTerminalPage>
 
   final ScrollController _scrollController = ScrollController();
   int intentcount = 0; // variable parar reintentar subscribirse
-
+  bool addCr = false; // Para agregar un salto de linea al final del texto
   @override
   void initState() {
     super.initState();
@@ -122,7 +124,8 @@ class BleNordicTerminalPageState extends State<BleNordicTerminalPage>
             ),
             Container(
               color: Colors.white,
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              width: double.infinity,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5.0),
                 child: SizedBox(
@@ -133,11 +136,48 @@ class BleNordicTerminalPageState extends State<BleNordicTerminalPage>
                         child: TextField(
                           controller: _controller,
                           style: const TextStyle(color: Colors.black),
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            label: Text('Comando'),
-                            labelStyle: TextStyle(color: Colors.black54),
-                            focusedBorder: OutlineInputBorder(
+                          decoration: InputDecoration(
+                            prefixIcon: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  addCr = !addCr;
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 5.0, horizontal: 10.0),
+                                margin: const EdgeInsets.only(right: 5.0),
+                                width: 55.0,
+                                decoration: BoxDecoration(
+                                  color:
+                                      addCr ? Colors.green : Colors.transparent,
+                                  border: const Border(
+                                    right: BorderSide(
+                                      color: Colors.black54,
+                                      width: 0.5,
+                                    ),
+                                  ),
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(5.0),
+                                    bottomLeft: Radius.circular(5.0),
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'CR+LF',
+                                    style: TextStyle(
+                                      color:
+                                          addCr ? Colors.white : Colors.black,
+                                      fontSize: 12.0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            border: const OutlineInputBorder(),
+                            hintText: 'Comando',
+                            hintStyle: const TextStyle(color: Colors.black54),
+                            focusedBorder: const OutlineInputBorder(
                               borderSide: BorderSide(
                                 color: Colors.black,
                               ),
@@ -156,17 +196,20 @@ class BleNordicTerminalPageState extends State<BleNordicTerminalPage>
                           border: Border.all(color: Colors.black54),
                           borderRadius: BorderRadius.circular(5.0),
                         ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.send,
-                            color: Colors.black,
-                          ),
-                          onPressed: () {
+                        child: GestureDetector(
+                          onTap: () {
                             if (_controller.text.isNotEmpty) {
+                              if (addCr) {
+                                _controller.text = '${_controller.text}\r\n';
+                              }
                               _sendMessage(_controller.text);
                               _controller.clear();
                             }
                           },
+                          child: const Icon(
+                            Icons.send,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     ],
