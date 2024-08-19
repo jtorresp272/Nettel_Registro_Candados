@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/ble/bleHandler.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +30,7 @@ class BleNordicTerminalPageState extends State<BleNordicTerminalPage>
   final ScrollController _scrollController = ScrollController();
   int intentcount = 0; // variable parar reintentar subscribirse
   bool addCr = false; // Para agregar un salto de linea al final del texto
+  bool clearText = true; // Limpiar el texto luego de presionar el boton enviar
   @override
   void initState() {
     super.initState();
@@ -58,7 +61,6 @@ class BleNordicTerminalPageState extends State<BleNordicTerminalPage>
   Future<void> _sendMessage(String message) async {
     // Convert message to bytes and write to the characteristic
     final List<int> commandBytes = message.codeUnits;
-
     await provider.writeNordicCharacteristic(device, commandBytes);
 
     setState(() {
@@ -67,6 +69,12 @@ class BleNordicTerminalPageState extends State<BleNordicTerminalPage>
     });
 
     scrollToBottom();
+  }
+
+  bool isValidMessage(String content) {
+    final regex =
+        RegExp(r'^[\w\s]+$'); // Solo permite letras, numeros y espacios.
+    return content.isNotEmpty;
   }
 
   @override
@@ -91,32 +99,36 @@ class BleNordicTerminalPageState extends State<BleNordicTerminalPage>
                   controller: _scrollController,
                   itemCount: provider.messages.length,
                   itemBuilder: (context, index) {
-                    final message = provider.messages[index];
-                    if (message.characteristic == CharacteristicType.nordic ||
-                        message.characteristic == CharacteristicType.both) {
-                      return Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          provider.messages[index].characteristic ==
-                                      CharacteristicType.both ||
-                                  provider.messages[index].characteristic ==
-                                      CharacteristicType.nordic
-                              ? provider.messages[index].content.trim()
-                              : '',
-                          style: TextStyle(
-                            color: provider.messages[index].type ==
-                                    MessageType.sent
-                                ? Colors.blue
-                                : provider.messages[index].type ==
-                                        MessageType.process
-                                    ? Colors.amber
-                                    : Colors.green,
-                            fontSize: 10.0,
+                    try {
+                      final message = provider.messages[index];
+                      if (message.characteristic == CharacteristicType.nordic ||
+                          message.characteristic == CharacteristicType.both) {
+                        final content = message.content.trim();
+
+                        return Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            message.characteristic == CharacteristicType.both ||
+                                    message.characteristic ==
+                                        CharacteristicType.nordic
+                                ? content
+                                : '',
+                            style: TextStyle(
+                              color: message.type == MessageType.sent
+                                  ? Colors.blue
+                                  : message.type == MessageType.process
+                                      ? Colors.amber
+                                      : Colors.green,
+                              fontSize: 10.0,
+                            ),
                           ),
-                        ),
-                      );
-                    } else {
-                      const SizedBox.shrink();
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    } catch (e) {
+                      logger.e('Error processing message at index $index: $e');
+                      return const SizedBox.shrink();
                     }
                   },
                 );
@@ -137,42 +149,92 @@ class BleNordicTerminalPageState extends State<BleNordicTerminalPage>
                           controller: _controller,
                           style: const TextStyle(color: Colors.black),
                           decoration: InputDecoration(
-                            prefixIcon: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  addCr = !addCr;
-                                });
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 5.0, horizontal: 10.0),
-                                margin: const EdgeInsets.only(right: 5.0),
-                                width: 55.0,
-                                decoration: BoxDecoration(
-                                  color:
-                                      addCr ? Colors.green : Colors.transparent,
-                                  border: const Border(
-                                    right: BorderSide(
-                                      color: Colors.black54,
-                                      width: 0.5,
+                            prefixIcon: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      addCr = !addCr;
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 5.0, horizontal: 10.0),
+                                    margin: const EdgeInsets.only(right: 5.0),
+                                    width: 55.0,
+                                    decoration: BoxDecoration(
+                                      color: addCr
+                                          ? Colors.green
+                                          : Colors.transparent,
+                                      border: const Border(
+                                        right: BorderSide(
+                                          color: Colors.black54,
+                                          width: 0.5,
+                                        ),
+                                      ),
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(5.0),
+                                        bottomLeft: Radius.circular(5.0),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        'CR+LF',
+                                        style: TextStyle(
+                                          color: addCr
+                                              ? Colors.white
+                                              : Colors.black,
+                                          fontSize: 12.0,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(5.0),
-                                    bottomLeft: Radius.circular(5.0),
-                                  ),
                                 ),
-                                child: Center(
-                                  child: Text(
-                                    'CR+LF',
-                                    style: TextStyle(
-                                      color:
-                                          addCr ? Colors.white : Colors.black,
-                                      fontSize: 12.0,
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      clearText = !clearText;
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 5.0, horizontal: 10.0),
+                                    margin: const EdgeInsets.only(right: 5.0),
+                                    width: 55.0,
+                                    decoration: BoxDecoration(
+                                      color: clearText
+                                          ? Colors.green
+                                          : Colors.transparent,
+                                      border: const Border(
+                                        right: BorderSide(
+                                          color: Colors.black54,
+                                          width: 0.5,
+                                        ),
+                                        top: BorderSide(
+                                          color: Colors.black54,
+                                          width: 0.5,
+                                        ),
+                                      ),
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(5.0),
+                                        bottomLeft: Radius.circular(5.0),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        'CLEAR',
+                                        style: TextStyle(
+                                          color: clearText
+                                              ? Colors.white
+                                              : Colors.black,
+                                          fontSize: 12.0,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
                             border: const OutlineInputBorder(),
                             hintText: 'Comando',
@@ -203,7 +265,9 @@ class BleNordicTerminalPageState extends State<BleNordicTerminalPage>
                                 _controller.text = '${_controller.text}\r\n';
                               }
                               _sendMessage(_controller.text);
-                              _controller.clear();
+                              if (clearText) {
+                                _controller.clear();
+                              }
                             }
                           },
                           child: const Icon(

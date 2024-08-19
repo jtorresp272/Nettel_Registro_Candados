@@ -116,8 +116,11 @@ class BleOperationState extends State<BleOperation> {
     _notificationNettelSubscription =
         provider.subscribeToNettelCharacteristic(newDevice).listen((data) {
       setState(() {
-        provider.addMessage(Message(utf8.decode(data), MessageType.received,
-            CharacteristicType.nettel));
+        List<int> validBytes =
+            data.where((byte) => byte >= 0 && byte <= 127).toList();
+        String decodeString = utf8.decode(validBytes, allowMalformed: true);
+        provider.addMessage(Message(
+            decodeString, MessageType.received, CharacteristicType.nettel));
       });
 
       bleNettelTerminalKey.currentState?.scrollToBottom();
@@ -128,8 +131,11 @@ class BleOperationState extends State<BleOperation> {
     _notificationNordicSubscription =
         provider.subscribeToNordicCharacteristic(newDevice).listen((data) {
       setState(() {
-        provider.addMessage(Message(utf8.decode(data), MessageType.received,
-            CharacteristicType.nordic));
+        List<int> validBytes =
+            data.where((byte) => byte >= 0 && byte <= 127).toList();
+        String decodeString = utf8.decode(validBytes, allowMalformed: true);
+        provider.addMessage(Message(
+            decodeString, MessageType.received, CharacteristicType.nordic));
       });
 
       bleNordicTerminalKey.currentState?.scrollToBottom();

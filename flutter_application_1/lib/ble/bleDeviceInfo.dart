@@ -1,8 +1,6 @@
 // ignore_for_file: file_names
 
 /* Funcion para obtener el nombre del dispositivo */
-import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
-
 String getDeviceName(List<int> manufacturerData) {
   if (manufacturerData.length < 2) {
     return 'Unknown';
