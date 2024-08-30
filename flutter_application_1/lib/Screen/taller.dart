@@ -173,6 +173,8 @@ class _TallerState extends State<Taller> {
     } else if (_selectedIndex == MenuNavigator.BLUETOOTH.index) {
       Navigator.of(context).pushNamed('/bleConexion');
       //Navigator.popAndPushNamed(context, '/bleConexion');
+    } else if (_selectedIndex == MenuNavigator.MAPS.index) {
+      Navigator.of(context).pushNamed('/map');
     }
   }
 
@@ -509,6 +511,11 @@ class _TallerState extends State<Taller> {
                   backgroundColor: Colors.white,
                   icon: Icon(Icons.bluetooth),
                   label: 'Conectar',
+                ),
+                BottomNavigationBarItem(
+                  backgroundColor: Colors.white,
+                  icon: Icon(Icons.map_outlined),
+                  label: 'Mapa',
                 ),
               ],
               currentIndex: _selectedIndex,

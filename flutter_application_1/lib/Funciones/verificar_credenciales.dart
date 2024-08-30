@@ -11,6 +11,8 @@ enum MenuNavigator {
   HISTORIAL,
   // ignore: constant_identifier_names
   BLUETOOTH,
+  // ignore: constant_identifier_names
+  MAPS,
 }
 
 Future<bool> validarCredenciales(String usuario, String pass) async {

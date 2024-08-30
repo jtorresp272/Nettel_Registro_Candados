@@ -8,6 +8,7 @@ import 'package:flutter_application_1/Screen/puerto.dart';
 import 'package:flutter_application_1/Screen/login.dart';
 import 'package:flutter_application_1/Screen/splash.dart';
 import 'package:flutter_application_1/ble/bleHandler.dart';
+import 'package:flutter_application_1/pages/map_page.dart';
 import 'package:flutter_application_1/widgets/CustomTheme.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
           '/monitoreo': (context) => const Monitoreo(),
           '/taller': (context) => const Taller(),
           '/puerto': (context) => const Puerto(),
+          '/map': (context) => const MapPage(),
           '/historial': (context) => const Historial(),
           '/bleConexion': (context) => const bleConexion(),
           '/login': (context) => const LogIn(),
