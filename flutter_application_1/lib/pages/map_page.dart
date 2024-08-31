@@ -1,10 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 //import 'package:permission_handler/permission_handler.dart';
+enum location_t  
+{
+  SOURCE,
+  DESTINATION,
+  CURRENT
+}
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -19,7 +24,7 @@ class _MapPageState extends State<MapPage> {
   final Location _locationController = Location();
   final Completer<GoogleMapController> _mapController =
       Completer<GoogleMapController>();
-
+  
   static const LatLng _pGooglePlex =
       LatLng(-2.168456777826358, -79.91654126509425);
 
@@ -28,7 +33,7 @@ class _MapPageState extends State<MapPage> {
 
   LatLng? _currentP;
 
-  Marker _currentLocationMarker = const Marker(
+  Marker _sourceLocationMarker = const Marker(
     markerId: MarkerId("_sourceLocation"),
     icon: BitmapDescriptor.defaultMarker,
     position: _pGooglePlex,
@@ -38,54 +43,104 @@ class _MapPageState extends State<MapPage> {
     ),
   );
 
+  Marker _destinationLocationMarker = const Marker(
+    markerId: MarkerId("_destinationLocation"),
+    icon: BitmapDescriptor.defaultMarker,
+    position: _pHiperMarket,
+    infoWindow: InfoWindow(
+      title: 'Destination Location',
+      snippet: 'Tap for more info',
+    ),
+  );
+  List<Marker> list = [];
+
   @override
   void initState() {
+    list = [_destinationLocationMarker, _sourceLocationMarker];
     super.initState();
-    _getLocationUpdates();
-    _showInfoWindow();
+    //_getLocationUpdates();
+    /*
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showUpdatedInfoWindow();
+    });
+    */
+    //_showUpdatedInfoWindow();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _currentP == null
-          ? const Center(
-              child: Text("Loading..."),
-            )
-          : GoogleMap(
-              onMapCreated: (GoogleMapController controller) =>
-                  _mapController.complete(controller),
-              initialCameraPosition:
-                  const CameraPosition(target: _pGooglePlex, zoom: 16),
-              markers: {
-                _currentLocationMarker.copyWith(
-                  onTapParam: _onMarkerTap,
+      body:// _currentP == null
+          //? const Center(
+          //    child: Text("Loading..."),
+          //  )
+          //: 
+          Stack(
+            children: [
+              GoogleMap(
+                  onMapCreated: (GoogleMapController controller) =>
+                      _mapController.complete(controller),
+                  initialCameraPosition:
+                      const CameraPosition(target: _pGooglePlex, zoom: 16),
+                  markers: Set<Marker>.of(list), 
+                  //{
+                    //_sourceLocationMarker.copyWith(
+                    //  onTapParam: _onMarkerTap,
+                    //),
+                    /*
+                    Marker(
+                      markerId: const MarkerId("_currentLocation"),
+                      icon: BitmapDescriptor.defaultMarker,
+                      infoWindow: const InfoWindow(
+                        title: 'Current Location',
+                      ),
+                      position: _currentP!,
+                    ),
+                    */
+                    //_destinationLocationMarker.copyWith(
+                    //  onTapParam: _onMarkerTap,
+                    //)
+                  //},
                 ),
-                Marker(
-                  markerId: const MarkerId("_currentLocation"),
-                  icon: BitmapDescriptor.defaultMarker,
-                  infoWindow: const InfoWindow(
-                    title: 'Current Location',
-                  ),
-                  position: _currentP!,
-                ),
-                const Marker(
-                  markerId: MarkerId("_destinationLocation"),
-                  icon: BitmapDescriptor.defaultMarker,
-                  position: _pHiperMarket,
-                ),
-              },
+                Positioned(
+            top: MediaQuery.of(context).size.height / 2 - 100,
+            left: MediaQuery.of(context).size.width / 2 - 150,
+            child: Column(
+              children: [
+                _buildCustomInfoWindow(
+                    context, 'Source Location', 'This is the source location'),
+                const SizedBox(height: 200),
+                _buildCustomInfoWindow(context, 'Destination Location',
+                    'This is the destination location'),
+              ],
             ),
+          ),
+            ],
+          ),
+    );
+  }
+
+  Widget _buildCustomInfoWindow(BuildContext context, String title, String snippet)
+  {
+return Container(
+      padding: const EdgeInsets.all(8.0),
+      color: Colors.white,
+      child: Column(
+        children: [
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(snippet),
+        ],
+      ),
     );
   }
 
   void _onMarkerTap() {
     setState(() {
-      _currentLocationMarker = _currentLocationMarker.copyWith(
+      _sourceLocationMarker = _sourceLocationMarker.copyWith(
         infoWindowParam: InfoWindow(
           title: 'Source Location',
           snippet:
-              'This is your current location. Latitude: ${_currentP!.latitude}, Longitude: ${_currentP!.longitude}',
+              'This is your source location. Latitude: ${_pGooglePlex.latitude}, Longitude: ${_pGooglePlex.longitude}',
         ),
       );
     });
@@ -101,6 +156,7 @@ class _MapPageState extends State<MapPage> {
 
   Future<void> _showUpdatedInfoWindow() async {
     final GoogleMapController controller = await _mapController.future;
+    controller.showMarkerInfoWindow(const MarkerId('_destinationLocation'));
     controller.showMarkerInfoWindow(const MarkerId('_sourceLocation'));
   }
 
@@ -110,6 +166,7 @@ class _MapPageState extends State<MapPage> {
     await controller.animateCamera(
       CameraUpdate.newCameraPosition(_newCameraPosition),
     );
+    _locationSubscription?.cancel();
   }
 
   /* Función para saber tu ubicación */
