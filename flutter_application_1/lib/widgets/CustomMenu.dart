@@ -162,7 +162,6 @@ class _customDrawerState extends State<customDrawer> {
                                       ),
                                     ),
                                     const SizedBox(
-                                      
                                       width: 20.0,
                                     ),
                                     ListTile(

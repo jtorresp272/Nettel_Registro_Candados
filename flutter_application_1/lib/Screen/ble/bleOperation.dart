@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
+import 'package:flutter_application_1/Screen/ble/bleConexion.dart';
 import 'package:flutter_application_1/Screen/ble/bleNettelTerminal.dart';
 import 'package:flutter_application_1/Screen/ble/bleNordicTerminal.dart';
 import 'package:flutter_application_1/ble/bleHandler.dart';
@@ -116,8 +117,11 @@ class BleOperationState extends State<BleOperation> {
     _notificationNettelSubscription =
         provider.subscribeToNettelCharacteristic(newDevice).listen((data) {
       setState(() {
-        List<int> validBytes =
-            data.where((byte) => byte >= 0 && byte <= 127).toList();
+        List<int> validBytes = data
+            .where(
+              (byte) => (byte >= 0 && byte <= 255),
+            )
+            .toList();
         String decodeString = utf8.decode(validBytes, allowMalformed: true);
         provider.addMessage(Message(
             decodeString, MessageType.received, CharacteristicType.nettel));
@@ -131,8 +135,12 @@ class BleOperationState extends State<BleOperation> {
     _notificationNordicSubscription =
         provider.subscribeToNordicCharacteristic(newDevice).listen((data) {
       setState(() {
-        List<int> validBytes =
-            data.where((byte) => byte >= 0 && byte <= 127).toList();
+        List<int> validBytes = data
+            .where(
+              (byte) => (byte >= 0 && byte <= 255),
+            )
+            .toList();
+
         String decodeString = utf8.decode(validBytes, allowMalformed: true);
         provider.addMessage(Message(
             decodeString, MessageType.received, CharacteristicType.nordic));
@@ -191,22 +199,34 @@ class BleOperationState extends State<BleOperation> {
           backgroundColor: Colors.white,
           appBar: AppBar(
             backgroundColor: getColorAlmostBlue(),
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            title: Row(
               children: [
-                Text(
-                  device.name,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold),
+                Container(
+                  margin: const EdgeInsets.only(right: 5.0),
+                  width: MediaQuery.of(context).size.width * 0.2,
+                  height: MediaQuery.of(context).size.width * 0.15,
+                  child: Image.asset(
+                    getImagePadlock(device.name),
+                  ),
                 ),
-                Text(
-                  device.id,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.normal),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      device.name,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      device.id,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.normal),
+                    ),
+                  ],
                 ),
               ],
             ),

@@ -367,7 +367,9 @@ class _bleConexionState extends State<bleConexion> {
                                                       .size
                                                       .width *
                                                   0.2,
-                                              child: Image.asset(image),
+                                              child: Image.asset(
+                                                image,
+                                              ),
                                             ),
                                             Expanded(
                                               flex: 2,
@@ -583,7 +585,10 @@ class _bleConexionState extends State<bleConexion> {
                                                                           'N01') ||
                                                                   device.name
                                                                       .contains(
-                                                                          'N03'))
+                                                                          'N03') ||
+                                                                  device.name
+                                                                      .contains(
+                                                                          'C07'))
                                                                 sensor(
                                                                   texto:
                                                                       'Corte',
@@ -598,7 +603,7 @@ class _bleConexionState extends State<bleConexion> {
                                                               // Separacion
                                                               if (device.name
                                                                   .contains(
-                                                                      'CA'))
+                                                                      'C07'))
                                                                 sensor(
                                                                   texto:
                                                                       'Separación',
@@ -647,7 +652,10 @@ class _bleConexionState extends State<bleConexion> {
                                                                           'N01') ||
                                                                   device.name
                                                                       .contains(
-                                                                          'N03'))
+                                                                          'N03') ||
+                                                                  device.name
+                                                                      .contains(
+                                                                          'C07'))
                                                                 estado(
                                                                   texto:
                                                                       getCoState(device.manufacturerData) ==
@@ -658,7 +666,7 @@ class _bleConexionState extends State<bleConexion> {
                                                               // Separación
                                                               if (device.name
                                                                   .contains(
-                                                                      'CA'))
+                                                                      'C07'))
                                                                 estado(
                                                                   texto:
                                                                       getSeState(device.manufacturerData) ==
@@ -854,6 +862,10 @@ String getImagePadlock(String name) {
     image = 'assets/images/candado_piston.png';
   } else if (name.contains('N03')) {
     image = 'assets/images/candado_U.png';
+  } else if (name.contains('C07')) {
+    image = 'assets/images/cc_plastico.png';
+  } else if (name.contains('S09')) {
+    image = 'assets/images/solar.png';
   }
   return image;
 }

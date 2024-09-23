@@ -93,6 +93,7 @@ flutter:
     - assets/images/candado_cable.png
     - assets/images/cc_plastico.png
     - assets/images/CC_5.png
+    - assets/images/solar.png
     - assets/images/bluetooth_desactivado.png
     - assets/images/ubicacion_desactivada.png
   # An image asset can refer to one or more resolution-specific "variants", see

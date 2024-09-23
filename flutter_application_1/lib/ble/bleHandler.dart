@@ -207,7 +207,7 @@ class BleProvider with ChangeNotifier {
 
   void handleDisconnection() {
     // Lógica para manejar la desconexión
-    logger.w('me desconecte');
+    //logger.w('me desconecte');
     if (targetDeviceName != null) {
       isConnected = false;
       reconnection = true;
