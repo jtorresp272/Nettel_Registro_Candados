@@ -8,7 +8,7 @@ Future<bool> modificarRegistro(
     String accion, String num, List<String> valores) async {
   const baseUrl =
       'https://script.google.com/macros/s/AKfycbzmePQJ3BkTkJ2SZrUbV0RSbS4gXp3fn9UFKVHSALFwx10aHMw20pnYB4doHKNoYxTtxg/exec';
-      
+
   // Construir la URL con los parámetros proporcionados
   bool state;
   // Combinar los componentes de la URL
@@ -21,11 +21,9 @@ Future<bool> modificarRegistro(
     if (response.statusCode == 200) {
       // Verificar el contenido de la respuesta
       if (response.body == '{"mensaje":"Filas modificadas exitosamente."}') {
-        logger.i('Filas modificadas exitosamente.');
         state = true;
       } else if (response.body ==
           '{"mensaje":"Fila modificada y agregada correctamente."}') {
-        logger.i('Fila agregada y modificada exitosamente.');
         state = true;
       } else {
         logger.i('Error en la respuesta: ${response.body}');

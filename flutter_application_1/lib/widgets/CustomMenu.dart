@@ -70,7 +70,7 @@ class _customDrawerState extends State<customDrawer> {
               decoration: BoxDecoration(
                   color: Colors.transparent,
                   border: Border.all(
-                      color: getBackgroundColor(),
+                      color: getColorAlmostBlue(),
                       width: 2.0,
                       style: BorderStyle.solid),
                   borderRadius: BorderRadius.circular(10.0)),
@@ -84,7 +84,7 @@ class _customDrawerState extends State<customDrawer> {
                           height: 40, // Altura del círculo
                           decoration: const BoxDecoration(
                             shape: BoxShape.circle, // Forma circular
-                            color: Colors.black, // Color de fondo del círculo
+                            color: Colors.white, // Color de fondo del círculo
                           ),
                           child: ClipOval(
                             child: Image.asset(
@@ -103,14 +103,14 @@ class _customDrawerState extends State<customDrawer> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Joshue Torres',
+                              'Información',
                               style: TextStyle(
                                 color: getColorAlmostBlue(),
                                 fontSize: 20.0,
                               ),
                             ),
                             Text(
-                              widget.nameUser,
+                              'cuenta',
                               style: TextStyle(
                                 color: getColorAlmostBlue(),
                                 fontSize: 16.0,
@@ -129,7 +129,7 @@ class _customDrawerState extends State<customDrawer> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle, // Forma circular
                         color:
-                            Colors.grey.shade400, // Color de fondo del círculo
+                            getBackgroundColor(), // Color de fondo del círculo
                       ),
                       child: GestureDetector(
                         onTap: () {
@@ -151,19 +151,20 @@ class _customDrawerState extends State<customDrawer> {
                                         shape:
                                             BoxShape.circle, // Forma circular
                                         border: Border.all(
-                                          color: Colors.black26,
+                                          color: getColorAlmostBlue(),
                                         ),
                                       ),
                                       child: ClipOval(
                                         child: Image.asset(
                                           'assets/images/logo_login.png',
-                                          fit: BoxFit.contain,
+                                          fit: BoxFit.scaleDown,
                                         ),
                                       ),
                                     ),
                                     const SizedBox(
                                       width: 20.0,
                                     ),
+                                    /*
                                     ListTile(
                                       title: const Text('Joshue Arturo'),
                                       subtitle: const Text('Cargo: Supervisor'),
@@ -173,6 +174,7 @@ class _customDrawerState extends State<customDrawer> {
                                       ),
                                       textColor: getColorAlmostBlue(),
                                     ),
+                                    */
                                     ListTile(
                                       leading: const Icon(Icons.person),
                                       title: const Text('Usuario'),
@@ -209,7 +211,10 @@ class _customDrawerState extends State<customDrawer> {
                             },
                           );
                         },
-                        child: const Icon(Icons.keyboard_arrow_down),
+                        child: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: getColorAlmostBlue(),
+                        ),
                       ),
                     ),
                   ]),
@@ -270,15 +275,12 @@ class _customDrawerState extends State<customDrawer> {
                         colorFondo: Colors.red);
                   }
                 } else {
-                  // Eliminar los datos guardados en memoria del login
-                  await deleteData(id: 1, title: 'login');
-                  Navigator.pushReplacementNamed(
-                    context,
-                    "/login",
-                  );
+                  // Preguntar si esta seguro de cerrar sesión
+                  areYouSure(context);
                 }
               },
             ),
+            /*
             // Modo
             ListTile(
               leading: Icon(
@@ -307,6 +309,7 @@ class _customDrawerState extends State<customDrawer> {
                     });
                   }),
             ),
+            */
             // Salir de la aplicacion
             ListTile(
               leading: const Icon(
@@ -342,4 +345,36 @@ Future<bool> _hasEmail(context) async {
   } else {
     return false;
   }
+}
+
+void areYouSure(context) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Seguro quieres cerrar sesión?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(
+            'No',
+            style: TextStyle(color: getColorAlmostBlue()),
+          ),
+        ),
+        TextButton(
+          onPressed: () async {
+            // Eliminar los datos guardados en memoria del login
+            await deleteData(id: 1, title: 'login');
+            Navigator.pushReplacementNamed(
+              context,
+              "/login",
+            );
+          },
+          child: Text(
+            'Si',
+            style: TextStyle(color: getColorAlmostBlue()),
+          ),
+        ),
+      ],
+    ),
+  );
 }

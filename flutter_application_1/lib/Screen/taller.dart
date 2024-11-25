@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:flutter_application_1/Funciones/servicios/apiForDataBase.dart';
-import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
 import 'package:flutter_application_1/Funciones/verificar_credenciales.dart';
 import 'package:flutter_application_1/api/emailHandler.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
@@ -16,6 +15,7 @@ import 'package:flutter_application_1/widgets/CustomResume.dart';
 import 'package:flutter_application_1/widgets/CustomScanResume.dart';
 import 'package:flutter_application_1/widgets/CustomSearch.dart';
 import 'package:flutter_application_1/widgets/CustomAboutDialog.dart';
+import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:flutter_application_1/widgets/CustomTheme.dart';
 
 class Taller extends StatefulWidget {
@@ -63,10 +63,33 @@ class _TallerState extends State<Taller> {
 
   void _actionWithNumber({required String numeroCandado}) {
     String scannedNumber = numeroCandado;
+
     // Buscar en la lista local de Taller
     Candado scannedCandado = listaCandadosTaller.firstWhere(
-      (e) => e.numero == scannedNumber,
+      (e) => e.numero.contains(
+        scannedNumber,
+      ),
       orElse: () => Candado(
+        numero: '',
+        tipo: '',
+        razonIngreso: '',
+        razonSalida: '',
+        responsable: '',
+        fechaIngreso: DateTime.now(),
+        fechaSalida: null,
+        lugar: '',
+        imageTipo: '',
+        imageDescripcion: '',
+      ), // Valor predeterminado
+    );
+
+    // Si no se encontró en la lista de Taller, buscar en la lista Por Llegar
+    if (scannedCandado.numero != scannedNumber) {
+      scannedCandado = listaCandadosLlegar.firstWhere(
+        (e) => e.numero.contains(
+          scannedNumber,
+        ),
+        orElse: () => Candado(
           numero: '',
           tipo: '',
           razonIngreso: '',
@@ -76,24 +99,8 @@ class _TallerState extends State<Taller> {
           fechaSalida: null,
           lugar: '',
           imageTipo: '',
-          imageDescripcion: ''), // Valor predeterminado
-    );
-
-    // Si no se encontró en la lista de Taller, buscar en la lista Por Llegar
-    if (scannedCandado.numero != scannedNumber) {
-      scannedCandado = listaCandadosLlegar.firstWhere(
-        (e) => e.numero == scannedNumber,
-        orElse: () => Candado(
-            numero: '',
-            tipo: '',
-            razonIngreso: '',
-            razonSalida: '',
-            responsable: '',
-            fechaIngreso: DateTime.now(),
-            fechaSalida: null,
-            lugar: '',
-            imageTipo: '',
-            imageDescripcion: ''), // Valor predeterminado
+          imageDescripcion: '',
+        ), // Valor predeterminado
       );
     }
 
@@ -122,7 +129,7 @@ class _TallerState extends State<Taller> {
       showDialog(
         context: context,
         builder: (context) =>
-            CustomScanResume(candado: scannedCandado, estado: estado),
+            CustomScanResume(candado: scannedCandado!, estado: estado),
       );
     } else
     // Candado no encontrado en la lista local, obtener datos de la API
@@ -136,51 +143,58 @@ class _TallerState extends State<Taller> {
 
 // Void para las botones del bottomNavigatorBar
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    // Acciones para el índice 0 (Escanear)
-    if (_selectedIndex == MenuNavigator.ESCANER.index) {
-      Navigator.of(context)
-          .push(MaterialPageRoute(
-        builder: (context) => const CustomQrScan(),
-      ))
-          .then((result) {
-        if (result != null) {
-          _actionWithNumber(numeroCandado: result as String);
-        }
-      });
-    } else if (_selectedIndex == MenuNavigator.MANUAL.index) {
-      showDialog(
-        context: context,
-        builder: (context) => CustomAboutDialog(
-          title: 'Ingrese número',
-          whoIs: 'manual',
-          manual: (value) {
-            _actionWithNumber(numeroCandado: value);
-          },
-        ),
+    if (termino_ob_data || index > 2) {
+      setState(
+        () {
+          _selectedIndex = index;
+        },
       );
-    } else if (_selectedIndex == MenuNavigator.HISTORIAL.index) {
-      // Acciones para el índice 1 (Historial)
-      showDialog(
-        context: context,
-        builder: ((context) => const CustomAboutDialog(
-              title: 'Ingrese número candado',
-              whoIs: 'taller',
-            )),
-      );
-    } else if (_selectedIndex == MenuNavigator.BLUETOOTH.index) {
-      Navigator.of(context).pushNamed('/bleConexion');
-      //Navigator.popAndPushNamed(context, '/bleConexion');
-    } else if (_selectedIndex == MenuNavigator.MAPS.index) {
-      Navigator.of(context).pushNamed('/map');
+
+      // Acciones para el índice 0 (Escanear)
+      if (_selectedIndex == MenuNavigator.ESCANER.index) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(
+          builder: (context) => const CustomQrScan(),
+        ))
+            .then((result) {
+          if (result != null) {
+            _actionWithNumber(numeroCandado: result as String);
+          }
+        });
+      } else if (_selectedIndex == MenuNavigator.MANUAL.index) {
+        showDialog(
+          context: context,
+          builder: (context) => CustomAboutDialog(
+            title: 'Ingrese número',
+            whoIs: 'manual',
+            manual: (value) {
+              _actionWithNumber(numeroCandado: value);
+            },
+          ),
+        );
+      } else if (_selectedIndex == MenuNavigator.HISTORIAL.index) {
+        // Acciones para el índice 1 (Historial)
+        showDialog(
+          context: context,
+          builder: ((context) => const CustomAboutDialog(
+                title: 'Ingrese número candado',
+                whoIs: 'taller',
+              )),
+        );
+      } else if (_selectedIndex == MenuNavigator.BLUETOOTH.index) {
+        Navigator.of(context).pushNamed('/bleConexion');
+        //Navigator.popAndPushNamed(context, '/bleConexion');
+      } else if (_selectedIndex == MenuNavigator.MAPS.index) {
+        Navigator.of(context).pushNamed('/map');
+      }
+    } else {
+      customSnackBar(context,
+          mensaje: "Espere a que se carguen los datos", colorFondo: Colors.red);
     }
   }
 
   @override
   void initState() {
-    super.initState();
     hasEmail(context, 'candados');
     listaCandadosTaller.clear();
     listaFiltradaTaller.clear();
@@ -194,6 +208,7 @@ class _TallerState extends State<Taller> {
       2: {},
     };
     _initializeData();
+    super.initState();
   }
 
   Future<void> _initializeData() async {
@@ -305,23 +320,33 @@ class _TallerState extends State<Taller> {
                 ? Column(
                     children: [
                       Container(
-                        color: modo == 0
+                        color: Colors.white,
+                        /* Formato para actualizar el color dependiendo del modo del telefono
+                        modo == 0
                             ? customColors.customOne!
                             : customColors.customTwo!,
+                        */
                         child: TabBar(
+                          /*
                           dividerColor: modo == 0
                               ? customColors.customTwo!
                               : customColors.customOne!,
                           labelColor: modo == 0
                               ? customColors.customTwo!
                               : customColors.customOne!,
+                          indicatorColor: modo == 0
+                              ? customColors.customTwo!
+                              : customColors.customOne!,
                           unselectedLabelColor: modo == 0
                               ? customColors.customThree
                               : Colors
                                   .black54, // Color del texto de las pestañas no seleccionadas
-                          indicatorColor: modo == 0
-                              ? customColors.customTwo!
-                              : customColors.customOne!,
+                              */
+                          dividerColor: Colors.transparent,
+                          labelColor: getColorAlmostBlue(),
+                          unselectedLabelColor:
+                              const Color.fromARGB(141, 68, 90, 164),
+                          indicatorColor: getColorAlmostBlue(),
                           // Color del indicador que resalta la pestaña seleccionada
                           labelStyle: const TextStyle(
                             fontSize: 18,
@@ -334,7 +359,6 @@ class _TallerState extends State<Taller> {
                       ),
                       Expanded(
                         child: TabBarView(
-                          //controller: _tabController,
                           children: [
                             // Página 1: "Resumen"
                             CustomResumen(
@@ -468,7 +492,6 @@ class _TallerState extends State<Taller> {
                                 },
                                 mode: (value) {
                                   setState(() {
-                                    //logger.i(value);
                                     modo = value;
                                   });
                                 },
@@ -520,11 +543,9 @@ class _TallerState extends State<Taller> {
               ],
               currentIndex: _selectedIndex,
               selectedItemColor: getColorAlmostBlue(),
-              unselectedItemColor: Colors.grey,
-              unselectedLabelStyle: const TextStyle(
-                color: Colors.grey,
-              ),
-              showUnselectedLabels: true,
+              unselectedItemColor: const Color.fromARGB(141, 68, 90, 164),
+              showUnselectedLabels: false,
+              showSelectedLabels: true,
               onTap: _onItemTapped,
             ));
       }),

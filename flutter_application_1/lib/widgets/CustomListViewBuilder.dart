@@ -102,7 +102,7 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 10.0, vertical: 8.0),
                   decoration: BoxDecoration(
-                    color: getColorAlmostBlue(),
+                    color: isExpanded ? colorContenedor : getColorAlmostBlue(),
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                   child: Row(
@@ -122,7 +122,9 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                           widget.onExpandedChanged?.call(index);
                         },
                         child: Icon(
-                          isExpanded ? Icons.remove : Icons.add,
+                          isExpanded
+                              ? Icons.keyboard_arrow_up
+                              : Icons.keyboard_arrow_down,
                           color: Colors.white,
                           size: 25.0,
                         ),
@@ -130,9 +132,14 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 8.0),
+                isExpanded ? const SizedBox() : const SizedBox(height: 8.0),
                 isExpanded
-                    ? SizedBox(
+                    ? Container(
+                        padding: const EdgeInsets.only(
+                          top: 5.0,
+                          bottom: 5.0,
+                        ),
+                        margin: const EdgeInsets.only(bottom: 10.0),
                         height: 140.0,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
@@ -150,7 +157,8 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                                 margin: const EdgeInsets.only(
                                     left: 8.0, right: 8.0, bottom: 8.0),
                                 decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10.0),
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  /*
                                     gradient: LinearGradient(
                                         begin: Alignment.topCenter,
                                         end: Alignment.bottomCenter,
@@ -159,9 +167,11 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                                           Colors.white,
                                           colorContenedor
                                         ]),
-                                    border: Border.all(
-                                      color: colorContenedor,
-                                    )),
+                                        */
+                                  border: Border.all(
+                                    color: colorContenedor,
+                                  ),
+                                ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   mainAxisAlignment: MainAxisAlignment.center,
