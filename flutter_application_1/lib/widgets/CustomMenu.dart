@@ -263,11 +263,14 @@ class _customDrawerState extends State<customDrawer> {
                   bool hasEmail = await _hasEmail(context);
                   if (!hasEmail) {
                     // Eliminar los datos guardados en memoria del login
+                    /*
                     await deleteData(id: 1, title: 'login');
                     Navigator.pushReplacementNamed(
                       context,
                       "/login",
                     );
+                    */
+                    areYouSure(context);
                   } else {
                     customSnackBar(context,
                         mensaje:
@@ -351,7 +354,16 @@ void areYouSure(context) {
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text('Seguro quieres cerrar sesión?'),
+      backgroundColor: Colors.white,
+      title: const Text(
+        'Seguro quieres cerrar sesión?',
+        style: TextStyle(
+          color: Colors.black,
+        ),
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),

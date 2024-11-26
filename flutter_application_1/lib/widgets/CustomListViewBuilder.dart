@@ -107,11 +107,12 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         titulo,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: isExpanded ? Colors.black : Colors.white,
                           fontSize: 16.0,
                           fontWeight: FontWeight.bold,
                         ),
@@ -125,7 +126,7 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                           isExpanded
                               ? Icons.keyboard_arrow_up
                               : Icons.keyboard_arrow_down,
-                          color: Colors.white,
+                          color: isExpanded ? Colors.black : Colors.white,
                           size: 25.0,
                         ),
                       ),
@@ -155,7 +156,9 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                               child: Container(
                                 width: 120.0,
                                 margin: const EdgeInsets.only(
-                                    left: 8.0, right: 8.0, bottom: 8.0),
+                                  right: 8.0,
+                                  bottom: 8.0,
+                                ),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10.0),
                                   /*

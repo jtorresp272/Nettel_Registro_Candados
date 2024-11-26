@@ -1,3 +1,6 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/notification_state.dart';
 import 'package:flutter_application_1/Screen/ble/bleConexion.dart';
@@ -10,11 +13,19 @@ import 'package:flutter_application_1/Screen/splash.dart';
 import 'package:flutter_application_1/ble/bleHandler.dart';
 import 'package:flutter_application_1/pages/map_page.dart';
 import 'package:flutter_application_1/widgets/CustomTheme.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   //await dotenv.load(fileName: ".env");
+  // Implement firebase notifications
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  final notificationSettings =
+      await FirebaseMessaging.instance.requestPermission(provisional: true);
   runApp(const MyApp());
 }
 

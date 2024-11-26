@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
@@ -182,7 +184,7 @@ class _TallerState extends State<Taller> {
               )),
         );
       } else if (_selectedIndex == MenuNavigator.BLUETOOTH.index) {
-        Navigator.of(context).pushNamed('/bleConexion');
+        Navigator.of(context).popAndPushNamed('/bleConexion');
         //Navigator.popAndPushNamed(context, '/bleConexion');
       } else if (_selectedIndex == MenuNavigator.MAPS.index) {
         Navigator.of(context).pushNamed('/map');
@@ -208,6 +210,11 @@ class _TallerState extends State<Taller> {
       2: {},
     };
     _initializeData();
+    FirebaseMessaging.instance.getToken().then(
+          (value) => {
+            logger.i("FCM Token is: $value"),
+          },
+        );
     super.initState();
   }
 
@@ -278,7 +285,7 @@ class _TallerState extends State<Taller> {
   @override
   Widget build(BuildContext context) {
     // Variable para el color dependiendo del tema
-    final customColors = Theme.of(context).extension<CustomColors>()!;
+    //final customColors = Theme.of(context).extension<CustomColors>()!;
 
     return DefaultTabController(
       initialIndex: _selectedIndexTab,
@@ -344,8 +351,7 @@ class _TallerState extends State<Taller> {
                               */
                           dividerColor: Colors.transparent,
                           labelColor: getColorAlmostBlue(),
-                          unselectedLabelColor:
-                              const Color.fromARGB(141, 68, 90, 164),
+                          unselectedLabelColor: getUnSelectedIcon(),
                           indicatorColor: getColorAlmostBlue(),
                           // Color del indicador que resalta la pestaña seleccionada
                           labelStyle: const TextStyle(

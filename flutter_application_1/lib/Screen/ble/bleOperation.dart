@@ -198,11 +198,11 @@ class BleOperationState extends State<BleOperation> {
         child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-            backgroundColor: getColorAlmostBlue(),
+            backgroundColor: Colors.white,
             title: Row(
               children: [
                 Container(
-                  margin: const EdgeInsets.only(right: 5.0),
+                  margin: const EdgeInsets.only(right: 10.0),
                   width: MediaQuery.of(context).size.width * 0.2,
                   height: MediaQuery.of(context).size.width * 0.15,
                   child: Image.asset(
@@ -214,15 +214,15 @@ class BleOperationState extends State<BleOperation> {
                   children: [
                     Text(
                       device.name,
-                      style: const TextStyle(
-                          color: Colors.white,
+                      style: TextStyle(
+                          color: getColorAlmostBlue(),
                           fontSize: 20.0,
                           fontWeight: FontWeight.bold),
                     ),
                     Text(
                       device.id,
-                      style: const TextStyle(
-                          color: Colors.white,
+                      style: TextStyle(
+                          color: getColorAlmostBlue(),
                           fontSize: 16.0,
                           fontWeight: FontWeight.normal),
                     ),
@@ -236,10 +236,10 @@ class BleOperationState extends State<BleOperation> {
               padding: const EdgeInsets.only(left: 5.0),
               child: IconButton(
                 onPressed: _disconnectAndNavigate,
-                icon: const Icon(
-                  Icons.arrow_back,
+                icon: Icon(
+                  Icons.keyboard_arrow_left,
                   size: 25.0,
-                  color: Colors.white,
+                  color: getColorAlmostBlue(),
                 ),
               ),
             ),
@@ -258,33 +258,34 @@ class BleOperationState extends State<BleOperation> {
                     }
                   },
                   child: isConnected
-                      ? const Text(
+                      ? Text(
                           'Desconectar',
                           style: TextStyle(
-                              color: Colors.white,
+                              color: getColorAlmostBlue(),
                               fontSize: 14.0,
                               fontWeight: FontWeight.bold),
                         )
                       : reconnection
-                          ? const Text(
+                          ? Text(
                               'Conectar',
                               style: TextStyle(
-                                  color: Colors.white,
+                                  color: getColorAlmostBlue(),
                                   fontSize: 14.0,
                                   fontWeight: FontWeight.bold),
                             )
-                          : const CircularProgressIndicator(
-                              color: Colors.white,
+                          : CircularProgressIndicator(
+                              color: getColorAlmostBlue(),
                               strokeWidth: BorderSide.strokeAlignOutside,
                             ),
                 );
               }),
             ],
-            bottom: const TabBar(
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.white54,
-              indicatorColor: Colors.white,
-              tabs: [
+            bottom: TabBar(
+              labelColor: getColorAlmostBlue(),
+              unselectedLabelColor: getUnSelectedIcon(),
+              indicatorColor: getColorAlmostBlue(),
+              dividerColor: Colors.white,
+              tabs: const [
                 Tab(
                   text: 'Nordic',
                 ),

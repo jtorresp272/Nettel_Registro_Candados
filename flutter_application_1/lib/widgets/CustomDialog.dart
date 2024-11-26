@@ -1,6 +1,7 @@
 // ignore_for_file: file_names, library_private_types_in_public_api, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_application_1/Funciones/BuildClass/BuildDecorationTextField.dart';
 import 'package:flutter_application_1/Funciones/BuildClass/BuildRowWithCheckBox.dart';
 import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
@@ -48,6 +49,13 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
     'L': Colors.green,
     'M': Colors.yellow
   };
+  Map<String, String> getNameOfType = {
+    'E': "Electronicas Dañadas",
+    'V': "Mecanicas Dañadas",
+    'I': "Candados Ingresados",
+    'L': "Candados Listos",
+    'M': "Mecanicas Listas",
+  };
   /* Variables globales */
   bool isEditable_1 = false; // Editar el campo Descripcion ingreso
   bool isEditable_2 = false; // Editar el campo Descripcion Salida
@@ -91,72 +99,84 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
         surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.white,
         insetPadding: const EdgeInsets.all(15.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          //side: BorderSide(color: color[widget.candado.lugar] ?? Colors.grey),
+        ),
         // Encabezado (Imagen - Numero - Fecha)
         title: Container(
           padding: const EdgeInsets.all(10.0),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15.0),
-            gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-              colors: [
-                Colors.white,
-                Colors.white,
-                color[widget.candado.lugar] ?? Colors.grey
-              ],
-            ),
+            borderRadius: BorderRadius.circular(10.0),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    width: 40.0,
-                    height: 40.0,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.5),
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      color: Colors.black,
-                      onPressed: () {
-                        _animationController.reverse().then((_) {
-                          Navigator.of(context)
-                              .pop(); // Cerrar el diálogo al finalizar la animación de salida
-                        });
-                      },
-                      icon: const Icon(
-                        Icons.arrow_back,
-                      ),
-                    ),
-                  ),
-                  if (lugares.contains(widget.candado.lugar) &&
-                      user != 'monitoreo')
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
                     Container(
                       width: 40.0,
                       height: 40.0,
                       decoration: BoxDecoration(
-                        color: isDamage
-                            ? Colors.red.withOpacity(0.5)
-                            : Colors.white.withOpacity(0.5),
+                        color: Colors.white.withOpacity(0.5),
                         shape: BoxShape.circle,
                       ),
-                      child: Center(
-                        child: IconButton(
-                          color: isDamage ? Colors.white : Colors.black,
-                          icon: const Icon(Icons.edit_document),
-                          onPressed: () {
-                            setState(() {
-                              isDamage = !isDamage;
-                            });
-                          },
+                      child: IconButton(
+                        color: Colors.black,
+                        onPressed: () {
+                          _animationController.reverse().then((_) {
+                            Navigator.of(context)
+                                .pop(); // Cerrar el diálogo al finalizar la animación de salida
+                          });
+                        },
+                        icon: const Icon(
+                          Icons.arrow_back,
                         ),
                       ),
                     ),
-                ],
+                    SizedBox(
+                      child: Text(
+                        getNameOfType[widget.candado.lugar]!,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    if (user == 'monitoreo')
+                      const SizedBox(
+                        width: 40.0,
+                      ),
+                    if (lugares.contains(widget.candado.lugar) &&
+                        user != 'monitoreo')
+                      Container(
+                        width: 40.0,
+                        height: 40.0,
+                        decoration: BoxDecoration(
+                          color: isDamage ? Colors.red : Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: IconButton(
+                            color: isDamage ? Colors.white : Colors.black,
+                            icon: const Icon(Icons.edit_document),
+                            onPressed: () {
+                              setState(
+                                () {
+                                  isDamage = !isDamage;
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
               Center(
                 child: Image.asset(
@@ -451,3 +471,12 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
     super.dispose();
   }
 }
+
+/*
+String getNameOfType(String place)
+{
+  
+  return "";
+}
+*/
+

@@ -231,11 +231,11 @@ class _MonitoreoState extends State<Monitoreo>
                   Container(
                     color: Colors.white,
                     child: TabBar(
-                      dividerColor: getColorAlmostBlue(),
+                      dividerColor: Colors.white,
                       controller: _tabController,
                       labelColor: getColorAlmostBlue(),
-                      unselectedLabelColor: Colors
-                          .black45, // Color del texto de las pestañas no seleccionadas
+                      unselectedLabelColor:
+                          getUnSelectedIcon(), // Color del texto de las pestañas no seleccionadas
                       indicatorColor:
                           getColorAlmostBlue(), // Color del indicador que resalta la pestaña seleccionada
                       labelStyle: const TextStyle(

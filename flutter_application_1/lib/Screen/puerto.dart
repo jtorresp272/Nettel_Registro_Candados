@@ -65,10 +65,14 @@ class _PuertoState extends State<Puerto> {
           body: Column(
             children: [
               Container(
+                /*
                 color: modo == 0
                     ? customColors.customOne!
                     : customColors.customTwo!,
+                    */
+                color: Colors.white,
                 child: TabBar(
+                  /*
                   dividerColor: modo == 0
                       ? customColors.customTwo!
                       : customColors.customOne!,
@@ -82,6 +86,11 @@ class _PuertoState extends State<Puerto> {
                   indicatorColor: modo == 0
                       ? customColors.customTwo!
                       : customColors.customOne!,
+                      */
+                  dividerColor: Colors.white,
+                  labelColor: getColorAlmostBlue(),
+                  indicatorColor: getColorAlmostBlue(),
+                  unselectedLabelColor: getUnSelectedIcon(),
                   // Color del indicador que resalta la pestaña seleccionada
                   labelStyle: const TextStyle(
                     fontSize: 18,
