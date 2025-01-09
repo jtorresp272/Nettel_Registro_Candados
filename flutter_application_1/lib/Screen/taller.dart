@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +21,7 @@ import 'package:flutter_application_1/widgets/CustomSearch.dart';
 import 'package:flutter_application_1/widgets/CustomAboutDialog.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:flutter_application_1/widgets/CustomTheme.dart';
+import 'package:http/http.dart' as http;
 
 class Taller extends StatefulWidget {
   const Taller({super.key});
@@ -45,7 +48,6 @@ class _TallerState extends State<Taller> {
   int modo = 0;
 
   // Variables para el TabBar
-
   final int _selectedIndexTab = 1;
   static const List<Tab> myTabs = <Tab>[
     Tab(
@@ -131,7 +133,7 @@ class _TallerState extends State<Taller> {
       showDialog(
         context: context,
         builder: (context) =>
-            CustomScanResume(candado: scannedCandado!, estado: estado),
+            CustomScanResume(candado: scannedCandado, estado: estado),
       );
     } else
     // Candado no encontrado en la lista local, obtener datos de la API
@@ -195,8 +197,57 @@ class _TallerState extends State<Taller> {
     }
   }
 
+  // Funciones para las peticiones con firebase
+  String? token;
+  // Variable para enviar notificaciones
+  Uri server = Uri(
+    scheme: 'http',
+    host: 'localhost',
+    port: 4050,
+    path: '/send-notification',
+  );
+
+  // Funcion para obtener el token de firebase
+  Future<void> _getToken() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    token = await messaging.getToken();
+  }
+
+  // Funcion para enviar una notificacion
+  Future<void> sendNotification() async {
+    logger.w('token is: $token');
+    var data = {
+      'token': token,
+      'title': 'Example',
+      'body': 'hello',
+    };
+    try {
+      final response = await http.post(
+        server,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(data),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        customSnackBar(context,
+            mensaje: 'notification sent successfully ${data['message']}');
+      } else {
+        customSnackBar(context,
+            mensaje:
+                'No se pudo enviar la notificacion: ${response.statusCode}',
+            colorFondo: Colors.amber);
+      }
+    } catch (e) {
+      logger.i('Error sending notifications: $e');
+      customSnackBar(context, mensaje: '$e', colorFondo: Colors.red);
+    }
+  }
+
   @override
   void initState() {
+    super.initState();
+
     hasEmail(context, 'candados');
     listaCandadosTaller.clear();
     listaFiltradaTaller.clear();
@@ -210,12 +261,15 @@ class _TallerState extends State<Taller> {
       2: {},
     };
     _initializeData();
-    FirebaseMessaging.instance.getToken().then(
-          (value) => {
-            logger.i("FCM Token is: $value"),
-          },
-        );
-    super.initState();
+    _getToken();
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      logger.i('Message data: ${message.data}');
+      if (message.notification != null) {
+        logger.w(
+            'Message also contained a notification: ${message.notification}');
+      }
+    });
   }
 
   Future<void> _initializeData() async {
@@ -518,6 +572,10 @@ class _TallerState extends State<Taller> {
                       ),
                     ),
                   ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: sendNotification,
+              child: const Text('send'),
+            ),
             bottomNavigationBar: BottomNavigationBar(
               backgroundColor: Colors.white,
               items: const <BottomNavigationBarItem>[
