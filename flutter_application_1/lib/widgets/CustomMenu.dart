@@ -8,7 +8,6 @@ import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/servicios/apiForDataBase.dart';
 import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 
 class customDrawer extends StatefulWidget {
   final String nameUser;

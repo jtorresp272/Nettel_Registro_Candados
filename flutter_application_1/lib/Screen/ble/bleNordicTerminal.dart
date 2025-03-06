@@ -1,10 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
-import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/ble/bleHandler.dart';
 import 'package:provider/provider.dart';
 
@@ -13,8 +10,7 @@ class BleNordicTerminalPage extends StatefulWidget {
   final BleProvider provider;
 
   const BleNordicTerminalPage(
-      {Key? key, required this.device, required this.provider})
-      : super(key: key);
+      {super.key, required this.device, required this.provider});
 
   @override
   State<BleNordicTerminalPage> createState() => BleNordicTerminalPageState();

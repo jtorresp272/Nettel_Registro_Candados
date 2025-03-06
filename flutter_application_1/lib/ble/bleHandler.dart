@@ -126,13 +126,13 @@ class BleProvider with ChangeNotifier {
 
   // Funcion que revisa si el dispositivo sigue en el aire o no
   void markDevicesOutOfRange() {
-    devices.forEach((device) {
+    for (var device in devices) {
       if (foundDevicesId.contains(device.id)) {
         device.outOfRange = false;
       } else {
         device.outOfRange = true;
       }
-    });
+    }
 
     foundDevicesId.clear();
     notifyListeners();

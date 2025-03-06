@@ -3,13 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+
 //import 'package:permission_handler/permission_handler.dart';
-enum location_t  
-{
-  SOURCE,
-  DESTINATION,
-  CURRENT
-}
+enum location_t { SOURCE, DESTINATION, CURRENT }
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -24,7 +20,7 @@ class _MapPageState extends State<MapPage> {
   final Location _locationController = Location();
   final Completer<GoogleMapController> _mapController =
       Completer<GoogleMapController>();
-  
+
   static const LatLng _pGooglePlex =
       LatLng(-2.168456777826358, -79.91654126509425);
 
@@ -43,7 +39,7 @@ class _MapPageState extends State<MapPage> {
     ),
   );
 
-  Marker _destinationLocationMarker = const Marker(
+  final Marker _destinationLocationMarker = const Marker(
     markerId: MarkerId("_destinationLocation"),
     icon: BitmapDescriptor.defaultMarker,
     position: _pHiperMarket,
@@ -70,24 +66,24 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:// _currentP == null
+      body: // _currentP == null
           //? const Center(
           //    child: Text("Loading..."),
           //  )
-          //: 
+          //:
           Stack(
-            children: [
-              GoogleMap(
-                  onMapCreated: (GoogleMapController controller) =>
-                      _mapController.complete(controller),
-                  initialCameraPosition:
-                      const CameraPosition(target: _pGooglePlex, zoom: 16),
-                  markers: Set<Marker>.of(list), 
-                  //{
-                    //_sourceLocationMarker.copyWith(
-                    //  onTapParam: _onMarkerTap,
-                    //),
-                    /*
+        children: [
+          GoogleMap(
+            onMapCreated: (GoogleMapController controller) =>
+                _mapController.complete(controller),
+            initialCameraPosition:
+                const CameraPosition(target: _pGooglePlex, zoom: 16),
+            markers: Set<Marker>.of(list),
+            //{
+            //_sourceLocationMarker.copyWith(
+            //  onTapParam: _onMarkerTap,
+            //),
+            /*
                     Marker(
                       markerId: const MarkerId("_currentLocation"),
                       icon: BitmapDescriptor.defaultMarker,
@@ -97,12 +93,12 @@ class _MapPageState extends State<MapPage> {
                       position: _currentP!,
                     ),
                     */
-                    //_destinationLocationMarker.copyWith(
-                    //  onTapParam: _onMarkerTap,
-                    //)
-                  //},
-                ),
-                Positioned(
+            //_destinationLocationMarker.copyWith(
+            //  onTapParam: _onMarkerTap,
+            //)
+            //},
+          ),
+          Positioned(
             top: MediaQuery.of(context).size.height / 2 - 100,
             left: MediaQuery.of(context).size.width / 2 - 150,
             child: Column(
@@ -115,14 +111,14 @@ class _MapPageState extends State<MapPage> {
               ],
             ),
           ),
-            ],
-          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildCustomInfoWindow(BuildContext context, String title, String snippet)
-  {
-return Container(
+  Widget _buildCustomInfoWindow(
+      BuildContext context, String title, String snippet) {
+    return Container(
       padding: const EdgeInsets.all(8.0),
       color: Colors.white,
       child: Column(
@@ -162,29 +158,29 @@ return Container(
 
   Future<void> _cameraToPosition(LatLng pos) async {
     final GoogleMapController controller = await _mapController.future;
-    CameraPosition _newCameraPosition = CameraPosition(target: pos, zoom: 16);
+    CameraPosition newCameraPosition = CameraPosition(target: pos, zoom: 16);
     await controller.animateCamera(
-      CameraUpdate.newCameraPosition(_newCameraPosition),
+      CameraUpdate.newCameraPosition(newCameraPosition),
     );
     _locationSubscription?.cancel();
   }
 
   /* Función para saber tu ubicación */
   Future<void> _getLocationUpdates() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
 
-    _serviceEnabled = await _locationController.serviceEnabled();
-    if (_serviceEnabled) {
-      _serviceEnabled = await _locationController.requestService();
+    serviceEnabled = await _locationController.serviceEnabled();
+    if (serviceEnabled) {
+      serviceEnabled = await _locationController.requestService();
     } else {
       return;
     }
 
-    _permissionGranted = await _locationController.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await _locationController.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
+    permissionGranted = await _locationController.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await _locationController.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
         return;
       }
     }

@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
 import 'package:flutter_application_1/ble/bleHandler.dart';
 import 'package:flutter_application_1/widgets/ble/CustomSelection.dart';
 import 'package:provider/provider.dart';

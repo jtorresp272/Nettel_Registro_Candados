@@ -395,7 +395,7 @@ AlertDialog _showMoreInfo(context, String info) {
     actions: [
       ElevatedButton(
           style: ButtonStyle(
-            backgroundColor: MaterialStateColor.resolveWith(
+            backgroundColor: WidgetStateColor.resolveWith(
               (states) => getColorAlmostBlue(),
             ),
           ),

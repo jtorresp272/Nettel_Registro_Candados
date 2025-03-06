@@ -1,10 +1,8 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/notification_state.dart';
-import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
 import 'package:flutter_application_1/widgets/CustomDialogScanQr.dart';
 import 'package:flutter_application_1/widgets/CustomElevatedButton.dart';
 import 'package:flutter_application_1/widgets/CustomQrScan.dart';

@@ -22,15 +22,15 @@ class _CustomElevatedButton extends State<CustomElevatedButton> {
     return ElevatedButton(
       onPressed: widget.onPressed,
       style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(
+          backgroundColor: WidgetStateProperty.all(
             const Color.fromARGB(255, 68, 91, 164),
           ),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
           ),
-          minimumSize: MaterialStateProperty.all(const Size(250, 45))),
+          minimumSize: WidgetStateProperty.all(const Size(250, 45))),
       child: Text(
         widget.text,
         style: const TextStyle(

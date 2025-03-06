@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
@@ -20,7 +19,6 @@ import 'package:flutter_application_1/widgets/CustomScanResume.dart';
 import 'package:flutter_application_1/widgets/CustomSearch.dart';
 import 'package:flutter_application_1/widgets/CustomAboutDialog.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
-import 'package:flutter_application_1/widgets/CustomTheme.dart';
 import 'package:http/http.dart' as http;
 
 class Taller extends StatefulWidget {

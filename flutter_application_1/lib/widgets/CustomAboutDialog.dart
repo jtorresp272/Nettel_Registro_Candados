@@ -76,7 +76,7 @@ class _CustomAboutDialogState extends State<CustomAboutDialog> {
         if (!wait)
           ElevatedButton(
             style: ButtonStyle(
-              backgroundColor: MaterialStateColor.resolveWith(
+              backgroundColor: WidgetStateColor.resolveWith(
                   (states) => getColorAlmostBlue()),
             ),
             onPressed: () async {

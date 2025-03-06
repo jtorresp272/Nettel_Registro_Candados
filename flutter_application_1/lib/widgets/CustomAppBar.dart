@@ -12,7 +12,7 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final NotificationState? notificationState;
   final VoidCallback? reloadCallback;
 
-  CustomAppBar({
+  const CustomAppBar({
     super.key,
     required this.titulo,
     required this.subtitulo,

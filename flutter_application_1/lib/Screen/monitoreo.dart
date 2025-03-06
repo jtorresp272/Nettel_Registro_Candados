@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/get_color.dart';
 import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
 import 'package:flutter_application_1/Funciones/servicios/apiForDataBase.dart';
-import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
 import 'package:flutter_application_1/Funciones/verificar_credenciales.dart';
 import 'package:flutter_application_1/api/emailHandler.dart';
 import 'package:flutter_application_1/widgets/CustomAboutDialog.dart';

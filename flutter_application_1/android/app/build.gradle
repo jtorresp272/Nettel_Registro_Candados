@@ -61,7 +61,8 @@ android {
             signingConfig signingConfigs.debug
         }
         create("customDebugType"){
-            isDebuggable= true
+            //isDebuggable= true
+            debuggable true
         }
     }
 }

@@ -1,7 +1,6 @@
 // ignore_for_file: file_names, library_private_types_in_public_api, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_application_1/Funciones/BuildClass/BuildDecorationTextField.dart';
 import 'package:flutter_application_1/Funciones/BuildClass/BuildRowWithCheckBox.dart';
 import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
@@ -334,7 +333,7 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
               Center(
                 child: ElevatedButton(
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateColor.resolveWith(
+                    backgroundColor: WidgetStateColor.resolveWith(
                         (states) => getColorAlmostBlue()),
                   ),
                   onPressed: () async {
@@ -479,4 +478,3 @@ String getNameOfType(String place)
   return "";
 }
 */
-

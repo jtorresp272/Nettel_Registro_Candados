@@ -33,10 +33,10 @@ List<Json> jsonList = [];
 
 class SelectionWidget extends StatefulWidget {
   final ValueChanged<String> addValue;
-  SelectionWidget({
-    Key? key,
+  const SelectionWidget({
+    super.key,
     required this.addValue,
-  }) : super(key: key);
+  });
 
   @override
   State<SelectionWidget> createState() => SelectionWidgetState();

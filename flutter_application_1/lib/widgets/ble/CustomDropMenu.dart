@@ -16,7 +16,7 @@ List<String> menu = [
 
 class customDrop extends StatefulWidget {
   final ValueChanged<String> selection;
-  customDrop({super.key, required this.selection});
+  const customDrop({super.key, required this.selection});
 
   @override
   State<customDrop> createState() => customDropState();
