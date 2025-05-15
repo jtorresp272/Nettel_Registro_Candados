@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
+import 'package:flutter_application_1/Funciones/generales/enviar_datos_database.dart';
 import 'package:flutter_application_1/ble/bleActivationHandler.dart';
 import 'package:flutter_application_1/ble/bleDeviceInfo.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';

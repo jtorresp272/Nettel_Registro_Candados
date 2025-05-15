@@ -1,7 +1,7 @@
 // ignore_for_file: file_names, library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/get_color.dart';
+import 'package:flutter_application_1/Funciones/generales/get_color.dart';
 
 class CustomTextFormField extends StatefulWidget {
   final String hintText;

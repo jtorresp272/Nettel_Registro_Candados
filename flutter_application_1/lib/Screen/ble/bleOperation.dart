@@ -4,8 +4,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
-import 'package:flutter_application_1/Funciones/get_color.dart';
+import 'package:flutter_application_1/Funciones/generales/enviar_datos_database.dart';
+import 'package:flutter_application_1/Funciones/generales/get_color.dart';
 import 'package:flutter_application_1/Screen/ble/bleConexion.dart';
 import 'package:flutter_application_1/Screen/ble/bleNettelTerminal.dart';
 import 'package:flutter_application_1/Screen/ble/bleNordicTerminal.dart';

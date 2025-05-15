@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_application_1/Funciones/get_color.dart';
+import 'package:flutter_application_1/Funciones/generales/get_color.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:flutter_application_1/widgets/ble/CustomDropMenu.dart';
 

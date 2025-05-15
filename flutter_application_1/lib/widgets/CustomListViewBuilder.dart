@@ -1,9 +1,9 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
+import 'package:flutter_application_1/Funciones/generales/obtener_datos_database.dart';
 import 'package:flutter_application_1/widgets/CustomDialog.dart';
-import '../Funciones/get_color.dart';
+import '../Funciones/generales/get_color.dart';
 import 'package:intl/intl.dart';
 
 //import 'package:flutter_application_1/Funciones/class_dato_lista.dart';

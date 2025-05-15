@@ -2,7 +2,7 @@
 
 import 'dart:async';
 import 'package:flutter/services.dart';
-import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
+import 'package:flutter_application_1/Funciones/generales/enviar_datos_database.dart';
 
 /* Clase para determinar si el ble esta conectado o no */
 class systemHelper {

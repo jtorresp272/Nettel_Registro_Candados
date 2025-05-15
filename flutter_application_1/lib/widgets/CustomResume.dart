@@ -1,8 +1,8 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/get_color.dart';
-import 'package:flutter_application_1/Funciones/contar_datos.dart';
-import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
+import 'package:flutter_application_1/Funciones/generales/get_color.dart';
+import 'package:flutter_application_1/Funciones/generales/contar_datos.dart';
+import 'package:flutter_application_1/Funciones/generales/obtener_datos_database.dart';
 
 double widthScreen = 0.0;
 Map<String, int> datosTaller = {};

@@ -5,9 +5,9 @@ import 'package:flutter_application_1/Funciones/BuildClass/BuildDecorationTextFi
 import 'package:flutter_application_1/Funciones/BuildClass/BuildRowWithButton.dart';
 import 'package:flutter_application_1/Funciones/BuildClass/BuildRowWithCheckBox.dart';
 import 'package:flutter_application_1/Funciones/database/data_model.dart';
-import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
-import 'package:flutter_application_1/Funciones/get_color.dart';
-import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
+import 'package:flutter_application_1/Funciones/generales/enviar_datos_database.dart';
+import 'package:flutter_application_1/Funciones/generales/get_color.dart';
+import 'package:flutter_application_1/Funciones/generales/obtener_datos_database.dart';
 import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
 import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';

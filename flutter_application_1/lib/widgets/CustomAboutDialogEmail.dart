@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/get_color.dart';
+import 'package:flutter_application_1/Funciones/generales/get_color.dart';
 
 class CustomAboutDialogEmail extends StatefulWidget {
   final String datos;

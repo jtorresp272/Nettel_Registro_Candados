@@ -1,7 +1,7 @@
 // En el directorio otro_directorio/funciones.dart
 //import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
 
-import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
+import 'package:flutter_application_1/Funciones/generales/obtener_datos_database.dart';
 
 Map<String, int> contarDatosTaller(List<Candado> listaTaller) {
   // Lógica para procesar la lista de taller y obtener los datos requeridos
@@ -29,7 +29,7 @@ Map<String, int> contarDatosTaller(List<Candado> listaTaller) {
         break;
       case 'E':
         electronicaDanadas++;
-        break;  
+        break;
       default:
         break;
     }
@@ -38,7 +38,8 @@ Map<String, int> contarDatosTaller(List<Candado> listaTaller) {
   totalCandados = candadosOperativos +
       candadosIngresados +
       mecanicasListas +
-      mecanicasDanadas + electronicaDanadas;
+      mecanicasDanadas +
+      electronicaDanadas;
   // Retornar un mapa con los datos contados
   return {
     'Candados Operativos': candadosOperativos,

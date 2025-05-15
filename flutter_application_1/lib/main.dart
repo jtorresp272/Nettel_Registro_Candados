@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/notification_state.dart';
+import 'package:flutter_application_1/Funciones/generales/notification_state.dart';
 import 'package:flutter_application_1/Screen/ble/bleConexion.dart';
 import 'package:flutter_application_1/Screen/historial.dart';
 import 'package:flutter_application_1/Screen/monitoreo.dart';

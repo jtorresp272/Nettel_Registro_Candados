@@ -1,7 +1,7 @@
 // ignore_for_file: file_names, library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/notification_state.dart';
+import 'package:flutter_application_1/Funciones/generales/notification_state.dart';
 import 'package:flutter_application_1/widgets/CustomTheme.dart';
 import 'package:provider/provider.dart';
 
@@ -44,6 +44,17 @@ class _CustomAppBarState extends State<CustomAppBar> {
               ? customColors.customTwo!
               : customColors.customOne!),
       actions: [
+        if (widget.subtitulo != "Puerto")
+          IconButton(
+            icon: const Icon(Icons.bluetooth),
+            onPressed: () {
+              setState(() {
+                // Actualizar la pagina de Taller
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/bleConexion', (route) => false);
+              });
+            },
+          ),
         if (widget.subtitulo != "Puerto")
           Stack(
             children: [

@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter/widgets.dart';
-import 'package:flutter_application_1/Funciones/enviar_datos_database.dart';
-import 'package:flutter_application_1/Funciones/get_color.dart';
+import 'package:flutter_application_1/Funciones/generales/enviar_datos_database.dart';
+import 'package:flutter_application_1/Funciones/generales/get_color.dart';
 import 'package:flutter_application_1/Screen/ble/bleOperation.dart';
 import 'package:flutter_application_1/ble/bleActivationHandler.dart';
 import 'package:flutter_application_1/ble/bleDeviceInfo.dart';

@@ -1,7 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/get_color.dart';
+import 'package:flutter_application_1/Funciones/generales/get_color.dart';
 
 /* Decoracion de texto  */
 Text decorationText(String texto) {
@@ -12,9 +12,10 @@ Text decorationText(String texto) {
 }
 
 /* Decoracion de un textfromfield */
-InputDecoration decorationTextField({required String text, Color? color,String? hint}) {
+InputDecoration decorationTextField(
+    {required String text, Color? color, String? hint}) {
   return InputDecoration(
-    hintText: hint?? '',
+    hintText: hint ?? '',
     labelText: text,
     labelStyle: TextStyle(color: color ?? getColorAlmostBlue()),
     focusedBorder: OutlineInputBorder(

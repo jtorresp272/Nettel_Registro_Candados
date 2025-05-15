@@ -4,13 +4,14 @@ import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/get_color.dart';
-import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
+import 'package:flutter_application_1/Funciones/generales/get_color.dart';
+import 'package:flutter_application_1/Funciones/generales/obtener_datos_candado.dart';
+import 'package:flutter_application_1/Funciones/generales/obtener_datos_database.dart';
 import 'package:flutter_application_1/Funciones/servicios/apiForDataBase.dart';
-import 'package:flutter_application_1/Funciones/verificar_credenciales.dart';
 import 'package:flutter_application_1/api/emailHandler.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
 import 'package:flutter_application_1/widgets/CustomDialogScanQr.dart';
+import 'package:flutter_application_1/widgets/CustomFloatingButton.dart';
 import 'package:flutter_application_1/widgets/CustomMenu.dart';
 import 'package:flutter_application_1/widgets/CustomListViewBuilder.dart';
 import 'package:flutter_application_1/widgets/CustomQrScan.dart';
@@ -20,6 +21,12 @@ import 'package:flutter_application_1/widgets/CustomSearch.dart';
 import 'package:flutter_application_1/widgets/CustomAboutDialog.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:http/http.dart' as http;
+
+enum Actions {
+  qr,
+  write,
+  historial,
+}
 
 class Taller extends StatefulWidget {
   const Taller({super.key});
@@ -32,18 +39,17 @@ class _TallerState extends State<Taller> {
   // ignore: non_constant_identifier_names
   bool termino_ob_data = false;
 /* Variables globales */
-  List<Candado> listaCandadosTaller = [];
-  List<Candado> listaFiltradaTaller = [];
-  List<Candado> listaCandadosLlegar = [];
-  List<Candado> listaFiltradaLlegar = [];
+  List<Candado> _listaCandadosTaller = [];
+  List<Candado> _listaFiltradaTaller = [];
+  List<Candado> _listaCandadosLlegar = [];
+  List<Candado> _listaFiltradaLlegar = [];
   late FocusNode _searchFocusNodeTaller;
   late FocusNode _searchFocusNodeLlegar;
   final TextEditingController _textControllerTaller = TextEditingController();
   final TextEditingController _textControllerLlegar = TextEditingController();
 
-  late int _selectedIndex = 0; // Definición de _selectedIndex
-  // Variable para determinar el modo que el usuario desee
-  int modo = 0;
+  int modo = 0; // Variable para determinar el modo que el usuario desee
+  bool isExpanded = false; // Variable para el floating button
 
   // Variables para el TabBar
   final int _selectedIndexTab = 1;
@@ -63,48 +69,12 @@ class _TallerState extends State<Taller> {
   late Map<int, Map<int, bool>>
       _tabExpandedStates; // Definicion de _tabExpandedStates para dejar seteado el ultimo estado de cada tapBar
 
+// Busca el número del candado en cache o servidor
   void _actionWithNumber({required String numeroCandado}) {
     String scannedNumber = numeroCandado;
 
-    // Buscar en la lista local de Taller
-    Candado scannedCandado = listaCandadosTaller.firstWhere(
-      (e) => e.numero.contains(
-        scannedNumber,
-      ),
-      orElse: () => Candado(
-        numero: '',
-        tipo: '',
-        razonIngreso: '',
-        razonSalida: '',
-        responsable: '',
-        fechaIngreso: DateTime.now(),
-        fechaSalida: null,
-        lugar: '',
-        imageTipo: '',
-        imageDescripcion: '',
-      ), // Valor predeterminado
-    );
-
-    // Si no se encontró en la lista de Taller, buscar en la lista Por Llegar
-    if (scannedCandado.numero != scannedNumber) {
-      scannedCandado = listaCandadosLlegar.firstWhere(
-        (e) => e.numero.contains(
-          scannedNumber,
-        ),
-        orElse: () => Candado(
-          numero: '',
-          tipo: '',
-          razonIngreso: '',
-          razonSalida: '',
-          responsable: '',
-          fechaIngreso: DateTime.now(),
-          fechaSalida: null,
-          lugar: '',
-          imageTipo: '',
-          imageDescripcion: '',
-        ), // Valor predeterminado
-      );
-    }
+    // Buscar el candado en el cache
+    Candado scannedCandado = obtenerDatosCandado(numeroCandado: numeroCandado);
 
     if (scannedCandado.numero == scannedNumber) {
       // Candado encontrado en la lista local, mostrar el diálogo con la información
@@ -144,16 +114,11 @@ class _TallerState extends State<Taller> {
   }
 
 // Void para las botones del bottomNavigatorBar
-  void _onItemTapped(int index) {
-    if (termino_ob_data || index > 2) {
-      setState(
-        () {
-          _selectedIndex = index;
-        },
-      );
-
-      // Acciones para el índice 0 (Escanear)
-      if (_selectedIndex == MenuNavigator.ESCANER.index) {
+  void _onFloatingAction(Actions index) {
+    // Acciones para el índice 0 (Escanear)
+    switch (index) {
+      // Qr scanner
+      case Actions.qr:
         Navigator.of(context)
             .push(MaterialPageRoute(
           builder: (context) => const CustomQrScan(),
@@ -163,7 +128,9 @@ class _TallerState extends State<Taller> {
             _actionWithNumber(numeroCandado: result as String);
           }
         });
-      } else if (_selectedIndex == MenuNavigator.MANUAL.index) {
+        break;
+      // Escribir numero
+      case Actions.write:
         showDialog(
           context: context,
           builder: (context) => CustomAboutDialog(
@@ -174,8 +141,9 @@ class _TallerState extends State<Taller> {
             },
           ),
         );
-      } else if (_selectedIndex == MenuNavigator.HISTORIAL.index) {
-        // Acciones para el índice 1 (Historial)
+        break;
+      // Historial
+      case Actions.historial:
         showDialog(
           context: context,
           builder: ((context) => const CustomAboutDialog(
@@ -183,15 +151,8 @@ class _TallerState extends State<Taller> {
                 whoIs: 'taller',
               )),
         );
-      } else if (_selectedIndex == MenuNavigator.BLUETOOTH.index) {
-        Navigator.of(context).popAndPushNamed('/bleConexion');
-        //Navigator.popAndPushNamed(context, '/bleConexion');
-      } else if (_selectedIndex == MenuNavigator.MAPS.index) {
-        Navigator.of(context).pushNamed('/map');
-      }
-    } else {
-      customSnackBar(context,
-          mensaje: "Espere a que se carguen los datos", colorFondo: Colors.red);
+
+        break;
     }
   }
 
@@ -247,10 +208,10 @@ class _TallerState extends State<Taller> {
     super.initState();
 
     hasEmail(context, 'candados');
-    listaCandadosTaller.clear();
-    listaFiltradaTaller.clear();
-    listaCandadosLlegar.clear();
-    listaFiltradaLlegar.clear();
+    _listaCandadosTaller.clear();
+    _listaFiltradaTaller.clear();
+    _listaCandadosLlegar.clear();
+    _listaFiltradaLlegar.clear();
     _searchFocusNodeTaller = FocusNode();
     _searchFocusNodeLlegar = FocusNode();
     _tabExpandedStates = {
@@ -273,7 +234,7 @@ class _TallerState extends State<Taller> {
   Future<void> _initializeData() async {
     await getDataGoogleSheet().then((_) {
       setState(() {
-        listaCandadosTaller = getCandadosTaller().map((candado) {
+        _listaCandadosTaller = getCandadosTaller().map((candado) {
           return Candado(
             numero: candado.numero,
             fechaIngreso: candado.fechaIngreso,
@@ -288,7 +249,7 @@ class _TallerState extends State<Taller> {
           );
         }).toList();
 
-        listaCandadosLlegar = getCandadosPuerto().map((candado) {
+        _listaCandadosLlegar = getCandadosPuerto().map((candado) {
           return Candado(
             numero: candado.numero,
             fechaIngreso: candado.fechaIngreso,
@@ -305,17 +266,17 @@ class _TallerState extends State<Taller> {
       });
     });
 
-    listaFiltradaTaller = List.from(listaCandadosTaller);
-    listaFiltradaLlegar = List.from(listaCandadosLlegar);
+    _listaFiltradaTaller = List.from(_listaCandadosTaller);
+    _listaFiltradaLlegar = List.from(_listaCandadosLlegar);
     termino_ob_data = true;
   }
 
   void filtrarListaTaller(String query) {
     setState(() {
       if (query.isEmpty) {
-        listaFiltradaTaller = List.from(listaCandadosTaller);
+        _listaFiltradaTaller = List.from(_listaCandadosTaller);
       } else {
-        listaFiltradaTaller = listaCandadosTaller
+        _listaFiltradaTaller = _listaCandadosTaller
             .where((candado) => candado.numero.contains(query))
             .toList();
       }
@@ -325,9 +286,9 @@ class _TallerState extends State<Taller> {
   void filtrarListaLlegar(String query) {
     setState(() {
       if (query.isEmpty) {
-        listaFiltradaLlegar = List.from(listaCandadosLlegar);
+        _listaFiltradaLlegar = List.from(_listaCandadosLlegar);
       } else {
-        listaFiltradaLlegar = listaCandadosLlegar
+        _listaFiltradaLlegar = _listaCandadosLlegar
             .where((candado) => candado.numero.contains(query))
             .toList();
       }
@@ -360,33 +321,33 @@ class _TallerState extends State<Taller> {
         });
 
         return Scaffold(
-            backgroundColor: Colors.white,
-            appBar: CustomAppBar(
-              mode: modo,
-              titulo: 'Consorcio Nettel',
-              subtitulo: 'Taller',
-              reloadCallback: () {
-                setState(() {
-                  watchDataBeforeSend(
-                    context,
-                    whoIs: 'Taller',
-                  );
-                });
-              },
-            ),
-            resizeToAvoidBottomInset: false,
-            body: termino_ob_data
-                ? Column(
-                    children: [
-                      Container(
-                        color: Colors.white,
-                        /* Formato para actualizar el color dependiendo del modo del telefono
+          backgroundColor: Colors.white,
+          appBar: CustomAppBar(
+            mode: modo,
+            titulo: 'Consorcio Nettel',
+            subtitulo: 'Taller',
+            reloadCallback: () {
+              setState(() {
+                watchDataBeforeSend(
+                  context,
+                  whoIs: 'Taller',
+                );
+              });
+            },
+          ),
+          resizeToAvoidBottomInset: false,
+          body: termino_ob_data
+              ? Column(
+                  children: [
+                    Container(
+                      color: Colors.white,
+                      /* Formato para actualizar el color dependiendo del modo del telefono
                         modo == 0
                             ? customColors.customOne!
                             : customColors.customTwo!,
                         */
-                        child: TabBar(
-                          /*
+                      child: TabBar(
+                        /*
                           dividerColor: modo == 0
                               ? customColors.customTwo!
                               : customColors.customOne!,
@@ -401,215 +362,224 @@ class _TallerState extends State<Taller> {
                               : Colors
                                   .black54, // Color del texto de las pestañas no seleccionadas
                               */
-                          dividerColor: Colors.transparent,
-                          labelColor: getColorAlmostBlue(),
-                          unselectedLabelColor: getUnSelectedIcon(),
-                          indicatorColor: getColorAlmostBlue(),
-                          // Color del indicador que resalta la pestaña seleccionada
-                          labelStyle: const TextStyle(
-                            fontSize: 18,
-                          ), // Estilo del texto de la pestaña seleccionada
-                          unselectedLabelStyle: const TextStyle(
-                            fontSize: 16,
-                          ), // Estilo del texto de las pestañas no seleccionadas
-                          tabs: myTabs,
-                        ),
+                        dividerColor: Colors.transparent,
+                        labelColor: getColorAlmostBlue(),
+                        unselectedLabelColor: getUnSelectedIcon(),
+                        indicatorColor: getColorAlmostBlue(),
+                        // Color del indicador que resalta la pestaña seleccionada
+                        labelStyle: const TextStyle(
+                          fontSize: 18,
+                        ), // Estilo del texto de la pestaña seleccionada
+                        unselectedLabelStyle: const TextStyle(
+                          fontSize: 16,
+                        ), // Estilo del texto de las pestañas no seleccionadas
+                        tabs: myTabs,
                       ),
-                      Expanded(
-                        child: TabBarView(
-                          children: [
-                            // Página 1: "Resumen"
-                            CustomResumen(
-                              listaTaller: listaCandadosTaller,
-                              listaLlegar: listaCandadosLlegar,
-                              gotoBar: (value) {
-                                setState(() {
-                                  if (value.isNotEmpty) {
-                                    int index = 0;
-                                    bool state = true;
-                                    logger.i(value);
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          // Página 1: "Resumen"
+                          CustomResumen(
+                            listaTaller: _listaCandadosTaller,
+                            listaLlegar: _listaCandadosLlegar,
+                            gotoBar: (value) {
+                              setState(() {
+                                if (value.isNotEmpty) {
+                                  int index = 0;
+                                  bool state = true;
+                                  logger.i(value);
 
-                                    if (value != 'Total candados por llegar') {
-                                      switch (value) {
-                                        case 'Candados Operativos':
-                                          index = 0;
-                                          break;
-                                        case 'Mecanicas Listas':
-                                          index = 1;
-                                          break;
-                                        case 'Candados Ingresados':
-                                          index = 2;
-                                          break;
-                                        case 'Mecanicas Dañadas':
-                                          index = 3;
-                                          break;
-                                        case 'Electronicas Dañadas':
-                                          index = 4;
-                                          break;
-                                        default:
-                                          state = false;
-                                          break;
-                                      }
-                                      tabController.index = 1;
-                                      _tabExpandedStates[tabController.index]![
-                                          index] = state;
-                                    } else {
-                                      tabController.index = 2;
+                                  if (value != 'Total candados por llegar') {
+                                    switch (value) {
+                                      case 'Candados Operativos':
+                                        index = 0;
+                                        break;
+                                      case 'Mecanicas Listas':
+                                        index = 1;
+                                        break;
+                                      case 'Candados Ingresados':
+                                        index = 2;
+                                        break;
+                                      case 'Mecanicas Dañadas':
+                                        index = 3;
+                                        break;
+                                      case 'Electronicas Dañadas':
+                                        index = 4;
+                                        break;
+                                      default:
+                                        state = false;
+                                        break;
                                     }
+                                    tabController.index = 1;
+                                    _tabExpandedStates[tabController.index]![
+                                        index] = state;
+                                  } else {
+                                    tabController.index = 2;
                                   }
-                                });
-                              },
-                            ),
-                            // Página 2: "En Taller"
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 20.0, left: 20.0, right: 20.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomSearchField(
-                                    controller: _textControllerTaller,
-                                    focusNode: _searchFocusNodeTaller,
-                                    onChanged: filtrarListaTaller,
-                                    onClear: () {
-                                      setState(() {
-                                        filtrarListaTaller('');
-                                        if (_textControllerTaller
-                                            .text.isEmpty) {
-                                          _searchFocusNodeTaller.requestFocus();
-                                        }
-                                      });
-                                    },
-                                  ),
-                                  CustomListViewBuilder(
-                                      whereFrom: 'Taller',
-                                      listaFiltrada: listaFiltradaTaller,
-                                      expandedState: _tabExpandedStates[1]!,
-                                      onExpandedChanged: (index) {
-                                        setState(() {
-                                          final currentState =
-                                              _tabExpandedStates[1]![index] ??
-                                                  false;
-                                          _tabExpandedStates[1]![index] =
-                                              !currentState;
-                                        });
-                                      }),
-                                ],
-                              ),
-                            ),
-                            // Página 3: "Por Llegar"
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 20.0, left: 20.0, right: 20.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomSearchField(
-                                    controller: _textControllerLlegar,
-                                    focusNode: _searchFocusNodeLlegar,
-                                    onChanged: filtrarListaLlegar,
-                                    onClear: () {
-                                      setState(() {
-                                        filtrarListaLlegar('');
-                                        if (_textControllerLlegar
-                                            .text.isEmpty) {
-                                          _searchFocusNodeLlegar.requestFocus();
-                                        }
-                                      });
-                                    },
-                                  ),
-                                  CustomListViewBuilder(
-                                    whereFrom: 'Llegar',
-                                    listaFiltrada: listaFiltradaLlegar,
-                                    expandedState: _tabExpandedStates[2]!,
+                                }
+                              });
+                            },
+                          ),
+                          // Página 2: "En Taller"
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 20.0, left: 20.0, right: 20.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomSearchField(
+                                  controller: _textControllerTaller,
+                                  focusNode: _searchFocusNodeTaller,
+                                  onChanged: filtrarListaTaller,
+                                  onClear: () {
+                                    setState(() {
+                                      filtrarListaTaller('');
+                                      if (_textControllerTaller.text.isEmpty) {
+                                        _searchFocusNodeTaller.requestFocus();
+                                      }
+                                    });
+                                  },
+                                ),
+                                CustomListViewBuilder(
+                                    whereFrom: 'Taller',
+                                    listaFiltrada: _listaFiltradaTaller,
+                                    expandedState: _tabExpandedStates[1]!,
                                     onExpandedChanged: (index) {
                                       setState(() {
                                         final currentState =
-                                            _tabExpandedStates[2]![index] ??
+                                            _tabExpandedStates[1]![index] ??
                                                 false;
-                                        _tabExpandedStates[2]![index] =
+                                        _tabExpandedStates[1]![index] =
                                             !currentState;
                                       });
-                                    },
-                                  ),
-                                ],
-                              ),
+                                    }),
+                              ],
                             ),
-                            // Usuario
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: customDrawer(
-                                nameUser: "Taller",
-                                reloadCallback: () {
-                                  setState(() {
-                                    watchDataBeforeSend(
-                                      context,
-                                      whoIs: 'Taller',
-                                    );
-                                  });
-                                },
-                                mode: (value) {
-                                  setState(() {
-                                    modo = value;
-                                  });
-                                },
-                              ),
+                          ),
+                          // Página 3: "Por Llegar"
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 20.0, left: 20.0, right: 20.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomSearchField(
+                                  controller: _textControllerLlegar,
+                                  focusNode: _searchFocusNodeLlegar,
+                                  onChanged: filtrarListaLlegar,
+                                  onClear: () {
+                                    setState(() {
+                                      filtrarListaLlegar('');
+                                      if (_textControllerLlegar.text.isEmpty) {
+                                        _searchFocusNodeLlegar.requestFocus();
+                                      }
+                                    });
+                                  },
+                                ),
+                                CustomListViewBuilder(
+                                  whereFrom: 'Llegar',
+                                  listaFiltrada: _listaFiltradaLlegar,
+                                  expandedState: _tabExpandedStates[2]!,
+                                  onExpandedChanged: (index) {
+                                    setState(() {
+                                      final currentState =
+                                          _tabExpandedStates[2]![index] ??
+                                              false;
+                                      _tabExpandedStates[2]![index] =
+                                          !currentState;
+                                    });
+                                  },
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  )
-                : Center(
-                    child: SizedBox(
-                      height: 100,
-                      width: 100,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 7.0,
-                        color: getColorAlmostBlue(),
+                          ),
+                          // Usuario
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: customDrawer(
+                              nameUser: "Taller",
+                              reloadCallback: () {
+                                setState(() {
+                                  watchDataBeforeSend(
+                                    context,
+                                    whoIs: 'Taller',
+                                  );
+                                });
+                              },
+                              mode: (value) {
+                                setState(() {
+                                  modo = value;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                  ],
+                )
+              : Center(
+                  child: SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 7.0,
+                      color: getColorAlmostBlue(),
+                    ),
                   ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: sendNotification,
-              child: const Text('send'),
-            ),
-            bottomNavigationBar: BottomNavigationBar(
-              backgroundColor: Colors.white,
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  backgroundColor: Colors.white,
-                  icon: Icon(Icons.qr_code_scanner),
-                  label: 'Escanear',
                 ),
-                BottomNavigationBarItem(
+          floatingActionButton: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (termino_ob_data) ...[
+                if (isExpanded) ...[
+                  CustomFloatingButton(
+                    icon: Icons.qr_code_scanner,
+                    label: 'QrScanner',
+                    onPressed: () => _onFloatingAction(Actions.qr),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  CustomFloatingButton(
+                    icon: Icons.drive_file_rename_outline,
+                    label: 'Escribir número',
+                    onPressed: () => _onFloatingAction(Actions.write),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  CustomFloatingButton(
+                    icon: Icons.receipt_long_outlined,
+                    label: 'Historial',
+                    onPressed: () => _onFloatingAction(Actions.historial),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                ],
+                FloatingActionButton(
+                  heroTag: 'main',
+                  tooltip: isExpanded ? 'Minimizar' : 'Maximizar',
+                  //onPressed: sendNotification,
+                  onPressed: () => setState(() => isExpanded = !isExpanded),
                   backgroundColor: Colors.white,
-                  icon: Icon(Icons.drive_file_rename_outline),
-                  label: 'Ingresar',
-                ),
-                BottomNavigationBarItem(
-                  backgroundColor: Colors.white,
-                  icon: Icon(Icons.receipt_long_outlined),
-                  label: 'Historial',
-                ),
-                BottomNavigationBarItem(
-                  backgroundColor: Colors.white,
-                  icon: Icon(Icons.bluetooth),
-                  label: 'Conectar',
-                ),
-                BottomNavigationBarItem(
-                  backgroundColor: Colors.white,
-                  icon: Icon(Icons.map_outlined),
-                  label: 'Mapa',
+                  elevation: 0.0,
+                  shape: CircleBorder(
+                      side: BorderSide(color: getColorAlmostBlue())),
+                  child: Icon(
+                    isExpanded
+                        ? Icons.keyboard_arrow_down_outlined
+                        : Icons.keyboard_arrow_up_outlined,
+                    color: getColorAlmostBlue(),
+                  ),
                 ),
               ],
-              currentIndex: _selectedIndex,
-              selectedItemColor: getColorAlmostBlue(),
-              unselectedItemColor: const Color.fromARGB(141, 68, 90, 164),
-              showUnselectedLabels: false,
-              showSelectedLabels: true,
-              onTap: _onItemTapped,
-            ));
+            ],
+          ),
+        );
       }),
     );
   }

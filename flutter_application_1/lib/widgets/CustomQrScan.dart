@@ -3,9 +3,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/get_color.dart';
+import 'package:flutter_application_1/Funciones/generales/get_color.dart';
 import 'package:logger/logger.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 
 class CustomQrScan extends StatefulWidget {
   const CustomQrScan({super.key});
@@ -128,6 +128,7 @@ class _CustomQrScan extends State<CustomQrScan> {
 
   @override
   void dispose() {
+    // ignore: deprecated_member_use
     controller?.dispose();
     super.dispose();
   }

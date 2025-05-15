@@ -4,12 +4,6 @@ import 'package:logger/logger.dart';
 
 enum MenuNavigator {
   // ignore: constant_identifier_names
-  ESCANER,
-  // ignore: constant_identifier_names
-  MANUAL,
-  // ignore: constant_identifier_names
-  HISTORIAL,
-  // ignore: constant_identifier_names
   BLUETOOTH,
   // ignore: constant_identifier_names
   MAPS,

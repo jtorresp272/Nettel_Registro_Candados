@@ -1,10 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/get_color.dart';
-import 'package:flutter_application_1/Funciones/obtener_datos_database.dart';
+import 'package:flutter_application_1/Funciones/generales/get_color.dart';
+import 'package:flutter_application_1/Funciones/generales/obtener_datos_database.dart';
 import 'package:flutter_application_1/Funciones/servicios/apiForDataBase.dart';
-import 'package:flutter_application_1/Funciones/verificar_credenciales.dart';
+import 'package:flutter_application_1/Funciones/generales/verificar_credenciales.dart';
 import 'package:flutter_application_1/api/emailHandler.dart';
 import 'package:flutter_application_1/widgets/CustomAboutDialog.dart';
 import 'package:flutter_application_1/widgets/CustomAppBar.dart';
@@ -90,6 +90,7 @@ class _MonitoreoState extends State<Monitoreo>
       _selectedIndex = index;
     });
     // Acciones para el índice 0 (Escanear)
+    /*
     if (_selectedIndex == MenuNavigator.ESCANER.index) {
       Navigator.of(context)
           .push(MaterialPageRoute(
@@ -113,6 +114,7 @@ class _MonitoreoState extends State<Monitoreo>
         ),
       );
     }
+    */
   }
 
   @override
