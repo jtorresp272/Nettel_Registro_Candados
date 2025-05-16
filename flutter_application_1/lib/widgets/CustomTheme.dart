@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Funciones/generales/get_color.dart';
+
+Color titleLigthColor = getColorAlmostBlue();
 
 class AppTheme {
   static final ThemeData lightTheme = ThemeData.light().copyWith(
@@ -15,22 +18,25 @@ class AppTheme {
 
 @immutable
 class CustomColors extends ThemeExtension<CustomColors> {
-  final Color? customOne;
-  final Color? customTwo;
-  final Color? customThree;
-
-  const CustomColors({this.customOne, this.customTwo, this.customThree});
+  final Color? icons;
+  final Color? appBarTitle;
+  final Color? background;
+  final Color? label;
+  const CustomColors(
+      {this.icons, this.appBarTitle, this.background, this.label});
 
   @override
   ThemeExtension<CustomColors> copyWith({
-    Color? customOne,
-    Color? customTwo,
-    Color? customThree,
+    Color? appBarIcon,
+    Color? appBarTitle,
+    Color? background,
+    Color? label,
   }) {
     return CustomColors(
-      customOne: customOne ?? this.customOne,
-      customTwo: customTwo ?? this.customTwo,
-      customThree: customTwo ?? this.customThree,
+      icons: appBarIcon ?? this.icons,
+      appBarTitle: appBarTitle ?? this.appBarTitle,
+      background: background ?? this.background,
+      label: label ?? this.label,
     );
   }
 
@@ -43,20 +49,23 @@ class CustomColors extends ThemeExtension<CustomColors> {
       return this;
     }
     return CustomColors(
-      customOne: Color.lerp(customOne, other.customOne, t),
-      customTwo: Color.lerp(customTwo, other.customTwo, t),
-      customThree: Color.lerp(customThree, other.customThree, t),
+      icons: Color.lerp(icons, other.icons, t),
+      appBarTitle: Color.lerp(appBarTitle, other.appBarTitle, t),
+      background: Color.lerp(background, other.background, t),
+      label: Color.lerp(label, other.label, t),
     );
   }
 
-  static const dark = CustomColors(
-    customOne: Colors.white,
-    customTwo: Color.fromARGB(255, 68, 91, 164),
-    customThree: Color.fromARGB(141, 68, 90, 164),
+  static final dark = CustomColors(
+    background: Colors.black,
+    icons: Colors.white,
+    appBarTitle: titleLigthColor,
+    label: Colors.white,
   );
-  static const light = CustomColors(
-    customOne: Color.fromARGB(255, 68, 91, 164),
-    customTwo: Colors.white,
-    customThree: Colors.white54,
+  static final light = CustomColors(
+    background: Colors.white,
+    icons: Colors.black,
+    appBarTitle: titleLigthColor,
+    label: Colors.black,
   );
 }

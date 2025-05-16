@@ -37,12 +37,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
     return AppBar(
       automaticallyImplyLeading: false,
-      backgroundColor:
-          widget.mode == 0 ? customColors.customOne! : customColors.customTwo!,
-      iconTheme: IconThemeData(
-          color: widget.mode == 0
-              ? customColors.customTwo!
-              : customColors.customOne!),
+      backgroundColor: customColors.background,
+      iconTheme: IconThemeData(color: customColors.icons),
       actions: [
         if (widget.subtitulo != "Puerto")
           IconButton(
@@ -106,17 +102,12 @@ class _CustomAppBarState extends State<CustomAppBar> {
           Text(
             widget.titulo,
             style: TextStyle(
-                color: widget.mode == 0
-                    ? customColors.customTwo!
-                    : customColors.customOne!,
-                fontWeight: FontWeight.bold),
+                color: customColors.appBarTitle, fontWeight: FontWeight.bold),
           ),
           Text(
             widget.subtitulo,
             style: TextStyle(
-                color: widget.mode == 0
-                    ? customColors.customTwo!
-                    : customColors.customOne!,
+                color: customColors.appBarTitle,
                 fontSize: 14.0,
                 fontWeight: FontWeight.bold),
           ),

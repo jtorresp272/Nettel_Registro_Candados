@@ -59,7 +59,9 @@ class _CustomAboutDialogState extends State<CustomAboutDialog> {
         autofocus: true,
         keyboardType: TextInputType.name,
         decoration: decorationTextField(
-            text: 'número Candado', hint: widget.hint ?? '0093'),
+            text: 'número Candado',
+            hint: widget.hint ?? '0093',
+            context: context),
       ),
       actions: [
         if (!wait)

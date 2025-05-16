@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/widgets/CustomTheme.dart';
 
 // ignore: camel_case_types
 class customCheckBox extends StatelessWidget {
@@ -17,11 +18,12 @@ class customCheckBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final customColors = Theme.of(context).extension<CustomColors>()!;
     return Row(
       children: [
         Checkbox(
           fillColor: WidgetStateColor.resolveWith(
-              (states) => isPressed ? Colors.red : Colors.transparent),
+              (states) => isPressed ? Colors.red : customColors.label!),
           side: const BorderSide(
             color: Colors.black,
             width: 2.0,
@@ -35,7 +37,7 @@ class customCheckBox extends StatelessWidget {
         Text(
           name,
           style: TextStyle(
-            color: isPressed ? Colors.red : Colors.black,
+            color: isPressed ? Colors.red : customColors.label,
             fontSize: 14.0,
           ),
         ),

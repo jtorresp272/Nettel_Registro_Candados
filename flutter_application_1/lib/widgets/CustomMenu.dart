@@ -8,6 +8,7 @@ import 'package:flutter_application_1/Funciones/generales/get_color.dart';
 import 'package:flutter_application_1/Funciones/servicios/apiForDataBase.dart';
 import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
+import 'package:flutter_application_1/widgets/CustomTheme.dart';
 
 class customDrawer extends StatefulWidget {
   final String nameUser;
@@ -35,6 +36,9 @@ class _customDrawerState extends State<customDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    // Variable para el color dependiendo del tema
+    final customColors = Theme.of(context).extension<CustomColors>()!;
+
     List<String> users = ['taller', 'monitoreo', 'puerto'];
     List<String> contras = ['taller9876', 'monitoreo45678', 'puerto12345'];
     String user = widget.nameUser == "Taller"
@@ -54,8 +58,8 @@ class _customDrawerState extends State<customDrawer> {
     final Size screenSize = MediaQuery.of(context).size;
     return Container(
         padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
-        width: screenSize.width * 0.75,
-        color: Colors.white,
+        width: screenSize.width,
+        color: customColors.background,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -81,9 +85,10 @@ class _customDrawerState extends State<customDrawer> {
                         Container(
                           width: 40, // Ancho del círculo
                           height: 40, // Altura del círculo
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             shape: BoxShape.circle, // Forma circular
-                            color: Colors.white, // Color de fondo del círculo
+                            color: customColors
+                                .background, // Color de fondo del círculo
                           ),
                           child: ClipOval(
                             child: Image.asset(
@@ -104,14 +109,14 @@ class _customDrawerState extends State<customDrawer> {
                             Text(
                               'Información',
                               style: TextStyle(
-                                color: getColorAlmostBlue(),
+                                color: customColors.label,
                                 fontSize: 20.0,
                               ),
                             ),
                             Text(
                               'cuenta',
                               style: TextStyle(
-                                color: getColorAlmostBlue(),
+                                color: customColors.label,
                                 fontSize: 16.0,
                               ),
                             ),
@@ -126,10 +131,9 @@ class _customDrawerState extends State<customDrawer> {
                       width: 30, // Ancho del círculo
                       height: 30, // Altura del círculo
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle, // Forma circular
-                        color:
-                            getBackgroundColor(), // Color de fondo del círculo
-                      ),
+                          shape: BoxShape.circle, // Forma circular
+                          color: customColors.background,
+                          border: Border.all(color: getColorAlmostBlue())),
                       child: GestureDetector(
                         onTap: () {
                           showModalBottomSheet(
@@ -138,7 +142,9 @@ class _customDrawerState extends State<customDrawer> {
                               return Container(
                                 padding: const EdgeInsets.all(20),
                                 decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: customColors.background,
+                                    border:
+                                        Border.all(color: getColorAlmostBlue()),
                                     borderRadius: BorderRadius.circular(20.0)),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
@@ -182,8 +188,8 @@ class _customDrawerState extends State<customDrawer> {
                                         fontSize: 16.0,
                                       ),
                                       subtitle: Text('$user@nettelcorp.com'),
-                                      textColor: getColorAlmostBlue(),
-                                      iconColor: getColorAlmostBlue(),
+                                      textColor: customColors.label,
+                                      iconColor: customColors.icons,
                                       onTap: () {
                                         // Acción para la opción 1
                                         Navigator.pop(context);
@@ -197,8 +203,8 @@ class _customDrawerState extends State<customDrawer> {
                                         fontSize: 16.0,
                                       ),
                                       subtitle: Text(contra),
-                                      textColor: getColorAlmostBlue(),
-                                      iconColor: getColorAlmostBlue(),
+                                      textColor: customColors.label,
+                                      iconColor: customColors.icons,
                                       onTap: () {
                                         // Acción para la opción 1
                                         Navigator.pop(context);
@@ -212,7 +218,7 @@ class _customDrawerState extends State<customDrawer> {
                         },
                         child: Icon(
                           Icons.keyboard_arrow_down,
-                          color: getColorAlmostBlue(),
+                          color: customColors.icons,
                         ),
                       ),
                     ),
@@ -226,12 +232,12 @@ class _customDrawerState extends State<customDrawer> {
               ListTile(
                 leading: Icon(
                   Icons.email,
-                  color: getColorAlmostBlue(),
+                  color: customColors.icons,
                 ),
                 title: Text(
                   'Enviar correo',
                   style: TextStyle(
-                    color: getColorAlmostBlue(),
+                    color: customColors.label,
                   ),
                 ),
                 onTap: () {
@@ -249,12 +255,12 @@ class _customDrawerState extends State<customDrawer> {
             ListTile(
               leading: Icon(
                 Icons.exit_to_app,
-                color: getColorAlmostBlue(),
+                color: customColors.icons,
               ),
               title: Text(
                 'Cerrar sesión',
                 style: TextStyle(
-                  color: getColorAlmostBlue(),
+                  color: customColors.label,
                 ),
               ),
               onTap: () async {
@@ -314,14 +320,14 @@ class _customDrawerState extends State<customDrawer> {
             */
             // Salir de la aplicacion
             ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.outbound,
-                color: Color.fromARGB(255, 68, 91, 164),
+                color: customColors.icons,
               ),
-              title: const Text(
+              title: Text(
                 'Salir',
                 style: TextStyle(
-                  color: Color.fromARGB(255, 68, 91, 164),
+                  color: customColors.label,
                 ),
               ),
               onTap: () {

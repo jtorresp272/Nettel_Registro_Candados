@@ -8,6 +8,7 @@ import 'package:flutter_application_1/Funciones/generales/get_color.dart';
 import 'package:flutter_application_1/Funciones/generales/notification_state.dart';
 import 'package:flutter_application_1/Funciones/generales/obtener_datos_database.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
+import 'package:flutter_application_1/widgets/CustomTheme.dart';
 import 'package:intl/intl.dart';
 //import 'package:provider/provider.dart';
 
@@ -87,23 +88,81 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
 
   @override
   Widget build(BuildContext context) {
+    // Variable para el color dependiendo del tema
+    final customColors = Theme.of(context).extension<CustomColors>()!;
+
     // obtener el usario que esta usando el customdialog
     final String user = widget.user ?? 'taller';
 
     return ScaleTransition(
       scale: _animation, // Aplicar escala según la animación
-      child: AlertDialog(
-        titlePadding: const EdgeInsets.all(0.0),
-        scrollable: true,
-        surfaceTintColor: Colors.transparent,
-        backgroundColor: Colors.white,
-        insetPadding: const EdgeInsets.all(15.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-          //side: BorderSide(color: color[widget.candado.lugar] ?? Colors.grey),
+      child: Scaffold(
+        backgroundColor: customColors.background,
+        appBar: AppBar(
+          backgroundColor: customColors.background,
+          leading: Container(
+            //width: 40.0,
+            //height: 40.0,
+            decoration: const BoxDecoration(
+              color: Colors.transparent,
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              color: customColors.icons,
+              onPressed: () {
+                _animationController.reverse().then((_) {
+                  Navigator.of(context)
+                      .pop(); // Cerrar el diálogo al finalizar la animación de salida
+                });
+              },
+              icon: const Icon(
+                Icons.keyboard_arrow_left_outlined,
+                size: 30,
+              ),
+            ),
+          ),
+          title: Center(
+            child: SizedBox(
+              child: Text(
+                getNameOfType[widget.candado.lugar]!,
+                style: TextStyle(
+                  color: customColors.label,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            if (user == 'monitoreo')
+              const SizedBox(
+                width: 40.0,
+              ),
+            if (lugares.contains(widget.candado.lugar) && user != 'monitoreo')
+              Container(
+                width: 40.0,
+                height: 40.0,
+                decoration: BoxDecoration(
+                  color: isDamage ? Colors.red : Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: IconButton(
+                    color: isDamage ? Colors.white : Colors.black,
+                    icon: const Icon(Icons.edit_document),
+                    onPressed: () {
+                      setState(
+                        () {
+                          isDamage = !isDamage;
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+          ],
         ),
-        // Encabezado (Imagen - Numero - Fecha)
-        title: Container(
+        body: Container(
           padding: const EdgeInsets.all(10.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10.0),
@@ -111,259 +170,249 @@ class _CustomCandadoDialogState extends State<CustomCandadoDialog>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Expanded(
+                child: Column(
                   children: [
-                    Container(
-                      width: 40.0,
-                      height: 40.0,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.5),
-                        shape: BoxShape.circle,
+                    // IMAGEN
+                    Center(
+                      child: Image.asset(
+                        widget.candado.imageTipo,
+                        fit: (widget.candado.tipo == 'CC_5' ||
+                                widget.candado.tipo == 'CC_4')
+                            ? BoxFit.cover
+                            : BoxFit.contain,
+                        width: MediaQuery.of(context).size.width * 0.70,
+                        height: MediaQuery.of(context).size.height * 0.20,
                       ),
-                      child: IconButton(
-                        color: Colors.black,
-                        onPressed: () {
-                          _animationController.reverse().then((_) {
-                            Navigator.of(context)
-                                .pop(); // Cerrar el diálogo al finalizar la animación de salida
+                    ),
+                    const SizedBox(height: 10.0),
+                    // NUMERO
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.50,
+                          child: Text(
+                            'Número de candado:',
+                            style: TextStyle(
+                                color: customColors.label,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          widget.candado.numero,
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.normal,
+                            color: customColors.label,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10.0),
+                    // FECHA
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.50,
+                          child: Text(
+                            'Ultima fecha de ingreso:',
+                            style: TextStyle(
+                                color: customColors.label,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          DateFormat('yyyy-MM-dd')
+                              .format(widget.candado.fechaIngreso),
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            color: customColors.label,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 30.0),
+
+                    // CONTENT
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        if (isDamage && user != 'monitoreo')
+                          const Text(
+                            'Tipo de daño:',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 13.0,
+                            ),
+                          ),
+                        // Check para saber si se daño la electronica o la mecanica
+                        if (isDamage && user != 'monitoreo')
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              customCheckBox(
+                                name: "Mecánico",
+                                onPressed: (value) {
+                                  setState(() {
+                                    isMecDamage = !isMecDamage;
+                                  });
+                                },
+                                isPressed: isMecDamage,
+                              ),
+                              customCheckBox(
+                                name: "Electronico",
+                                onPressed: (value) {
+                                  setState(() {
+                                    isElectDamage = !isElectDamage;
+                                  });
+                                },
+                                isPressed: isElectDamage,
+                              ),
+                            ],
+                          ),
+                        if (isDamage && user != 'monitoreo')
+                          const SizedBox(
+                            height: 20.0,
+                          ),
+                        // TextFromField Candado dañado
+                        if (isDamage)
+                          TextFormField(
+                            maxLines: null,
+                            controller: _descripcionDanadaController,
+                            decoration: decorationTextField(
+                              text: 'Descripción de daño',
+                              context: context,
+                              //color: customColors.label,
+                            ),
+                            style: const TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
+                        // Descripción de entrada
+                        if (!isDamage)
+                          TextFormField(
+                            maxLines: null,
+                            style: const TextStyle(
+                              color: Colors.black,
+                            ),
+                            readOnly: !isEditable_1,
+                            autofocus: !isEditable_1,
+                            controller: _descripcionIngresoController,
+                            decoration:
+                                (lugares.contains(widget.candado.lugar) &&
+                                        user != 'monitoreo')
+                                    ? decorationTextFieldwithAction(
+                                        text: 'Descripción de ingreso',
+                                        isEnabled: isEditable_1,
+                                        context: context,
+                                        onPressed: () {
+                                          setState(() {
+                                            isEditable_1 = !isEditable_1;
+                                          });
+                                        },
+                                      )
+                                    : decorationTextField(
+                                        text: 'Descripción de ingreso',
+                                        context: context),
+                          ),
+                        if (!['I', 'V', 'E'].contains(widget.candado.lugar))
+                          const SizedBox(
+                            height: 20.0,
+                          ),
+
+                        if (!isDamage &&
+                            !['I', 'V', 'E'].contains(widget.candado.lugar))
+                          // Descripción de salida
+                          if (lugares.contains(widget.candado.lugar))
+                            TextFormField(
+                              maxLines: null,
+                              style: const TextStyle(
+                                color: Colors.black,
+                              ),
+                              readOnly: !isEditable_2,
+                              controller: _descripcionSalidaController,
+                              decoration: user != 'monitoreo'
+                                  ? decorationTextFieldwithAction(
+                                      text: 'Descripción de salida',
+                                      isEnabled: isEditable_2,
+                                      context: context,
+                                      onPressed: () {
+                                        setState(() {
+                                          isEditable_2 = !isEditable_2;
+                                        });
+                                      },
+                                    )
+                                  : decorationTextField(
+                                      text: 'Descripción de salida',
+                                      context: context),
+                            ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              // ACTIONS
+              if (lugares.contains(widget.candado.lugar) && user != 'monitoreo')
+                if (!waiting)
+                  Expanded(
+                    child: Center(
+                      child: GestureDetector(
+                        onTap: () async {
+                          setState(() {
+                            waiting = true;
+                          });
+                          // Guardar cambios realizados
+                          await _saveChanges();
+
+                          setState(() {
+                            waiting = false;
                           });
                         },
-                        icon: const Icon(
-                          Icons.arrow_back,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      child: Text(
-                        getNameOfType[widget.candado.lugar]!,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    if (user == 'monitoreo')
-                      const SizedBox(
-                        width: 40.0,
-                      ),
-                    if (lugares.contains(widget.candado.lugar) &&
-                        user != 'monitoreo')
-                      Container(
-                        width: 40.0,
-                        height: 40.0,
-                        decoration: BoxDecoration(
-                          color: isDamage ? Colors.red : Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: IconButton(
-                            color: isDamage ? Colors.white : Colors.black,
-                            icon: const Icon(Icons.edit_document),
-                            onPressed: () {
-                              setState(
-                                () {
-                                  isDamage = !isDamage;
-                                },
-                              );
-                            },
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height * 0.07,
+                          decoration: BoxDecoration(
+                            color: getColorAlmostBlue(),
+                            border: Border.all(),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Text(
+                            'Guardar Cambios',
+                            style: TextStyle(
+                              color: customColors.label,
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
-                  ],
-                ),
-              ),
-              Center(
-                child: Image.asset(
-                  widget.candado.imageTipo,
-                  fit: (widget.candado.tipo == 'CC_5' ||
-                          widget.candado.tipo == 'CC_4')
-                      ? BoxFit.cover
-                      : BoxFit.contain,
-                  width: MediaQuery.of(context).size.width * 0.58,
-                  height: MediaQuery.of(context).size.height * 0.15,
-                ),
-              ),
-              const SizedBox(height: 8.0),
-              Center(
-                child: Text(
-                  widget.candado.numero,
-                  style: const TextStyle(
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    ),
+                  ),
+              if (waiting)
+                Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 4,
+                    color: getBackgroundColor(),
+                    backgroundColor: getColorAlmostBlue(),
                   ),
                 ),
-              ),
-              Center(
-                child: Text(
-                  DateFormat('yyyy-MM-dd').format(widget.candado.fechaIngreso),
-                  style: const TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10.0),
             ],
           ),
         ),
-        content: ConstrainedBox(
-          // Dimensiones maximas y minimas
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height * 0.1,
-            maxWidth: MediaQuery.of(context).size.width * 0.7,
-            minWidth: MediaQuery.of(context).size.width * 0.7,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              if (isDamage && user != 'monitoreo')
-                const Text(
-                  'Tipo de daño:',
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 13.0,
-                  ),
-                ),
-              // Check para saber si se daño la electronica o la mecanica
-              if (isDamage && user != 'monitoreo')
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    customCheckBox(
-                      name: "Mecánico",
-                      onPressed: (value) {
-                        setState(() {
-                          isMecDamage = !isMecDamage;
-                        });
-                      },
-                      isPressed: isMecDamage,
-                    ),
-                    customCheckBox(
-                      name: "Electronico",
-                      onPressed: (value) {
-                        setState(() {
-                          isElectDamage = !isElectDamage;
-                        });
-                      },
-                      isPressed: isElectDamage,
-                    ),
-                  ],
-                ),
-              if (isDamage && user != 'monitoreo')
-                const SizedBox(
-                  height: 20.0,
-                ),
-              // TextFromField Candado dañado
-              if (isDamage)
-                TextFormField(
-                  maxLines: null,
-                  controller: _descripcionDanadaController,
-                  decoration: decorationTextField(
-                    text: 'Descripción de daño',
-                    color: Colors.red,
-                  ),
-                  style: const TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-              if (!isDamage)
-                // Descripción de entrada
-                TextFormField(
-                  maxLines: null,
-                  style: const TextStyle(
-                    color: Colors.black,
-                  ),
-                  readOnly: !isEditable_1,
-                  autofocus: !isEditable_1,
-                  controller: _descripcionIngresoController,
-                  decoration: (lugares.contains(widget.candado.lugar) &&
-                          user != 'monitoreo')
-                      ? decorationTextFieldwithAction(
-                          text: 'Descripción de ingreso',
-                          isEnabled: isEditable_1,
-                          onPressed: () {
-                            setState(() {
-                              isEditable_1 = !isEditable_1;
-                            });
-                          },
-                        )
-                      : decorationTextField(text: 'Descripción de ingreso'),
-                ),
-              if (!['I', 'V', 'E'].contains(widget.candado.lugar))
-                const SizedBox(
-                  height: 20.0,
-                ),
-
-              if (!isDamage && !['I', 'V', 'E'].contains(widget.candado.lugar))
-                // Descripción de salida
-                if (lugares.contains(widget.candado.lugar))
-                  TextFormField(
-                    maxLines: null,
-                    style: const TextStyle(
-                      color: Colors.black,
-                    ),
-                    readOnly: !isEditable_2,
-                    controller: _descripcionSalidaController,
-                    decoration: user != 'monitoreo'
-                        ? decorationTextFieldwithAction(
-                            text: 'Descripción de salida',
-                            isEnabled: isEditable_2,
-                            onPressed: () {
-                              setState(() {
-                                isEditable_2 = !isEditable_2;
-                              });
-                            },
-                          )
-                        : decorationTextField(text: 'Descripción de salida'),
-                  ),
-            ],
-          ),
-        ),
-        actions: [
-          if (lugares.contains(widget.candado.lugar) && user != 'monitoreo')
-            if (!waiting)
-              Center(
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateColor.resolveWith(
-                        (states) => getColorAlmostBlue()),
-                  ),
-                  onPressed: () async {
-                    setState(() {
-                      waiting = true;
-                    });
-                    // Guardar cambios realizados
-                    await _saveChanges();
-
-                    setState(() {
-                      waiting = false;
-                    });
-                  },
-                  child: const Text(
-                    'Guardar Cambios',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-          if (waiting)
-            Center(
-              child: CircularProgressIndicator(
-                strokeWidth: 4,
-                color: getBackgroundColor(),
-                backgroundColor: getColorAlmostBlue(),
-              ),
-            ),
-        ],
       ),
     );
   }

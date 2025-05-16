@@ -172,6 +172,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
             name.indexWhere((name) => name.contains(responsable))] = true;
       }
     }
+
     // animacion de ingreso
     _animationController = AnimationController(
       vsync: this,
@@ -189,624 +190,598 @@ class _CustomScanResumeState extends State<CustomScanResume>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(15.0),
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15.0),
-        gradient: LinearGradient(
-          colors: widget.whereGo != 'puerto'
-              ? color[widget.candado.lugar] ??
-                  [
-                    Colors.white,
-                    Colors.white,
-                    Colors.white,
-                    Colors.grey.shade400,
-                    Colors.grey.shade400
-                  ]
-              : [
-                  Colors.white,
-                  Colors.white,
-                  Colors.white,
-                  Colors.grey.shade400,
-                  Colors.grey.shade400
-                ],
-          end: Alignment.topCenter,
-          begin: Alignment.bottomCenter,
-        ),
-      ),
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          leading: Container(
-            margin: const EdgeInsets.only(top: 10.0),
-            width: 40.0,
-            height: 40.0,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.5),
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              onPressed: () {
-                _animationController.reverse().then((_) {
-                  Navigator.of(context).pop();
-                });
-              },
-              icon: const Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-              ),
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        leading: Container(
+          margin: const EdgeInsets.only(top: 10.0),
+          width: 40.0,
+          height: 40.0,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.5),
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
+            onPressed: () {
+              _animationController.reverse().then((_) {
+                Navigator.of(context).pop();
+              });
+            },
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.black,
             ),
           ),
-          actions: [
-            if (widget.whereGo != 'monitoreo' && widget.whereGo != 'puerto')
-              Container(
-                width: 40.0,
-                height: 40.0,
-                decoration: BoxDecoration(
-                  color: isDamage
-                      ? Colors.red.withOpacity(0.5)
-                      : Colors.white.withOpacity(0.5),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isDamage = !isDamage;
-                    });
-                  },
-                  icon: Icon(
-                    Icons.error_outline_sharp,
-                    color: isDamage ? Colors.white : Colors.black,
-                  ),
+        ),
+        actions: [
+          if (widget.whereGo != 'monitoreo' && widget.whereGo != 'puerto')
+            Container(
+              width: 40.0,
+              height: 40.0,
+              decoration: BoxDecoration(
+                color: isDamage
+                    ? Colors.red.withOpacity(0.5)
+                    : Colors.white.withOpacity(0.5),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                onPressed: () {
+                  setState(() {
+                    isDamage = !isDamage;
+                  });
+                },
+                icon: Icon(
+                  Icons.error_outline_sharp,
+                  color: isDamage ? Colors.white : Colors.black,
                 ),
               ),
-          ],
-        ),
-        backgroundColor: Colors
-            .transparent, // Para que el fondo del Scaffold sea transparente
-        body: Align(
-          alignment: Alignment.bottomLeft,
-          child: SlideTransition(
-            position: _animation,
-            child: Container(
-              height: MediaQuery.of(context)
-                  .size
-                  .height, // Tamaño completo de la pantalla
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Titulo
-                  Expanded(
-                    flex: 2,
-                    child: ListView(
-                      padding: const EdgeInsets.only(bottom: 15.0),
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: [
-                        Center(
-                          child: Image.asset(
-                            imagen,
-                            fit: (imagen.contains('CC_4') ||
-                                    imagen.contains('CC_5'))
-                                ? BoxFit.cover
-                                : BoxFit.contain,
-                            height: 125.0,
-                            width: 230.0,
-                          ),
+            ),
+        ],
+      ),
+      backgroundColor:
+          Colors.transparent, // Para que el fondo del Scaffold sea transparente
+      body: Align(
+        alignment: Alignment.bottomLeft,
+        child: SlideTransition(
+          position: _animation,
+          child: Container(
+            height: MediaQuery.of(context)
+                .size
+                .height, // Tamaño completo de la pantalla
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Titulo
+                Expanded(
+                  flex: 2,
+                  child: ListView(
+                    padding: const EdgeInsets.only(bottom: 15.0),
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      Center(
+                        child: Image.asset(
+                          imagen,
+                          fit: (imagen.contains('CC_4') ||
+                                  imagen.contains('CC_5'))
+                              ? BoxFit.cover
+                              : BoxFit.contain,
+                          height: 125.0,
+                          width: 230.0,
                         ),
-                        const SizedBox(height: 8.0),
-                        Center(
-                          child: Text(
-                            widget.candado.numero,
-                            style: const TextStyle(
-                              fontSize: 30.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        Center(
-                            child: Text(
-                          DateFormat('yyyy-MM-dd')
-                              .format(widget.candado.fechaIngreso),
+                      ),
+                      const SizedBox(height: 8.0),
+                      Center(
+                        child: Text(
+                          widget.candado.numero,
                           style: const TextStyle(
-                            fontSize: 20.0,
+                            fontSize: 30.0,
+                            fontWeight: FontWeight.bold,
                             color: Colors.black,
                           ),
-                        )),
-                      ],
-                    ),
+                        ),
+                      ),
+                      Center(
+                          child: Text(
+                        DateFormat('yyyy-MM-dd')
+                            .format(widget.candado.fechaIngreso),
+                        style: const TextStyle(
+                          fontSize: 20.0,
+                          color: Colors.black,
+                        ),
+                      )),
+                    ],
                   ),
-                  const SizedBox(
-                    height: 10.0,
-                  ),
-                  // Body
-                  Expanded(
-                    flex: 3,
-                    child: ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.only(bottom: 0.0),
-                      children: [
+                ),
+                const SizedBox(
+                  height: 10.0,
+                ),
+                // Body
+                Expanded(
+                  flex: 3,
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.only(bottom: 0.0),
+                    children: [
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      if (isDamage)
+                        const Text(
+                          'Tipo de daño:',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 13.0,
+                          ),
+                        ),
+                      // Check para saber si se daño la electronica o la mecanica
+                      if (isDamage)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            customCheckBox(
+                              name: "Mecánico",
+                              onPressed: (value) {
+                                setState(() {
+                                  isMecDamage = !isMecDamage;
+                                });
+                              },
+                              isPressed: isMecDamage,
+                            ),
+                            customCheckBox(
+                              name: "Electronico",
+                              onPressed: (value) {
+                                setState(() {
+                                  isElectDamage = !isElectDamage;
+                                });
+                              },
+                              isPressed: isElectDamage,
+                            ),
+                          ],
+                        ),
+                      if (isDamage)
                         const SizedBox(
                           height: 10.0,
                         ),
-                        if (isDamage)
-                          const Text(
-                            'Tipo de daño:',
-                            style: TextStyle(
+                      if (isDamage)
+                        TextFormField(
+                          maxLines: null,
+                          style: const TextStyle(
+                            color: Colors.black,
+                          ),
+                          controller: _descripcionDanadoController,
+                          decoration: decorationTextField(
+                              text: 'Descripción de daño',
                               color: Colors.red,
-                              fontSize: 13.0,
-                            ),
+                              context: context),
+                        ),
+                      if (!isDamage &&
+                          !['V', 'E'].contains(widget.candado.lugar))
+                        TextFormField(
+                          readOnly: widget.whereGo == 'monitoreo',
+                          maxLines: null,
+                          style: const TextStyle(
+                            color: Colors.black,
                           ),
-                        // Check para saber si se daño la electronica o la mecanica
-                        if (isDamage)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              customCheckBox(
-                                name: "Mecánico",
-                                onPressed: (value) {
-                                  setState(() {
-                                    isMecDamage = !isMecDamage;
-                                  });
-                                },
-                                isPressed: isMecDamage,
-                              ),
-                              customCheckBox(
-                                name: "Electronico",
-                                onPressed: (value) {
-                                  setState(() {
-                                    isElectDamage = !isElectDamage;
-                                  });
-                                },
-                                isPressed: isElectDamage,
-                              ),
-                            ],
-                          ),
-                        if (isDamage)
-                          const SizedBox(
-                            height: 10.0,
-                          ),
-                        if (isDamage)
-                          TextFormField(
-                            maxLines: null,
-                            style: const TextStyle(
-                              color: Colors.black,
-                            ),
-                            controller: _descripcionDanadoController,
-                            decoration: decorationTextField(
-                                text: 'Descripción de daño', color: Colors.red),
-                          ),
-                        if (!isDamage &&
-                            !['V', 'E'].contains(widget.candado.lugar))
-                          TextFormField(
-                            readOnly: widget.whereGo == 'monitoreo',
-                            maxLines: null,
-                            style: const TextStyle(
-                              color: Colors.black,
-                            ),
-                            controller: _descripcionIngresoController,
-                            decoration: decorationTextField(
-                                text: 'Descripción de ingreso'),
-                          ),
-                        if (widget.whereGo == 'puerto')
-                          const SizedBox(
-                            height: 10.0,
-                          ),
-                        if (widget.whereGo == 'puerto')
-                          Container(
-                            padding: const EdgeInsets.all(5.0),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10.0),
-                                border: Border.all(
-                                  color: getColorAlmostBlue(),
-                                )),
-                            child: Center(
-                              child: Stack(
-                                children: [
-                                  Positioned(
-                                    top:
-                                        -5.0, // Ajusta la posición vertical del texto
-                                    left:
-                                        4.0, // Ajusta la posición horizontal del texto
-                                    child: Container(
-                                      color: Colors
-                                          .white, // Color del fondo del texto
-                                      child: Text(
-                                        'Puerto:',
-                                        style: TextStyle(
-                                          color: getColorAlmostBlue(),
-                                          fontSize: 15.0,
-                                        ),
+                          controller: _descripcionIngresoController,
+                          decoration: decorationTextField(
+                              text: 'Descripción de ingreso', context: context),
+                        ),
+                      if (widget.whereGo == 'puerto')
+                        const SizedBox(
+                          height: 10.0,
+                        ),
+                      if (widget.whereGo == 'puerto')
+                        Container(
+                          padding: const EdgeInsets.all(5.0),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.0),
+                              border: Border.all(
+                                color: getColorAlmostBlue(),
+                              )),
+                          child: Center(
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  top:
+                                      -5.0, // Ajusta la posición vertical del texto
+                                  left:
+                                      4.0, // Ajusta la posición horizontal del texto
+                                  child: Container(
+                                    color: Colors
+                                        .white, // Color del fondo del texto
+                                    child: Text(
+                                      'Puerto:',
+                                      style: TextStyle(
+                                        color: getColorAlmostBlue(),
+                                        fontSize: 15.0,
                                       ),
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 15.0, left: 10.0, right: 10.0),
-                                    child: Column(
-                                      children: [
-                                        RowWithButton(
-                                          name: [puertos[0], puertos[1]],
-                                          onPressed: [
-                                            () {
-                                              setState(() {
-                                                buttonOnPressedPuerto =
-                                                    List.generate(
-                                                        buttonOnPressedPuerto
-                                                            .length,
-                                                        (index) => index == 0
-                                                            ? !buttonOnPressedPuerto[
-                                                                0]
-                                                            : false);
-                                              });
-                                            },
-                                            () {
-                                              setState(() {
-                                                buttonOnPressedPuerto =
-                                                    List.generate(
-                                                        buttonOnPressedPuerto
-                                                            .length,
-                                                        (index) => index == 1
-                                                            ? !buttonOnPressedPuerto[
-                                                                1]
-                                                            : false);
-                                              });
-                                            },
-                                          ],
-                                          isPressed: [
-                                            buttonOnPressedPuerto[0],
-                                            buttonOnPressedPuerto[1]
-                                          ],
-                                        ),
-                                        RowWithButton(
-                                          name: [puertos[2], puertos[3]],
-                                          onPressed: [
-                                            () {
-                                              setState(() {
-                                                buttonOnPressedPuerto =
-                                                    List.generate(
-                                                        buttonOnPressedPuerto
-                                                            .length,
-                                                        (index) => index == 2
-                                                            ? !buttonOnPressedPuerto[
-                                                                2]
-                                                            : false);
-                                              });
-                                            },
-                                            () {
-                                              setState(() {
-                                                buttonOnPressedPuerto =
-                                                    List.generate(
-                                                        buttonOnPressedPuerto
-                                                            .length,
-                                                        (index) => index == 3
-                                                            ? !buttonOnPressedPuerto[
-                                                                3]
-                                                            : false);
-                                              });
-                                            },
-                                          ],
-                                          isPressed: [
-                                            buttonOnPressedPuerto[2],
-                                            buttonOnPressedPuerto[3]
-                                          ],
-                                        ),
-                                        RowWithButton(
-                                          name: [puertos[4], puertos[5]],
-                                          onPressed: [
-                                            () {
-                                              setState(() {
-                                                buttonOnPressedPuerto =
-                                                    List.generate(
-                                                        buttonOnPressedPuerto
-                                                            .length,
-                                                        (index) => index == 4
-                                                            ? !buttonOnPressedPuerto[
-                                                                4]
-                                                            : false);
-                                              });
-                                            },
-                                            () {
-                                              setState(() {
-                                                buttonOnPressedPuerto =
-                                                    List.generate(
-                                                        buttonOnPressedPuerto
-                                                            .length,
-                                                        (index) => index == 5
-                                                            ? !buttonOnPressedPuerto[
-                                                                5]
-                                                            : false);
-                                              });
-                                            },
-                                          ],
-                                          isPressed: [
-                                            buttonOnPressedPuerto[4],
-                                            buttonOnPressedPuerto[5]
-                                          ],
-                                        ),
-                                        RowWithButton(
-                                          name: [puertos[6], puertos[7]],
-                                          onPressed: [
-                                            () {
-                                              setState(() {
-                                                buttonOnPressedPuerto =
-                                                    List.generate(
-                                                        buttonOnPressedPuerto
-                                                            .length,
-                                                        (index) => index == 6
-                                                            ? !buttonOnPressedPuerto[
-                                                                6]
-                                                            : false);
-                                              });
-                                            },
-                                            () {
-                                              setState(() {
-                                                buttonOnPressedPuerto =
-                                                    List.generate(
-                                                        buttonOnPressedPuerto
-                                                            .length,
-                                                        (index) => index == 7
-                                                            ? !buttonOnPressedPuerto[
-                                                                7]
-                                                            : false);
-                                              });
-                                            },
-                                          ],
-                                          isPressed: [
-                                            buttonOnPressedPuerto[6],
-                                            buttonOnPressedPuerto[7]
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        if (widget.estado != EstadoCandados.porIngresar &&
-                            !isDamage)
-                          const SizedBox(
-                            height: 10.0,
-                          ),
-                        if (widget.estado != EstadoCandados.porIngresar &&
-                            !isDamage)
-                          TextFormField(
-                            readOnly: widget.whereGo == 'monitoreo',
-                            maxLines: null,
-                            style: const TextStyle(
-                              color: Colors.black,
-                            ),
-                            controller: _descripcionSalidaController,
-                            decoration: decorationTextField(
-                                text: 'Descripción de salida'),
-                          ),
-                        if (widget.estado != EstadoCandados.porIngresar &&
-                            !isDamage &&
-                            widget.whereGo != 'monitoreo')
-                          const SizedBox(
-                            height: 10.0,
-                          ),
-                        // Responsables
-                        if (widget.estado != EstadoCandados.porIngresar &&
-                            !isDamage &&
-                            widget.whereGo != 'monitoreo')
-                          Container(
-                            padding: const EdgeInsets.all(5.0),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10.0),
-                                border: Border.all(
-                                  color: getColorAlmostBlue(),
-                                )),
-                            child: Center(
-                              child: Stack(
-                                children: [
-                                  Positioned(
-                                    top:
-                                        -5.0, // Ajusta la posición vertical del texto
-                                    left:
-                                        4.0, // Ajusta la posición horizontal del texto
-                                    child: Container(
-                                      color: Colors
-                                          .white, // Color del fondo del texto
-                                      child: Text(
-                                        'Responsable:',
-                                        style: TextStyle(
-                                          color: getColorAlmostBlue(),
-                                          fontSize: 15.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 15.0, left: 10.0, right: 10.0),
-                                    child: Column(
-                                      children: [
-                                        RowWithButton(
-                                          name: [name[0], name[1]],
-                                          onPressed: [
-                                            () {
-                                              setState(() {
-                                                buttonOnPressedResponsable =
-                                                    List.generate(
-                                                        buttonOnPressedResponsable
-                                                            .length,
-                                                        (index) => index == 0
-                                                            ? !buttonOnPressedResponsable[
-                                                                0]
-                                                            : false);
-                                              });
-                                            },
-                                            () {
-                                              setState(() {
-                                                buttonOnPressedResponsable =
-                                                    List.generate(
-                                                        buttonOnPressedResponsable
-                                                            .length,
-                                                        (index) => index == 1
-                                                            ? !buttonOnPressedResponsable[
-                                                                1]
-                                                            : false);
-                                              });
-                                            },
-                                          ],
-                                          isPressed: [
-                                            buttonOnPressedResponsable[0],
-                                            buttonOnPressedResponsable[1]
-                                          ],
-                                        ),
-                                        RowWithButton(
-                                          name: [name[2], name[3]],
-                                          onPressed: [
-                                            () {
-                                              setState(() {
-                                                buttonOnPressedResponsable =
-                                                    List.generate(
-                                                        buttonOnPressedResponsable
-                                                            .length,
-                                                        (index) => index == 2
-                                                            ? !buttonOnPressedResponsable[
-                                                                2]
-                                                            : false);
-                                              });
-                                            },
-                                            () {
-                                              setState(() {
-                                                buttonOnPressedResponsable =
-                                                    List.generate(
-                                                        buttonOnPressedResponsable
-                                                            .length,
-                                                        (index) => index == 3
-                                                            ? !buttonOnPressedResponsable[
-                                                                3]
-                                                            : false);
-                                              });
-                                            },
-                                          ],
-                                          isPressed: [
-                                            buttonOnPressedResponsable[2],
-                                            buttonOnPressedResponsable[3]
-                                          ],
-                                        ),
-                                        RowWithButton(
-                                          name: [name[4]],
-                                          onPressed: [
-                                            () {
-                                              setState(() {
-                                                buttonOnPressedResponsable =
-                                                    List.generate(
-                                                        buttonOnPressedResponsable
-                                                            .length,
-                                                        (index) => index == 4
-                                                            ? !buttonOnPressedResponsable[
-                                                                4]
-                                                            : false);
-                                              });
-                                            },
-                                          ],
-                                          isPressed: [
-                                            buttonOnPressedResponsable[4]
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  // Boton
-                  Expanded(
-                    child: !waiting
-                        ? Container(
-                            alignment: Alignment.center,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                elevation:
-                                    5, // Ajusta el valor según el efecto de sombra deseado
-                                // Otros estilos como colores, márgenes, etc.
-                                foregroundColor: Colors.transparent,
-                                backgroundColor: getColorAlmostBlue(),
-                                shadowColor: getColorAlmostBlue(),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
                                 ),
-                                minimumSize: Size(
-                                    MediaQuery.of(context).size.width * 0.7,
-                                    MediaQuery.of(context).size.height * 0.06),
-                                maximumSize: Size(
-                                    MediaQuery.of(context).size.width * 0.8,
-                                    MediaQuery.of(context).size.height * 0.1),
-                              ),
-                              onPressed: () async {
-                                // Acción del botón
-                                if (widget.whereGo != 'puerto') {
-                                  if (buttonOnPressedResponsable
-                                          .contains(true) ||
-                                      widget.estado ==
-                                          EstadoCandados.porIngresar ||
-                                      isDamage) {
-                                    setState(() {
-                                      waiting = true;
-                                    });
-                                    await _saveChanges();
-                                    setState(() {
-                                      waiting = false;
-                                    });
-                                  } else {
-                                    customSnackBar(context,
-                                        mensaje: 'Seleccione un responsable',
-                                        colorFondo: Colors.red);
-                                  }
-                                } else {
-                                  if (buttonOnPressedPuerto.contains(true)) {
-                                    setState(() {
-                                      waiting = true;
-                                    });
-                                    await _saveChanges();
-                                    setState(() {
-                                      waiting = false;
-                                    });
-                                  } else {
-                                    customSnackBar(context,
-                                        mensaje: 'Seleccione un puerto',
-                                        colorFondo: Colors.red);
-                                  }
-                                }
-                              },
-                              child: Text(
-                                widget.estado != EstadoCandados.porIngresar
-                                    ? "Guardar y actualizar"
-                                    : "Ingresar y actualizar",
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16.0),
-                              ),
-                            ),
-                          )
-                        : Center(
-                            child: CircularProgressIndicator(
-                              strokeWidth: 4,
-                              color: getBackgroundColor(),
-                              backgroundColor: getColorAlmostBlue(),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 15.0, left: 10.0, right: 10.0),
+                                  child: Column(
+                                    children: [
+                                      RowWithButton(
+                                        name: [puertos[0], puertos[1]],
+                                        onPressed: [
+                                          () {
+                                            setState(() {
+                                              buttonOnPressedPuerto =
+                                                  List.generate(
+                                                      buttonOnPressedPuerto
+                                                          .length,
+                                                      (index) => index == 0
+                                                          ? !buttonOnPressedPuerto[
+                                                              0]
+                                                          : false);
+                                            });
+                                          },
+                                          () {
+                                            setState(() {
+                                              buttonOnPressedPuerto =
+                                                  List.generate(
+                                                      buttonOnPressedPuerto
+                                                          .length,
+                                                      (index) => index == 1
+                                                          ? !buttonOnPressedPuerto[
+                                                              1]
+                                                          : false);
+                                            });
+                                          },
+                                        ],
+                                        isPressed: [
+                                          buttonOnPressedPuerto[0],
+                                          buttonOnPressedPuerto[1]
+                                        ],
+                                      ),
+                                      RowWithButton(
+                                        name: [puertos[2], puertos[3]],
+                                        onPressed: [
+                                          () {
+                                            setState(() {
+                                              buttonOnPressedPuerto =
+                                                  List.generate(
+                                                      buttonOnPressedPuerto
+                                                          .length,
+                                                      (index) => index == 2
+                                                          ? !buttonOnPressedPuerto[
+                                                              2]
+                                                          : false);
+                                            });
+                                          },
+                                          () {
+                                            setState(() {
+                                              buttonOnPressedPuerto =
+                                                  List.generate(
+                                                      buttonOnPressedPuerto
+                                                          .length,
+                                                      (index) => index == 3
+                                                          ? !buttonOnPressedPuerto[
+                                                              3]
+                                                          : false);
+                                            });
+                                          },
+                                        ],
+                                        isPressed: [
+                                          buttonOnPressedPuerto[2],
+                                          buttonOnPressedPuerto[3]
+                                        ],
+                                      ),
+                                      RowWithButton(
+                                        name: [puertos[4], puertos[5]],
+                                        onPressed: [
+                                          () {
+                                            setState(() {
+                                              buttonOnPressedPuerto =
+                                                  List.generate(
+                                                      buttonOnPressedPuerto
+                                                          .length,
+                                                      (index) => index == 4
+                                                          ? !buttonOnPressedPuerto[
+                                                              4]
+                                                          : false);
+                                            });
+                                          },
+                                          () {
+                                            setState(() {
+                                              buttonOnPressedPuerto =
+                                                  List.generate(
+                                                      buttonOnPressedPuerto
+                                                          .length,
+                                                      (index) => index == 5
+                                                          ? !buttonOnPressedPuerto[
+                                                              5]
+                                                          : false);
+                                            });
+                                          },
+                                        ],
+                                        isPressed: [
+                                          buttonOnPressedPuerto[4],
+                                          buttonOnPressedPuerto[5]
+                                        ],
+                                      ),
+                                      RowWithButton(
+                                        name: [puertos[6], puertos[7]],
+                                        onPressed: [
+                                          () {
+                                            setState(() {
+                                              buttonOnPressedPuerto =
+                                                  List.generate(
+                                                      buttonOnPressedPuerto
+                                                          .length,
+                                                      (index) => index == 6
+                                                          ? !buttonOnPressedPuerto[
+                                                              6]
+                                                          : false);
+                                            });
+                                          },
+                                          () {
+                                            setState(() {
+                                              buttonOnPressedPuerto =
+                                                  List.generate(
+                                                      buttonOnPressedPuerto
+                                                          .length,
+                                                      (index) => index == 7
+                                                          ? !buttonOnPressedPuerto[
+                                                              7]
+                                                          : false);
+                                            });
+                                          },
+                                        ],
+                                        isPressed: [
+                                          buttonOnPressedPuerto[6],
+                                          buttonOnPressedPuerto[7]
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
+                        ),
+                      if (widget.estado != EstadoCandados.porIngresar &&
+                          !isDamage)
+                        const SizedBox(
+                          height: 10.0,
+                        ),
+                      if (widget.estado != EstadoCandados.porIngresar &&
+                          !isDamage)
+                        TextFormField(
+                          readOnly: widget.whereGo == 'monitoreo',
+                          maxLines: null,
+                          style: const TextStyle(
+                            color: Colors.black,
+                          ),
+                          controller: _descripcionSalidaController,
+                          decoration: decorationTextField(
+                              text: 'Descripción de salida', context: context),
+                        ),
+                      if (widget.estado != EstadoCandados.porIngresar &&
+                          !isDamage &&
+                          widget.whereGo != 'monitoreo')
+                        const SizedBox(
+                          height: 10.0,
+                        ),
+                      // Responsables
+                      if (widget.estado != EstadoCandados.porIngresar &&
+                          !isDamage &&
+                          widget.whereGo != 'monitoreo')
+                        Container(
+                          padding: const EdgeInsets.all(5.0),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.0),
+                              border: Border.all(
+                                color: getColorAlmostBlue(),
+                              )),
+                          child: Center(
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  top:
+                                      -5.0, // Ajusta la posición vertical del texto
+                                  left:
+                                      4.0, // Ajusta la posición horizontal del texto
+                                  child: Container(
+                                    color: Colors
+                                        .white, // Color del fondo del texto
+                                    child: Text(
+                                      'Responsable:',
+                                      style: TextStyle(
+                                        color: getColorAlmostBlue(),
+                                        fontSize: 15.0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 15.0, left: 10.0, right: 10.0),
+                                  child: Column(
+                                    children: [
+                                      RowWithButton(
+                                        name: [name[0], name[1]],
+                                        onPressed: [
+                                          () {
+                                            setState(() {
+                                              buttonOnPressedResponsable =
+                                                  List.generate(
+                                                      buttonOnPressedResponsable
+                                                          .length,
+                                                      (index) => index == 0
+                                                          ? !buttonOnPressedResponsable[
+                                                              0]
+                                                          : false);
+                                            });
+                                          },
+                                          () {
+                                            setState(() {
+                                              buttonOnPressedResponsable =
+                                                  List.generate(
+                                                      buttonOnPressedResponsable
+                                                          .length,
+                                                      (index) => index == 1
+                                                          ? !buttonOnPressedResponsable[
+                                                              1]
+                                                          : false);
+                                            });
+                                          },
+                                        ],
+                                        isPressed: [
+                                          buttonOnPressedResponsable[0],
+                                          buttonOnPressedResponsable[1]
+                                        ],
+                                      ),
+                                      RowWithButton(
+                                        name: [name[2], name[3]],
+                                        onPressed: [
+                                          () {
+                                            setState(() {
+                                              buttonOnPressedResponsable =
+                                                  List.generate(
+                                                      buttonOnPressedResponsable
+                                                          .length,
+                                                      (index) => index == 2
+                                                          ? !buttonOnPressedResponsable[
+                                                              2]
+                                                          : false);
+                                            });
+                                          },
+                                          () {
+                                            setState(() {
+                                              buttonOnPressedResponsable =
+                                                  List.generate(
+                                                      buttonOnPressedResponsable
+                                                          .length,
+                                                      (index) => index == 3
+                                                          ? !buttonOnPressedResponsable[
+                                                              3]
+                                                          : false);
+                                            });
+                                          },
+                                        ],
+                                        isPressed: [
+                                          buttonOnPressedResponsable[2],
+                                          buttonOnPressedResponsable[3]
+                                        ],
+                                      ),
+                                      RowWithButton(
+                                        name: [name[4]],
+                                        onPressed: [
+                                          () {
+                                            setState(() {
+                                              buttonOnPressedResponsable =
+                                                  List.generate(
+                                                      buttonOnPressedResponsable
+                                                          .length,
+                                                      (index) => index == 4
+                                                          ? !buttonOnPressedResponsable[
+                                                              4]
+                                                          : false);
+                                            });
+                                          },
+                                        ],
+                                        isPressed: [
+                                          buttonOnPressedResponsable[4]
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                // Boton
+                Expanded(
+                  child: !waiting
+                      ? Container(
+                          alignment: Alignment.center,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              elevation:
+                                  5, // Ajusta el valor según el efecto de sombra deseado
+                              // Otros estilos como colores, márgenes, etc.
+                              foregroundColor: Colors.transparent,
+                              backgroundColor: getColorAlmostBlue(),
+                              shadowColor: getColorAlmostBlue(),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                              minimumSize: Size(
+                                  MediaQuery.of(context).size.width * 0.7,
+                                  MediaQuery.of(context).size.height * 0.06),
+                              maximumSize: Size(
+                                  MediaQuery.of(context).size.width * 0.8,
+                                  MediaQuery.of(context).size.height * 0.1),
+                            ),
+                            onPressed: () async {
+                              // Acción del botón
+                              if (widget.whereGo != 'puerto') {
+                                if (buttonOnPressedResponsable.contains(true) ||
+                                    widget.estado ==
+                                        EstadoCandados.porIngresar ||
+                                    isDamage) {
+                                  setState(() {
+                                    waiting = true;
+                                  });
+                                  await _saveChanges();
+                                  setState(() {
+                                    waiting = false;
+                                  });
+                                } else {
+                                  customSnackBar(context,
+                                      mensaje: 'Seleccione un responsable',
+                                      colorFondo: Colors.red);
+                                }
+                              } else {
+                                if (buttonOnPressedPuerto.contains(true)) {
+                                  setState(() {
+                                    waiting = true;
+                                  });
+                                  await _saveChanges();
+                                  setState(() {
+                                    waiting = false;
+                                  });
+                                } else {
+                                  customSnackBar(context,
+                                      mensaje: 'Seleccione un puerto',
+                                      colorFondo: Colors.red);
+                                }
+                              }
+                            },
+                            child: Text(
+                              widget.estado != EstadoCandados.porIngresar
+                                  ? "Guardar y actualizar"
+                                  : "Ingresar y actualizar",
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16.0),
+                            ),
+                          ),
+                        )
+                      : Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 4,
+                            color: getBackgroundColor(),
+                            backgroundColor: getColorAlmostBlue(),
+                          ),
+                        ),
+                ),
+              ],
             ),
           ),
         ),

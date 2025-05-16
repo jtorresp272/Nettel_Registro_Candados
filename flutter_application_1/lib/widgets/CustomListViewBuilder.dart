@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/generales/obtener_datos_database.dart';
 import 'package:flutter_application_1/widgets/CustomDialog.dart';
+import 'package:flutter_application_1/widgets/CustomTheme.dart';
 import '../Funciones/generales/get_color.dart';
 import 'package:intl/intl.dart';
 
@@ -30,6 +31,9 @@ class CustomListViewBuilder extends StatefulWidget {
 class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
   @override
   Widget build(BuildContext context) {
+    // Variable para el color dependiendo del tema
+    final customColors = Theme.of(context).extension<CustomColors>()!;
+
     // Obtener el usuario que vera el customListView
     final user = widget.user ?? 'taller';
     Map<String, List<Candado>> candadosPorLugar = {};
@@ -97,40 +101,42 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10.0, vertical: 8.0),
-                  decoration: BoxDecoration(
-                    color: isExpanded ? colorContenedor : getColorAlmostBlue(),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        titulo,
-                        style: TextStyle(
-                          color: isExpanded ? Colors.black : Colors.white,
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
-                        ),
+                GestureDetector(
+                  onTap: () => widget.onExpandedChanged?.call(index),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10.0, vertical: 8.0),
+                    decoration: BoxDecoration(
+                      color: isExpanded ? colorContenedor : null,
+                      borderRadius: BorderRadius.circular(5.0),
+                      border: Border.all(
+                        color:
+                            isExpanded ? colorContenedor : getColorAlmostBlue(),
                       ),
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: () {
-                          widget.onExpandedChanged?.call(index);
-                        },
-                        child: Icon(
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          titulo,
+                          style: TextStyle(
+                            color: customColors.label,
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Spacer(),
+                        Icon(
                           isExpanded
                               ? Icons.keyboard_arrow_up
                               : Icons.keyboard_arrow_down,
-                          color: isExpanded ? Colors.black : Colors.white,
+                          color: customColors.icons,
                           size: 25.0,
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 isExpanded ? const SizedBox() : const SizedBox(height: 8.0),
@@ -184,22 +190,24 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                                       fit: BoxFit.contain,
                                       height: 70.0,
                                     ),
+                                    // Número candado
                                     Text(
                                       candadosPorLugar[lugar]![index].numero,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16.0,
-                                        color: Colors.black,
+                                        color: customColors.label,
                                       ),
                                     ),
+                                    // Fecha
                                     Text(
                                       DateFormat('yyyy-MM-dd').format(
                                         candadosPorLugar[lugar]![index]
                                             .fechaIngreso,
                                       ),
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 14.0,
-                                        color: Colors.black,
+                                        color: customColors.label,
                                       ),
                                     ),
                                   ],
@@ -223,10 +231,18 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
   void _showCandadoDialog(
       BuildContext context, Candado candado, String where, String? user) {
     final user0 = user ?? 'taller';
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              CustomCandadoDialog(candado: candado, where: where, user: user0),
+        ));
+    /*
     showDialog(
       context: context,
       builder: (context) =>
           CustomCandadoDialog(candado: candado, where: where, user: user0),
     );
+    */
   }
 }

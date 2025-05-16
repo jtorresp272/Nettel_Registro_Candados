@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/generales/get_color.dart';
 import 'package:flutter_application_1/Funciones/generales/contar_datos.dart';
 import 'package:flutter_application_1/Funciones/generales/obtener_datos_database.dart';
+import 'package:flutter_application_1/widgets/CustomTheme.dart';
 
 double widthScreen = 0.0;
 Map<String, int> datosTaller = {};
@@ -41,36 +42,43 @@ class CustomResumen extends StatelessWidget {
             _CustomContainer(
               razon: 'Candados Operativos',
               dato: datosTaller['Candados Operativos'],
+              context: context,
               onPressed: _handleContainerPressed,
             ),
             _CustomContainer(
               razon: 'Mecanicas Listas',
               dato: datosTaller['Mecanicas Listas'],
+              context: context,
               onPressed: _handleContainerPressed,
             ),
             _CustomContainer(
               razon: 'Candados Ingresados',
               dato: datosTaller['Candados Ingresados'],
+              context: context,
               onPressed: _handleContainerPressed,
             ),
             _CustomContainer(
               razon: 'Mecanicas Dañadas',
               dato: datosTaller['Mecanicas Dañadas'],
+              context: context,
               onPressed: _handleContainerPressed,
             ),
             _CustomContainer(
               razon: 'Electronicas Dañadas',
               dato: datosTaller['Electronicas Dañadas'],
+              context: context,
               onPressed: _handleContainerPressed,
             ),
             _CustomContainer(
               razon: 'Total electronicas en taller',
               dato: datosTaller['Total electronicas en taller'],
+              context: context,
               onPressed: _handleContainerPressed,
             ),
             _CustomContainer(
               razon: 'Total candados por llegar',
               dato: listaLlegar.length,
+              context: context,
               onPressed: _handleContainerPressed,
             ),
           ],
@@ -84,8 +92,11 @@ class CustomResumen extends StatelessWidget {
 Widget _CustomContainer({
   String? razon,
   int? dato,
+  required BuildContext context,
   required Function(String)? onPressed,
 }) {
+  // Variable para el color dependiendo del tema
+  final customColors = Theme.of(context).extension<CustomColors>()!;
   Color fillContainer;
   switch (razon) {
     case 'Candados Operativos':
@@ -155,7 +166,7 @@ Widget _CustomContainer({
                     style: TextStyle(
                       fontSize: 15.0, // Tamaño de fuente del texto
                       fontWeight: FontWeight.bold, // Peso de fuente en negrita
-                      color: getColorAlmostBlue(), // Color del texto
+                      color: customColors.label, // Color del texto
                     ),
                   ))),
         ],

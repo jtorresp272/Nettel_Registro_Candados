@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_application_1/Funciones/generales/obtener_datos_database.dart';
+import 'package:flutter_application_1/widgets/CustomScanResume.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/generales/notification_state.dart';

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/generales/get_color.dart';
+import 'package:flutter_application_1/widgets/CustomTheme.dart';
 
 class CustomSearchField extends StatelessWidget {
   final TextEditingController controller;
@@ -19,10 +20,13 @@ class CustomSearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Variable para el color dependiendo del tema
+    final customColors = Theme.of(context).extension<CustomColors>()!;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: TextField(
-        style: const TextStyle(color: Colors.black),
+        style: TextStyle(color: customColors.label),
         focusNode: focusNode,
         controller: controller,
         onChanged: onChanged,
