@@ -1,0 +1,2 @@
+C:/Users/joshue/Documents/flutter/Registro_Candado_Nettel/Nettel_Registro_Candados/flutter_application_1/android/app/.cxx/RelWithDebInfo/185n3jg1/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/joshue/Documents/flutter/Registro_Candado_Nettel/Nettel_Registro_Candados/flutter_application_1/android/app/.cxx/RelWithDebInfo/185n3jg1/x86_64/CMakeFiles/rebuild_cache.dir
