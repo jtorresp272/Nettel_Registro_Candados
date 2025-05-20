@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/generales/get_color.dart';
+import 'package:flutter_application_1/widgets/CustomTheme.dart';
 
 class RowWithButton extends StatelessWidget {
   final List<String> name;
@@ -17,6 +18,8 @@ class RowWithButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final customColors = Theme.of(context).extension<CustomColors>()!;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -34,7 +37,10 @@ class RowWithButton extends StatelessWidget {
                   height: 20,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: getColorAlmostBlue(), width: 2.0),
+                    border: Border.all(
+                      color: customColors.icons!,
+                      width: 2.0,
+                    ),
                   ),
                   child: Center(
                     child: Container(
@@ -45,7 +51,7 @@ class RowWithButton extends StatelessWidget {
                         border: Border.all(color: Colors.transparent),
                         color: isPressed[index]
                             ? getColorAlmostBlue()
-                            : getBackgroundColor(),
+                            : Colors.transparent,
                       ),
                     ),
                   ),
@@ -55,7 +61,7 @@ class RowWithButton extends StatelessWidget {
                   name[index],
                   style: TextStyle(
                     fontSize: 16.0,
-                    color: getColorAlmostBlue(),
+                    color: customColors.label,
                   ),
                 ),
               ],

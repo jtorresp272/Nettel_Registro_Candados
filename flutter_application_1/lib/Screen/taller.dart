@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/generales/get_color.dart';
-import 'package:flutter_application_1/Funciones/generales/notification_state.dart';
 import 'package:flutter_application_1/Funciones/generales/obtener_datos_candado.dart';
 import 'package:flutter_application_1/Funciones/generales/obtener_datos_database.dart';
 import 'package:flutter_application_1/Funciones/servicios/apiForDataBase.dart';
@@ -337,8 +336,7 @@ class _TallerState extends State<Taller> {
           backgroundColor: customColors.background,
           appBar: CustomAppBar(
             mode: modo,
-            titulo: 'Consorcio Nettel',
-            subtitulo: 'Taller',
+            area: 'Taller',
             reloadCallback: () {
               setState(() {
                 watchDataBeforeSend(
@@ -495,7 +493,7 @@ class _TallerState extends State<Taller> {
                 ),
           floatingActionButton: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               if (termino_ob_data) ...[
                 if (isExpanded) ...[
@@ -531,60 +529,75 @@ class _TallerState extends State<Taller> {
                   onPressed: () => setState(() => isExpanded = !isExpanded),
                   backgroundColor: customColors.background,
                   elevation: 0.0,
-                  shape: CircleBorder(
-                      side: BorderSide(color: getColorAlmostBlue())),
+                  //shape: CircleBorder(
+                  //    side: BorderSide(color: getColorAlmostBlue())),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(color: getColorAlmostBlue()),
+                  ),
                   child: Icon(
                     isExpanded
                         ? Icons.keyboard_arrow_down_outlined
                         : Icons.keyboard_arrow_up_outlined,
-                    color: getColorAlmostBlue(),
+                    color: customColors.icons,
+                    //size: 30, // Tamaño del icono
                   ),
                 ),
               ],
             ],
           ),
-          bottomNavigationBar: NavigationBar(
-            backgroundColor: customColors.background,
-            overlayColor: WidgetStateProperty.all(customColors.label),
-            onDestinationSelected: (int index) {
-              setState(() {
-                currentPageIndex = index;
-              });
-            },
-            indicatorColor: getColorAlmostBlue(),
-            selectedIndex: currentPageIndex,
-            labelTextStyle:
-                WidgetStateProperty.all(TextStyle(color: customColors.label)),
-            destinations: <Widget>[
-              NavigationDestination(
-                  icon: Icon(
-                    Icons.info_outline,
-                    color: customColors.icons,
-                  ),
-                  selectedIcon: const Icon(Icons.info),
-                  label: 'Resumen'),
-              NavigationDestination(
-                  icon: Icon(
-                    Icons.construction_outlined,
-                    color: customColors.icons,
-                  ),
-                  selectedIcon: const Icon(Icons.construction),
-                  label: 'Taller'),
-              NavigationDestination(
-                  icon: Icon(
-                    Icons.local_shipping_outlined,
-                    color: customColors.icons,
-                  ),
-                  selectedIcon: const Icon(Icons.local_shipping),
-                  label: 'Por llegar'),
-              NavigationDestination(
-                  icon: Icon(
-                    Icons.menu_outlined,
-                    color: customColors.icons,
-                  ),
-                  selectedIcon: const Icon(Icons.menu),
-                  label: 'Información'),
-            ],
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              //color: customColors.navigatorBar,
+              border: Border(
+                top: BorderSide(
+                  color: getColorAlmostBlue(),
+                  width: 1.0,
+                ),
+              ),
+            ),
+            child: NavigationBar(
+              backgroundColor: customColors.navigatorBar,
+              onDestinationSelected: (int index) {
+                setState(() {
+                  currentPageIndex = index;
+                });
+              },
+              indicatorColor: getColorAlmostBlue().withOpacity(0.8),
+              selectedIndex: currentPageIndex,
+              labelTextStyle:
+                  WidgetStateProperty.all(TextStyle(color: customColors.label)),
+              destinations: <Widget>[
+                NavigationDestination(
+                    icon: Icon(
+                      Icons.info_outline,
+                      color: customColors.icons,
+                    ),
+                    selectedIcon: const Icon(Icons.info),
+                    label: 'Resumen'),
+                NavigationDestination(
+                    icon: Icon(
+                      Icons.construction_outlined,
+                      color: customColors.icons,
+                    ),
+                    selectedIcon: const Icon(Icons.construction),
+                    label: 'Taller'),
+                NavigationDestination(
+                    icon: Icon(
+                      Icons.local_shipping_outlined,
+                      color: customColors.icons,
+                    ),
+                    selectedIcon: const Icon(Icons.local_shipping),
+                    label: 'Por llegar'),
+                NavigationDestination(
+                    icon: Icon(
+                      Icons.menu_outlined,
+                      color: customColors.icons,
+                    ),
+                    selectedIcon: const Icon(Icons.menu),
+                    label: 'Información'),
+              ],
+            ),
           ),
         );
       }),

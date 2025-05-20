@@ -21,9 +21,14 @@ class CustomColors extends ThemeExtension<CustomColors> {
   final Color? icons;
   final Color? appBarTitle;
   final Color? background;
+  final Color? navigatorBar;
   final Color? label;
   const CustomColors(
-      {this.icons, this.appBarTitle, this.background, this.label});
+      {this.icons,
+      this.appBarTitle,
+      this.background,
+      this.label,
+      this.navigatorBar});
 
   @override
   ThemeExtension<CustomColors> copyWith({
@@ -31,12 +36,14 @@ class CustomColors extends ThemeExtension<CustomColors> {
     Color? appBarTitle,
     Color? background,
     Color? label,
+    Color? navigatorBar,
   }) {
     return CustomColors(
       icons: appBarIcon ?? this.icons,
       appBarTitle: appBarTitle ?? this.appBarTitle,
       background: background ?? this.background,
       label: label ?? this.label,
+      navigatorBar: navigatorBar ?? this.navigatorBar,
     );
   }
 
@@ -53,6 +60,7 @@ class CustomColors extends ThemeExtension<CustomColors> {
       appBarTitle: Color.lerp(appBarTitle, other.appBarTitle, t),
       background: Color.lerp(background, other.background, t),
       label: Color.lerp(label, other.label, t),
+      navigatorBar: Color.lerp(navigatorBar, other.navigatorBar, t),
     );
   }
 
@@ -61,11 +69,13 @@ class CustomColors extends ThemeExtension<CustomColors> {
     icons: Colors.white,
     appBarTitle: titleLigthColor,
     label: Colors.white,
+    navigatorBar: Colors.black,
   );
   static final light = CustomColors(
     background: Colors.white,
     icons: Colors.black,
     appBarTitle: titleLigthColor,
     label: Colors.black,
+    navigatorBar: Colors.white,
   );
 }

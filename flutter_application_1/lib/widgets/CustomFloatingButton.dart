@@ -24,14 +24,19 @@ class CustomFloatingButton extends StatelessWidget {
       mini: true, // Tamaño reducido
       backgroundColor: customColors.background,
       elevation: 0.0,
-      shape: CircleBorder(
-        side: BorderSide(
-          color: getColorAlmostBlue(),
-        ),
-      ), // 🔵 Forma circular explícita
+      //shape: CircleBorder(
+      //  side: BorderSide(
+      //    color: getColorAlmostBlue(),
+      //  ),
+      //),// 🔵 Forma circular explícita
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: getColorAlmostBlue()),
+      ),
       child: Icon(
         icon,
-        color: getColorAlmostBlue(),
+        color: customColors.icons,
+        size: 20, // Tamaño del icono
       ),
     );
   }

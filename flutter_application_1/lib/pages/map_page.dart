@@ -17,7 +17,7 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   StreamSubscription<LocationData>?
       _locationSubscription; // Suscripción para poder detener la adquision de ubicación y mejorar el rendimiento de la app
-  final Location _locationController = Location();
+  //final Location _locationController = Location();
   final Completer<GoogleMapController> _mapController =
       Completer<GoogleMapController>();
 
@@ -27,7 +27,7 @@ class _MapPageState extends State<MapPage> {
   static const LatLng _pHiperMarket =
       LatLng(-2.170786417910632, -79.91667714758492);
 
-  LatLng? _currentP;
+  //LatLng? _currentP;
 
   Marker _sourceLocationMarker = const Marker(
     markerId: MarkerId("_sourceLocation"),
@@ -130,74 +130,74 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
-  void _onMarkerTap() {
-    setState(() {
-      _sourceLocationMarker = _sourceLocationMarker.copyWith(
-        infoWindowParam: InfoWindow(
-          title: 'Source Location',
-          snippet:
-              'This is your source location. Latitude: ${_pGooglePlex.latitude}, Longitude: ${_pGooglePlex.longitude}',
-        ),
-      );
-    });
+  // void _onMarkerTap() {
+  //   setState(() {
+  //     _sourceLocationMarker = _sourceLocationMarker.copyWith(
+  //       infoWindowParam: InfoWindow(
+  //         title: 'Source Location',
+  //         snippet:
+  //             'This is your source location. Latitude: ${_pGooglePlex.latitude}, Longitude: ${_pGooglePlex.longitude}',
+  //       ),
+  //     );
+  //   });
 
-    _showUpdatedInfoWindow();
-  }
+  //   _showUpdatedInfoWindow();
+  // }
 
   /* Mostrar informacion del marcador */
-  Future<void> _showInfoWindow() async {
-    final GoogleMapController controller = await _mapController.future;
-    controller.showMarkerInfoWindow(const MarkerId('_currentLocation'));
-  }
+  // Future<void> _showInfoWindow() async {
+  //   final GoogleMapController controller = await _mapController.future;
+  //   controller.showMarkerInfoWindow(const MarkerId('_currentLocation'));
+  // }
 
-  Future<void> _showUpdatedInfoWindow() async {
-    final GoogleMapController controller = await _mapController.future;
-    controller.showMarkerInfoWindow(const MarkerId('_destinationLocation'));
-    controller.showMarkerInfoWindow(const MarkerId('_sourceLocation'));
-  }
+  // Future<void> _showUpdatedInfoWindow() async {
+  //   final GoogleMapController controller = await _mapController.future;
+  //   controller.showMarkerInfoWindow(const MarkerId('_destinationLocation'));
+  //   controller.showMarkerInfoWindow(const MarkerId('_sourceLocation'));
+  // }
 
-  Future<void> _cameraToPosition(LatLng pos) async {
-    final GoogleMapController controller = await _mapController.future;
-    CameraPosition newCameraPosition = CameraPosition(target: pos, zoom: 16);
-    await controller.animateCamera(
-      CameraUpdate.newCameraPosition(newCameraPosition),
-    );
-    _locationSubscription?.cancel();
-  }
+  // Future<void> _cameraToPosition(LatLng pos) async {
+  //   final GoogleMapController controller = await _mapController.future;
+  //   CameraPosition newCameraPosition = CameraPosition(target: pos, zoom: 16);
+  //   await controller.animateCamera(
+  //     CameraUpdate.newCameraPosition(newCameraPosition),
+  //   );
+  //   _locationSubscription?.cancel();
+  // }
 
   /* Función para saber tu ubicación */
-  Future<void> _getLocationUpdates() async {
-    bool serviceEnabled;
-    PermissionStatus permissionGranted;
+  // Future<void> _getLocationUpdates() async {
+  //   bool serviceEnabled;
+  //   PermissionStatus permissionGranted;
 
-    serviceEnabled = await _locationController.serviceEnabled();
-    if (serviceEnabled) {
-      serviceEnabled = await _locationController.requestService();
-    } else {
-      return;
-    }
+  //   serviceEnabled = await _locationController.serviceEnabled();
+  //   if (serviceEnabled) {
+  //     serviceEnabled = await _locationController.requestService();
+  //   } else {
+  //     return;
+  //   }
 
-    permissionGranted = await _locationController.hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await _locationController.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) {
-        return;
-      }
-    }
+  //   permissionGranted = await _locationController.hasPermission();
+  //   if (permissionGranted == PermissionStatus.denied) {
+  //     permissionGranted = await _locationController.requestPermission();
+  //     if (permissionGranted != PermissionStatus.granted) {
+  //       return;
+  //     }
+  //   }
 
-    // Guardar la suscripción para luego poder cancelarla
-    _locationSubscription = _locationController.onLocationChanged
-        .listen((LocationData currentLocation) {
-      if (currentLocation.latitude != null &&
-          currentLocation.longitude != null) {
-        setState(() {
-          _currentP =
-              LatLng(currentLocation.latitude!, currentLocation.longitude!);
-          _cameraToPosition(_currentP!);
-        });
-      }
-    });
-  }
+  //   // Guardar la suscripción para luego poder cancelarla
+  //   _locationSubscription = _locationController.onLocationChanged
+  //       .listen((LocationData currentLocation) {
+  //     if (currentLocation.latitude != null &&
+  //         currentLocation.longitude != null) {
+  //       setState(() {
+  //         _currentP =
+  //             LatLng(currentLocation.latitude!, currentLocation.longitude!);
+  //         _cameraToPosition(_currentP!);
+  //       });
+  //     }
+  //   });
+  // }
 
   /* Custom icon
   BitmapDescriptor customIcon = await BitmapDescriptor.fromAssetImage(

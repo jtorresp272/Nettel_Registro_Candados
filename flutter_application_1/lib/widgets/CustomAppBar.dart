@@ -6,16 +6,14 @@ import 'package:flutter_application_1/widgets/CustomTheme.dart';
 import 'package:provider/provider.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
-  final String titulo;
-  final String subtitulo;
+  final String area;
   final int mode;
   final NotificationState? notificationState;
   final VoidCallback? reloadCallback;
 
   const CustomAppBar({
     super.key,
-    required this.titulo,
-    required this.subtitulo,
+    required this.area,
     required this.mode,
     this.notificationState,
     this.reloadCallback,
@@ -40,7 +38,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
       backgroundColor: customColors.background,
       iconTheme: IconThemeData(color: customColors.icons),
       actions: [
-        if (widget.subtitulo != "Puerto")
+        if (widget.area != "Puerto")
           IconButton(
             icon: const Icon(Icons.bluetooth),
             onPressed: () {
@@ -51,7 +49,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
               });
             },
           ),
-        if (widget.subtitulo != "Puerto")
+        if (widget.area != "Puerto")
           Stack(
             children: [
               IconButton(
@@ -82,13 +80,13 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 ),
             ],
           ),
-        if (widget.subtitulo != "Puerto")
+        if (widget.area != "Puerto")
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
               setState(() {
                 String page =
-                    widget.subtitulo == 'Monitoreo' ? '/monitoreo' : '/taller';
+                    widget.area == 'Monitoreo' ? '/monitoreo' : '/taller';
                 // Actualizar la pagina de Taller
                 Navigator.pushNamedAndRemoveUntil(
                     context, page, (route) => false);
@@ -96,20 +94,23 @@ class _CustomAppBarState extends State<CustomAppBar> {
             },
           ),
       ],
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text(
-            widget.titulo,
-            style: TextStyle(
-                color: customColors.appBarTitle, fontWeight: FontWeight.bold),
+          /*
+          Image.asset(
+            'assets/images/logo_login.png',
+            height: 40,
           ),
+          const SizedBox(width: 10),
+          */
           Text(
-            widget.subtitulo,
+            widget.area,
             style: TextStyle(
-                color: customColors.appBarTitle,
-                fontSize: 14.0,
-                fontWeight: FontWeight.bold),
+              color: customColors.appBarTitle,
+              fontSize: 30.0,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),

@@ -23,9 +23,9 @@ class customCheckBox extends StatelessWidget {
       children: [
         Checkbox(
           fillColor: WidgetStateColor.resolveWith(
-              (states) => isPressed ? Colors.red : customColors.label!),
-          side: const BorderSide(
-            color: Colors.black,
+              (states) => isPressed ? Colors.red : Colors.transparent),
+          side: BorderSide(
+            color: customColors.label!,
             width: 2.0,
             style: BorderStyle.solid,
           ),

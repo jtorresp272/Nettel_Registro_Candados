@@ -6,6 +6,7 @@ import 'package:flutter_application_1/Funciones/generales/get_color.dart';
 import 'package:flutter_application_1/Funciones/generales/obtener_datos_database.dart';
 import 'package:flutter_application_1/widgets/CustomDialogScanQr.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
+import 'package:flutter_application_1/widgets/CustomTheme.dart';
 
 class CustomAboutDialog extends StatefulWidget {
   final String title;
@@ -30,10 +31,19 @@ class _CustomAboutDialogState extends State<CustomAboutDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final customColors = Theme.of(context).extension<CustomColors>()!;
+
     return AlertDialog(
       alignment: Alignment.center,
-      surfaceTintColor: Colors.white,
-      backgroundColor: Colors.white,
+      surfaceTintColor: getColorAlmostBlue(),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+        side: BorderSide(
+          color: getColorAlmostBlue(),
+          width: 0.5,
+        ),
+      ),
+      backgroundColor: customColors.background,
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -52,8 +62,8 @@ class _CustomAboutDialogState extends State<CustomAboutDialog> {
         ],
       ),
       content: TextField(
-        style: const TextStyle(
-          color: Colors.black,
+        style: TextStyle(
+          color: customColors.label,
         ),
         controller: _textController,
         autofocus: true,

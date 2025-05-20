@@ -68,7 +68,7 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
               switch (lugar) {
                 case 'I':
                   colorContenedor = Colors.blueAccent;
-                  titulo = 'Candados Ingresados';
+                  titulo = 'Ingresados';
                   break;
                 case 'M':
                   colorContenedor = Colors.yellow;
@@ -76,7 +76,7 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                   break;
                 case 'L':
                   colorContenedor = Colors.green;
-                  titulo = 'Candados Operativos';
+                  titulo = 'Operativos';
                   break;
                 case 'V':
                   colorContenedor = Colors.orange;
@@ -88,7 +88,7 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                   break;
                 default:
                   colorContenedor = Colors.grey;
-                  titulo = 'Candados Ingresados';
+                  titulo = 'Ingresados';
                   break;
               }
             } else if (widget.whereFrom == 'Llegar') {

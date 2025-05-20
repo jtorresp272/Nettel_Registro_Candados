@@ -54,8 +54,7 @@ class _PuertoState extends State<Puerto> {
           backgroundColor: Colors.white,
           appBar: CustomAppBar(
             mode: modo,
-            titulo: 'Consorcio Nettel',
-            subtitulo: 'Puerto',
+            area: 'Puerto',
           ),
           drawer: const customDrawer(
             nameUser: "Puerto",

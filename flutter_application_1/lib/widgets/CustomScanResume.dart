@@ -11,6 +11,7 @@ import 'package:flutter_application_1/Funciones/generales/obtener_datos_database
 import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
 import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
+import 'package:flutter_application_1/widgets/CustomTheme.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 
@@ -190,28 +191,34 @@ class _CustomScanResumeState extends State<CustomScanResume>
 
   @override
   Widget build(BuildContext context) {
+    // Variable para el color dependiendo del tema
+    final customColors = Theme.of(context).extension<CustomColors>()!;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      backgroundColor: customColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: Container(
-          margin: const EdgeInsets.only(top: 10.0),
-          width: 40.0,
-          height: 40.0,
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.5),
-            shape: BoxShape.circle,
-          ),
-          child: IconButton(
-            onPressed: () {
-              _animationController.reverse().then((_) {
-                Navigator.of(context).pop();
-              });
-            },
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.black,
+        backgroundColor: customColors.background,
+        /*
+        title: Center(
+          child: Text(
+            'Detalles del candado',
+            style: TextStyle(
+              color: customColors.label,
+              fontSize: 20.0,
             ),
+          ),
+        ),
+        */
+        leading: IconButton(
+          onPressed: () {
+            _animationController.reverse().then((_) {
+              Navigator.of(context).pop();
+            });
+          },
+          icon: Icon(
+            Icons.arrow_back,
+            color: customColors.icons,
           ),
         ),
         actions: [
@@ -222,7 +229,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
               decoration: BoxDecoration(
                 color: isDamage
                     ? Colors.red.withOpacity(0.5)
-                    : Colors.white.withOpacity(0.5),
+                    : customColors.background,
                 shape: BoxShape.circle,
               ),
               child: IconButton(
@@ -233,14 +240,12 @@ class _CustomScanResumeState extends State<CustomScanResume>
                 },
                 icon: Icon(
                   Icons.error_outline_sharp,
-                  color: isDamage ? Colors.white : Colors.black,
+                  color: customColors.icons,
                 ),
               ),
             ),
         ],
       ),
-      backgroundColor:
-          Colors.transparent, // Para que el fondo del Scaffold sea transparente
       body: Align(
         alignment: Alignment.bottomLeft,
         child: SlideTransition(
@@ -256,11 +261,51 @@ class _CustomScanResumeState extends State<CustomScanResume>
               children: [
                 // Titulo
                 Expanded(
-                  flex: 2,
+                  flex: 1,
                   child: ListView(
                     padding: const EdgeInsets.only(bottom: 15.0),
                     physics: const NeverScrollableScrollPhysics(),
                     children: [
+                      // Encabezado
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            SizedBox(
+                              height: 100,
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              child: Image.asset(
+                                widget.candado.imageTipo,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Candado ${widget.candado.numero}',
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    color: customColors.label,
+                                  ),
+                                ),
+                                Text(
+                                  DateFormat('dd-MM-yyyy')
+                                      .format(widget.candado.fechaIngreso),
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    color: customColors.label,
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+
+                      /*
                       Center(
                         child: Image.asset(
                           imagen,
@@ -284,14 +329,16 @@ class _CustomScanResumeState extends State<CustomScanResume>
                         ),
                       ),
                       Center(
-                          child: Text(
-                        DateFormat('yyyy-MM-dd')
-                            .format(widget.candado.fechaIngreso),
-                        style: const TextStyle(
-                          fontSize: 20.0,
-                          color: Colors.black,
+                        child: Text(
+                          DateFormat('yyyy-MM-dd')
+                              .format(widget.candado.fechaIngreso),
+                          style: const TextStyle(
+                            fontSize: 20.0,
+                            color: Colors.black,
+                          ),
                         ),
-                      )),
+                      ),
+*/
                     ],
                   ),
                 ),
@@ -300,7 +347,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
                 ),
                 // Body
                 Expanded(
-                  flex: 3,
+                  flex: 4,
                   child: ListView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.only(bottom: 0.0),
@@ -348,8 +395,8 @@ class _CustomScanResumeState extends State<CustomScanResume>
                       if (isDamage)
                         TextFormField(
                           maxLines: null,
-                          style: const TextStyle(
-                            color: Colors.black,
+                          style: TextStyle(
+                            color: customColors.label,
                           ),
                           controller: _descripcionDanadoController,
                           decoration: decorationTextField(
@@ -362,8 +409,8 @@ class _CustomScanResumeState extends State<CustomScanResume>
                         TextFormField(
                           readOnly: widget.whereGo == 'monitoreo',
                           maxLines: null,
-                          style: const TextStyle(
-                            color: Colors.black,
+                          style: TextStyle(
+                            color: customColors.label,
                           ),
                           controller: _descripcionIngresoController,
                           decoration: decorationTextField(
@@ -557,8 +604,8 @@ class _CustomScanResumeState extends State<CustomScanResume>
                         TextFormField(
                           readOnly: widget.whereGo == 'monitoreo',
                           maxLines: null,
-                          style: const TextStyle(
-                            color: Colors.black,
+                          style: TextStyle(
+                            color: customColors.label,
                           ),
                           controller: _descripcionSalidaController,
                           decoration: decorationTextField(
@@ -578,10 +625,10 @@ class _CustomScanResumeState extends State<CustomScanResume>
                           padding: const EdgeInsets.all(5.0),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: Colors.transparent,
                               borderRadius: BorderRadius.circular(10.0),
                               border: Border.all(
-                                color: getColorAlmostBlue(),
+                                color: customColors.label!,
                               )),
                           child: Center(
                             child: Stack(
@@ -592,12 +639,12 @@ class _CustomScanResumeState extends State<CustomScanResume>
                                   left:
                                       4.0, // Ajusta la posición horizontal del texto
                                   child: Container(
-                                    color: Colors
-                                        .white, // Color del fondo del texto
+                                    color: customColors
+                                        .background, // Color del fondo del texto
                                     child: Text(
                                       'Responsable:',
                                       style: TextStyle(
-                                        color: getColorAlmostBlue(),
+                                        color: customColors.label,
                                         fontSize: 15.0,
                                       ),
                                     ),
@@ -711,20 +758,21 @@ class _CustomScanResumeState extends State<CustomScanResume>
                           alignment: Alignment.center,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              elevation:
-                                  5, // Ajusta el valor según el efecto de sombra deseado
+                              //elevation:
+                              //    5, // Ajusta el valor según el efecto de sombra deseado
                               // Otros estilos como colores, márgenes, etc.
                               foregroundColor: Colors.transparent,
                               backgroundColor: getColorAlmostBlue(),
-                              shadowColor: getColorAlmostBlue(),
+                              //shadowColor: getColorAlmostBlue(),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15.0),
                               ),
+
                               minimumSize: Size(
-                                  MediaQuery.of(context).size.width * 0.7,
+                                  MediaQuery.of(context).size.width * 0.9,
                                   MediaQuery.of(context).size.height * 0.06),
                               maximumSize: Size(
-                                  MediaQuery.of(context).size.width * 0.8,
+                                  MediaQuery.of(context).size.width * 0.9,
                                   MediaQuery.of(context).size.height * 0.1),
                             ),
                             onPressed: () async {

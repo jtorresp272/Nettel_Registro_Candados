@@ -211,8 +211,7 @@ class _MonitoreoState extends State<Monitoreo>
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
         mode: 0,
-        titulo: 'Consorcio Nettel',
-        subtitulo: 'Monitoreo',
+        area: 'Monitoreo',
         reloadCallback: () {
           setState(() {
             watchDataBeforeSend(
