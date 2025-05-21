@@ -1,11 +1,12 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Funciones/generales/get_color.dart';
 import 'package:flutter_application_1/Funciones/generales/obtener_datos_database.dart';
 import 'package:flutter_application_1/widgets/CustomDialog.dart';
 import 'package:flutter_application_1/widgets/CustomTheme.dart';
-import '../Funciones/generales/get_color.dart';
 import 'package:intl/intl.dart';
+import 'package:pie_chart/pie_chart.dart';
 
 //import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
 class CustomListViewBuilder extends StatefulWidget {
@@ -54,170 +55,154 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
             'MANTA',
             'OTRO'
           ];
-
     return Expanded(
       child: ListView(
         children: lugares.asMap().entries.map((entry) {
-          final index = entry.key;
           final lugar = entry.value;
+
           if (candadosPorLugar.containsKey(lugar) &&
               candadosPorLugar[lugar]!.isNotEmpty) {
-            Color colorContenedor = Colors.grey;
             late final String titulo;
+
             if (widget.whereFrom == "Taller") {
               switch (lugar) {
                 case 'I':
-                  colorContenedor = Colors.blueAccent;
                   titulo = 'Ingresados';
                   break;
                 case 'M':
-                  colorContenedor = Colors.yellow;
-                  titulo = 'Mecanicas Listas';
+                  titulo = 'Mecánicas Listas';
                   break;
                 case 'L':
-                  colorContenedor = Colors.green;
                   titulo = 'Operativos';
                   break;
                 case 'V':
-                  colorContenedor = Colors.orange;
-                  titulo = 'Mecanicas Dañadas';
+                  titulo = 'Mecánicas Dañadas';
                   break;
                 case 'E':
-                  colorContenedor = Colors.red;
-                  titulo = 'Electronicas Dañadas';
+                  titulo = 'Electrónicas Dañadas';
                   break;
                 default:
-                  colorContenedor = Colors.grey;
-                  titulo = 'Ingresados';
+                  titulo = 'Otros';
                   break;
               }
             } else if (widget.whereFrom == 'Llegar') {
-              colorContenedor = Colors.grey;
               titulo = lugar;
             }
 
-            final isExpanded = widget.expandedState[index] ?? false;
+            final columnasDeCandados =
+                agruparEnColumnas(candadosPorLugar[lugar]!, 3);
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
-                  onTap: () => widget.onExpandedChanged?.call(index),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0, vertical: 8.0),
-                    decoration: BoxDecoration(
-                      color: isExpanded ? colorContenedor : null,
-                      borderRadius: BorderRadius.circular(5.0),
-                      border: Border.all(
-                        color:
-                            isExpanded ? colorContenedor : getColorAlmostBlue(),
-                      ),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          titulo,
-                          style: TextStyle(
-                            color: customColors.label,
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Spacer(),
-                        Icon(
-                          isExpanded
-                              ? Icons.keyboard_arrow_up
-                              : Icons.keyboard_arrow_down,
-                          color: customColors.icons,
-                          size: 25.0,
-                        ),
-                      ],
+                // Titulo de la sección
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Text(
+                    '$titulo (${candadosPorLugar[lugar]!.length})',
+                    style: TextStyle(
+                      color: customColors.label,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
                     ),
                   ),
                 ),
-                isExpanded ? const SizedBox() : const SizedBox(height: 8.0),
-                isExpanded
-                    ? Container(
-                        padding: const EdgeInsets.only(
-                          top: 5.0,
-                          bottom: 5.0,
-                        ),
-                        margin: const EdgeInsets.only(bottom: 10.0),
-                        height: 140.0,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: candadosPorLugar[lugar]!.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            Candado candadoPress = candadosPorLugar[lugar]![
-                                index]; // Accede al candado específico en esta posición
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: 0,
+                    minWidth: 0,
+                    maxWidth: MediaQuery.of(context).size.width,
+                    maxHeight: MediaQuery.of(context).size.height * 0.4,
+                  ),
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: columnasDeCandados.length,
+                    itemBuilder: (BuildContext context, int colIndex) {
+                      final columna = columnasDeCandados[colIndex];
+                      return Container(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: columna.map((candadoPress) {
                             return GestureDetector(
                               onTap: () {
                                 _showCandadoDialog(context, candadoPress,
                                     widget.whereFrom, user);
                               },
-                              child: Container(
-                                width: 120.0,
-                                margin: const EdgeInsets.only(
-                                  right: 8.0,
-                                  bottom: 8.0,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  /*
-                                    gradient: LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        colors: [
-                                          Colors.white,
-                                          Colors.white,
-                                          colorContenedor
-                                        ]),
-                                        */
-                                  border: Border.all(
-                                    color: colorContenedor,
-                                  ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Image.asset(
-                                      candadosPorLugar[lugar]![index].imageTipo,
+                                      candadoPress.imageTipo,
                                       fit: BoxFit.contain,
-                                      height: 70.0,
+                                      height: 75.0,
+                                      width: 75.0,
                                     ),
-                                    // Número candado
-                                    Text(
-                                      candadosPorLugar[lugar]![index].numero,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16.0,
-                                        color: customColors.label,
-                                      ),
+                                    const SizedBox(width: 10.0),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          candadoPress.numero,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14.0,
+                                            color: customColors.label,
+                                          ),
+                                        ),
+                                        Text(
+                                          DateFormat('yyyy-MM-dd').format(
+                                              candadoPress.fechaIngreso),
+                                          style: TextStyle(
+                                            fontSize: 12.0,
+                                            color: customColors.label,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.5,
+                                          child: Text(
+                                            (titulo == 'Mecánicas Listas' ||
+                                                    titulo == 'Operativos')
+                                                ? candadoPress.razonSalida
+                                                : candadoPress.razonIngreso,
+                                            style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: customColors.label,
+                                            ),
+                                            overflow: TextOverflow.fade,
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                    // Fecha
-                                    Text(
-                                      DateFormat('yyyy-MM-dd').format(
-                                        candadosPorLugar[lugar]![index]
-                                            .fechaIngreso,
-                                      ),
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                        color: customColors.label,
-                                      ),
-                                    ),
+                                    const SizedBox(height: 5.0),
                                   ],
                                 ),
                               ),
                             );
-                          },
+                          }).toList(),
                         ),
-                      )
-                    : const SizedBox(),
+                      );
+                    },
+                  ),
+                ),
+                if (titulo != 'Electrónicas Dañadas')
+                  Divider(
+                    color: customColors.icons,
+                    height: 1.0,
+                  ),
+                if (titulo != 'Electrónicas Dañadas')
+                  const SizedBox(height: 20.0),
               ],
             );
           } else {
@@ -237,12 +222,17 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
           builder: (context) =>
               CustomCandadoDialog(candado: candado, where: where, user: user0),
         ));
-    /*
-    showDialog(
-      context: context,
-      builder: (context) =>
-          CustomCandadoDialog(candado: candado, where: where, user: user0),
-    );
-    */
   }
+}
+
+List<List<Candado>> agruparEnColumnas(
+    List<Candado> lista, int cantidadPorColumna) {
+  List<List<Candado>> columnas = [];
+  for (int i = 0; i < lista.length; i += cantidadPorColumna) {
+    int fin = (i + cantidadPorColumna < lista.length)
+        ? i + cantidadPorColumna
+        : lista.length;
+    columnas.add(lista.sublist(i, fin));
+  }
+  return columnas;
 }

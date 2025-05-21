@@ -15,14 +15,12 @@ import 'package:flutter_application_1/widgets/CustomFloatingButton.dart';
 import 'package:flutter_application_1/widgets/CustomMenu.dart';
 import 'package:flutter_application_1/widgets/CustomListViewBuilder.dart';
 import 'package:flutter_application_1/widgets/CustomQrScan.dart';
-import 'package:flutter_application_1/widgets/CustomResume.dart';
 import 'package:flutter_application_1/widgets/CustomScanResume.dart';
 import 'package:flutter_application_1/widgets/CustomSearch.dart';
 import 'package:flutter_application_1/widgets/CustomAboutDialog.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:flutter_application_1/widgets/CustomTheme.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 
 enum Actions {
   qr,
@@ -51,7 +49,7 @@ class _TallerState extends State<Taller> {
   final TextEditingController _textControllerLlegar = TextEditingController();
 
   // Variables para el navigator bar
-  int currentPageIndex = 1;
+  int currentPageIndex = 0;
 
   int modo = 0; // Variable para determinar el modo que el usuario desee
   bool isExpanded = false; // Variable para el floating button
@@ -349,6 +347,7 @@ class _TallerState extends State<Taller> {
           resizeToAvoidBottomInset: false,
           body: termino_ob_data
               ? <Widget>[
+                  /*
                   CustomResumen(
                     listaTaller: _listaCandadosTaller,
                     listaLlegar: _listaCandadosLlegar,
@@ -391,6 +390,7 @@ class _TallerState extends State<Taller> {
                       });
                     },
                   ),
+                  */
                   // Página 2: "En Taller"
                   Padding(
                     padding: const EdgeInsets.only(
@@ -568,6 +568,7 @@ class _TallerState extends State<Taller> {
               labelTextStyle:
                   WidgetStateProperty.all(TextStyle(color: customColors.label)),
               destinations: <Widget>[
+                /*
                 NavigationDestination(
                     icon: Icon(
                       Icons.info_outline,
@@ -575,6 +576,7 @@ class _TallerState extends State<Taller> {
                     ),
                     selectedIcon: const Icon(Icons.info),
                     label: 'Resumen'),
+                */
                 NavigationDestination(
                     icon: Icon(
                       Icons.construction_outlined,

@@ -64,12 +64,22 @@ class CustomColors extends ThemeExtension<CustomColors> {
     );
   }
 
+  // Por el momento siempre sera ligth
+  /*
   static final dark = CustomColors(
     background: Colors.black,
     icons: Colors.white,
     appBarTitle: titleLigthColor,
     label: Colors.white,
     navigatorBar: Colors.black,
+  );
+  */
+  static final dark = CustomColors(
+    background: Colors.white,
+    icons: Colors.black,
+    appBarTitle: titleLigthColor,
+    label: Colors.black,
+    navigatorBar: Colors.white,
   );
   static final light = CustomColors(
     background: Colors.white,
