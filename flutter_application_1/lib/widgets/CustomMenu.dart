@@ -13,12 +13,10 @@ import 'package:flutter_application_1/widgets/CustomTheme.dart';
 class customDrawer extends StatefulWidget {
   final String nameUser;
   final VoidCallback? reloadCallback;
-  final Function(int)? mode;
   const customDrawer({
     super.key,
     required this.nameUser,
     this.reloadCallback,
-    this.mode,
   });
 
   @override
@@ -28,12 +26,6 @@ class customDrawer extends StatefulWidget {
 int mode = 0;
 
 class _customDrawerState extends State<customDrawer> {
-  void _handleContainerPressed(int modo) {
-    if (widget.mode != null) {
-      widget.mode!(modo);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     // Variable para el color dependiendo del tema

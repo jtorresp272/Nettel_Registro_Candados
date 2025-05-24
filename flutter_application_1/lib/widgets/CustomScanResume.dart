@@ -15,13 +15,7 @@ import 'package:flutter_application_1/widgets/CustomTheme.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 
-enum EstadoCandados {
-  ingresado,
-  porIngresar,
-  mantenimiento,
-  listos,
-  danados,
-}
+import '../Screen/enums.dart';
 
 // Espera que termine la confirmación luego de presionar el boton guardar cambios
 bool waiting = false;

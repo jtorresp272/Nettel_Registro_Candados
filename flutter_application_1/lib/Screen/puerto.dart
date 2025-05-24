@@ -204,15 +204,10 @@ class _PuertoState extends State<Puerto> {
                       ),
                     ),
                     // Informacion cuenta
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 10.0),
                       child: customDrawer(
                         nameUser: "Puerto",
-                        mode: (value) {
-                          setState(() {
-                            modo = value;
-                          });
-                        },
                       ),
                     ),
                   ],

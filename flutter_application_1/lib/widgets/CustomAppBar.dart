@@ -38,7 +38,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
       backgroundColor: customColors.background,
       iconTheme: IconThemeData(color: customColors.icons),
       actions: [
-        if (widget.area != "Puerto")
+        if (widget.area == "Taller")
           IconButton(
             icon: const Icon(Icons.bluetooth),
             onPressed: () {
