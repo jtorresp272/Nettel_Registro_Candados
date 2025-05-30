@@ -30,7 +30,8 @@ class _CustomElevatedButton extends State<CustomElevatedButton> {
               borderRadius: BorderRadius.circular(10.0),
             ),
           ),
-          minimumSize: WidgetStateProperty.all(const Size(250, 45))),
+          minimumSize: WidgetStateProperty.all(
+              Size(MediaQuery.of(context).size.width * 0.9, 45))),
       child: Text(
         widget.text,
         style: const TextStyle(

@@ -6,7 +6,6 @@ import 'package:flutter_application_1/Funciones/generales/obtener_datos_database
 import 'package:flutter_application_1/widgets/CustomDialog.dart';
 import 'package:flutter_application_1/widgets/CustomTheme.dart';
 import 'package:intl/intl.dart';
-import 'package:pie_chart/pie_chart.dart';
 
 //import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
 class CustomListViewBuilder extends StatefulWidget {
@@ -63,26 +62,32 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
           if (candadosPorLugar.containsKey(lugar) &&
               candadosPorLugar[lugar]!.isNotEmpty) {
             late final String titulo;
-
+            late final Color categoriaColor;
             if (widget.whereFrom == "Taller") {
               switch (lugar) {
                 case 'I':
                   titulo = 'Ingresados';
+                  categoriaColor = Colors.blue;
                   break;
                 case 'M':
                   titulo = 'Mecánicas Listas';
+                  categoriaColor = const Color.fromARGB(255, 214, 197, 43);
                   break;
                 case 'L':
                   titulo = 'Operativos';
+                  categoriaColor = Colors.green;
                   break;
                 case 'V':
                   titulo = 'Mecánicas Dañadas';
+                  categoriaColor = Colors.red;
                   break;
                 case 'E':
                   titulo = 'Electrónicas Dañadas';
+                  categoriaColor = Colors.purple;
                   break;
                 default:
                   titulo = 'Otros';
+                  categoriaColor = customColors.label!;
                   break;
               }
             } else if (widget.whereFrom == 'Llegar') {
@@ -102,7 +107,7 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                   child: Text(
                     '$titulo (${candadosPorLugar[lugar]!.length})',
                     style: TextStyle(
-                      color: customColors.label,
+                      color: categoriaColor,
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
                       fontStyle: FontStyle.italic,
@@ -196,13 +201,17 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                     },
                   ),
                 ),
+                /*
                 if (titulo != 'Electrónicas Dañadas')
                   Divider(
                     color: customColors.icons,
                     height: 1.0,
                   ),
+                
                 if (titulo != 'Electrónicas Dañadas')
-                  const SizedBox(height: 20.0),
+                  const SizedBox(height: 20.0)
+                  ,
+                  */
               ],
             );
           } else {
