@@ -60,21 +60,24 @@ class CandadoActions {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                CustomScanResume(candado: scannedCandado, estado: estado),
+            builder: (context) => CustomScanResume(
+                whereGo: whoIs, candado: scannedCandado, estado: estado),
           ),
         );
       }
     } else {
+      /*
       if (whoIs == 'monitoreo') {
         customSnackBar(context,
             mensaje: 'Candado no se encuentra en taller',
             colorFondo: Colors.red);
         return;
       }
+      */
       showDialog(
         context: context,
-        builder: (context) => DialogScanQr(scannedNumber: scannedNumber),
+        builder: (context) =>
+            DialogScanQr(who: 'monitoreo', scannedNumber: scannedNumber),
       );
     }
   }

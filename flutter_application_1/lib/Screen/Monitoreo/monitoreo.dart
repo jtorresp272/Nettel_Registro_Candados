@@ -170,6 +170,7 @@ class _MonitoreoState extends State<Monitoreo>
                     ),
                     CustomListViewBuilder(
                         whereFrom: 'Taller',
+                        user: 'monitoreo',
                         listaFiltrada: _listaFiltradaTaller,
                         expandedState: _tabExpandedStates[1]!,
                         onExpandedChanged: (index) {

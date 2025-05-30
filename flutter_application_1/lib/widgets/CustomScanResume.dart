@@ -123,6 +123,15 @@ class _CustomScanResumeState extends State<CustomScanResume>
     ],
   };
 
+  Map<String, String> getNameOfType = {
+    'E': "Electronica Dañada",
+    'V': "Mecanica Dañada",
+    'I': "Candado Ingresado",
+    'L': "Candado Listo",
+    'M': "Mecanica Lista",
+    '': "Nuevo Candado",
+  };
+
   @override
   void initState() {
     super.initState();
@@ -193,17 +202,18 @@ class _CustomScanResumeState extends State<CustomScanResume>
       backgroundColor: customColors.background,
       appBar: AppBar(
         backgroundColor: customColors.background,
-        /*
         title: Center(
-          child: Text(
-            'Detalles del candado',
-            style: TextStyle(
-              color: customColors.label,
-              fontSize: 20.0,
+          child: SizedBox(
+            child: Text(
+              getNameOfType[widget.candado.lugar]!,
+              style: TextStyle(
+                color: customColors.label,
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
-        */
         leading: IconButton(
           onPressed: () {
             _animationController.reverse().then((_) {
@@ -216,25 +226,25 @@ class _CustomScanResumeState extends State<CustomScanResume>
           ),
         ),
         actions: [
-          if (widget.whereGo != 'monitoreo' && widget.whereGo != 'puerto')
+          if (widget.whereGo != 'puerto')
             Container(
               width: 40.0,
               height: 40.0,
               decoration: BoxDecoration(
-                color: isDamage
-                    ? Colors.red.withOpacity(0.5)
-                    : customColors.background,
+                color: isDamage ? Colors.red : customColors.background,
                 shape: BoxShape.circle,
               ),
-              child: IconButton(
-                onPressed: () {
-                  setState(() {
-                    isDamage = !isDamage;
-                  });
-                },
-                icon: Icon(
-                  Icons.error_outline_sharp,
-                  color: customColors.icons,
+              child: Center(
+                child: IconButton(
+                  icon: Icon(
+                    Icons.error_outline_sharp,
+                    color: isDamage ? Colors.white : Colors.black,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      isDamage = !isDamage;
+                    });
+                  },
                 ),
               ),
             ),
@@ -298,41 +308,6 @@ class _CustomScanResumeState extends State<CustomScanResume>
                           ],
                         ),
                       ),
-
-                      /*
-                      Center(
-                        child: Image.asset(
-                          imagen,
-                          fit: (imagen.contains('CC_4') ||
-                                  imagen.contains('CC_5'))
-                              ? BoxFit.cover
-                              : BoxFit.contain,
-                          height: 125.0,
-                          width: 230.0,
-                        ),
-                      ),
-                      const SizedBox(height: 8.0),
-                      Center(
-                        child: Text(
-                          widget.candado.numero,
-                          style: const TextStyle(
-                            fontSize: 30.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      Center(
-                        child: Text(
-                          DateFormat('yyyy-MM-dd')
-                              .format(widget.candado.fechaIngreso),
-                          style: const TextStyle(
-                            fontSize: 20.0,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-*/
                     ],
                   ),
                 ),
@@ -401,7 +376,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
                       if (!isDamage &&
                           !['V', 'E'].contains(widget.candado.lugar))
                         TextFormField(
-                          readOnly: widget.whereGo == 'monitoreo',
+                          //readOnly: widget.whereGo == 'monitoreo',
                           maxLines: null,
                           style: TextStyle(
                             color: customColors.label,
@@ -877,8 +852,26 @@ class _CustomScanResumeState extends State<CustomScanResume>
     /* Actualizar o Ingresar Valores a la base de datos */
     else {
       if (widget.whereGo == 'monitoreo') {
-        lugar = 'OP';
-        fechaSalida = DateFormat('dd-MM-yy').format(DateTime.now());
+        switch (widget.estado) {
+          case EstadoCandados.porIngresar:
+            // Proximo estado
+            fechaIngreso = DateFormat('dd-MM-yy').format(DateTime.now());
+            fechaSalida = '';
+            responsable = '';
+            if (widget.whereGo == 'puerto') {
+              lugar = puertos[buttonOnPressedPuerto.indexWhere((e) => e)];
+              accion = 'modificarRegistro';
+            } else {
+              lugar = 'I';
+              accion = 'agregarRegistroHistorial';
+            }
+            break;
+          case EstadoCandados.listos:
+          default:
+            lugar = 'OP';
+            fechaSalida = DateFormat('dd-MM-yy').format(DateTime.now());
+            break;
+        }
       } else {
         switch (widget.estado) {
           case EstadoCandados.ingresado:
@@ -923,25 +916,49 @@ class _CustomScanResumeState extends State<CustomScanResume>
 
       // Dependiendo de la accion  a realizar se realizan las modificaciones
       if (accion != 'agregarRegistroHistorial') {
-        valoresNuevos = [
-          newDescripcionIngreso,
-          newDescripcionSalida,
-          responsable,
-          fechaIngreso,
-          fechaSalida,
-          lugar
-        ];
+        if (isDamage) {
+          valoresNuevos = [
+            newDescripcionDanado,
+            newDescripcionSalida,
+            responsable,
+            fechaIngreso,
+            fechaSalida,
+            lugar
+          ];
+        } else {
+          valoresNuevos = [
+            newDescripcionIngreso,
+            newDescripcionSalida,
+            responsable,
+            fechaIngreso,
+            fechaSalida,
+            lugar
+          ];
+        }
       } else {
-        valoresNuevos = [
-          widget.candado.numero,
-          widget.candado.tipo,
-          newDescripcionIngreso,
-          newDescripcionSalida,
-          responsable,
-          fechaIngreso,
-          fechaSalida,
-          lugar
-        ];
+        if (isDamage) {
+          valoresNuevos = [
+            widget.candado.numero,
+            widget.candado.tipo,
+            newDescripcionDanado,
+            newDescripcionSalida,
+            responsable,
+            fechaIngreso,
+            fechaSalida,
+            lugar
+          ];
+        } else {
+          valoresNuevos = [
+            widget.candado.numero,
+            widget.candado.tipo,
+            newDescripcionIngreso,
+            newDescripcionSalida,
+            responsable,
+            fechaIngreso,
+            fechaSalida,
+            lugar
+          ];
+        }
       }
     }
 
@@ -962,16 +979,32 @@ class _CustomScanResumeState extends State<CustomScanResume>
           // crear estructura para los candados en el cache
           if (datosMemoria.isNotEmpty) {
             if (widget.whereGo == 'monitoreo') {
-              candadosPorEnviar.add(
-                  '$datosMemoria,${widget.candado.numero} - $newDescripcionSalida');
+              if (widget.estado == EstadoCandados.porIngresar) {
+                candadosPorEnviar.add(
+                    '$datosMemoria,${widget.candado.numero} - $newDescripcionIngreso - Ingresar a Taller');
+              } else if (isDamage) {
+                candadosPorEnviar.add(
+                    '$datosMemoria,${widget.candado.numero} - $newDescripcionDanado - Ingresar a Taller');
+              } else {
+                candadosPorEnviar.add(
+                    '$datosMemoria,${widget.candado.numero} - $newDescripcionSalida - Retirar de Taller');
+              }
             } else {
               candadosPorEnviar.add(
                   '$datosMemoria,${widget.candado.numero} - $newDescripcionIngreso');
             }
           } else {
             if (widget.whereGo == 'monitoreo') {
-              candadosPorEnviar
-                  .add('${widget.candado.numero} - $newDescripcionSalida');
+              if (widget.estado == EstadoCandados.porIngresar) {
+                candadosPorEnviar.add(
+                    '$datosMemoria,${widget.candado.numero} - $newDescripcionIngreso - Ingresar a Taller');
+              } else if (isDamage) {
+                candadosPorEnviar.add(
+                    '$datosMemoria,${widget.candado.numero} - $newDescripcionDanado - Ingresar a Taller');
+              } else {
+                candadosPorEnviar.add(
+                    '$datosMemoria,${widget.candado.numero} - $newDescripcionSalida - Retirar de Taller');
+              }
             } else {
               candadosPorEnviar
                   .add('${widget.candado.numero} - $newDescripcionIngreso');
