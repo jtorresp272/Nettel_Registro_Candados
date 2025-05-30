@@ -7,7 +7,6 @@ import 'package:flutter_application_1/Funciones/generales/enviar_datos_database.
 import 'package:flutter_application_1/Funciones/generales/get_color.dart';
 import 'package:flutter_application_1/Funciones/generales/notification_state.dart';
 import 'package:flutter_application_1/Funciones/generales/obtener_datos_database.dart';
-import 'package:flutter_application_1/widgets/CustomResume.dart';
 import 'package:flutter_application_1/widgets/CustomSnackBar.dart';
 import 'package:flutter_application_1/widgets/CustomTheme.dart';
 import 'package:intl/intl.dart';

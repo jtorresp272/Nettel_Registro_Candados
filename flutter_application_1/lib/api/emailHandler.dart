@@ -55,7 +55,7 @@ Future<bool> checkAndSendEmail(BuildContext context,
     ..from = Address(email, 'Consorcio Nettel')
     ..recipients = selectReceiver(whereSend)
     ..subject =
-        'Listado de candados para ${whereSend == 'Taller' ? 'ingresar a taller' : 'salida de taller'}'
+        'Listado de candados para ${whereSend == 'Taller' ? 'ingresar a taller' : 'ingresar / retirar de taller'}'
     ..text = datosFormateados;
 
   try {

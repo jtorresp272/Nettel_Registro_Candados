@@ -226,7 +226,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
           ),
         ),
         actions: [
-          if (widget.whereGo != 'monitoreo' && widget.whereGo != 'puerto')
+          if (widget.whereGo != 'puerto')
             Container(
               width: 40.0,
               height: 40.0,
@@ -376,7 +376,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
                       if (!isDamage &&
                           !['V', 'E'].contains(widget.candado.lugar))
                         TextFormField(
-                          readOnly: widget.whereGo == 'monitoreo',
+                          //readOnly: widget.whereGo == 'monitoreo',
                           maxLines: null,
                           style: TextStyle(
                             color: customColors.label,
@@ -852,8 +852,26 @@ class _CustomScanResumeState extends State<CustomScanResume>
     /* Actualizar o Ingresar Valores a la base de datos */
     else {
       if (widget.whereGo == 'monitoreo') {
-        lugar = 'OP';
-        fechaSalida = DateFormat('dd-MM-yy').format(DateTime.now());
+        switch (widget.estado) {
+          case EstadoCandados.porIngresar:
+            // Proximo estado
+            fechaIngreso = DateFormat('dd-MM-yy').format(DateTime.now());
+            fechaSalida = '';
+            responsable = '';
+            if (widget.whereGo == 'puerto') {
+              lugar = puertos[buttonOnPressedPuerto.indexWhere((e) => e)];
+              accion = 'modificarRegistro';
+            } else {
+              lugar = 'I';
+              accion = 'agregarRegistroHistorial';
+            }
+            break;
+          case EstadoCandados.listos:
+          default:
+            lugar = 'OP';
+            fechaSalida = DateFormat('dd-MM-yy').format(DateTime.now());
+            break;
+        }
       } else {
         switch (widget.estado) {
           case EstadoCandados.ingresado:
@@ -961,16 +979,32 @@ class _CustomScanResumeState extends State<CustomScanResume>
           // crear estructura para los candados en el cache
           if (datosMemoria.isNotEmpty) {
             if (widget.whereGo == 'monitoreo') {
-              candadosPorEnviar.add(
-                  '$datosMemoria,${widget.candado.numero} - $newDescripcionSalida');
+              if (widget.estado == EstadoCandados.porIngresar) {
+                candadosPorEnviar.add(
+                    '$datosMemoria,${widget.candado.numero} - $newDescripcionIngreso - Ingresar a Taller');
+              } else if (isDamage) {
+                candadosPorEnviar.add(
+                    '$datosMemoria,${widget.candado.numero} - $newDescripcionDanado - Ingresar a Taller');
+              } else {
+                candadosPorEnviar.add(
+                    '$datosMemoria,${widget.candado.numero} - $newDescripcionSalida - Retirar de Taller');
+              }
             } else {
               candadosPorEnviar.add(
                   '$datosMemoria,${widget.candado.numero} - $newDescripcionIngreso');
             }
           } else {
             if (widget.whereGo == 'monitoreo') {
-              candadosPorEnviar
-                  .add('${widget.candado.numero} - $newDescripcionSalida');
+              if (widget.estado == EstadoCandados.porIngresar) {
+                candadosPorEnviar.add(
+                    '$datosMemoria,${widget.candado.numero} - $newDescripcionIngreso - Ingresar a Taller');
+              } else if (isDamage) {
+                candadosPorEnviar.add(
+                    '$datosMemoria,${widget.candado.numero} - $newDescripcionDanado - Ingresar a Taller');
+              } else {
+                candadosPorEnviar.add(
+                    '$datosMemoria,${widget.candado.numero} - $newDescripcionSalida - Retirar de Taller');
+              }
             } else {
               candadosPorEnviar
                   .add('${widget.candado.numero} - $newDescripcionIngreso');
