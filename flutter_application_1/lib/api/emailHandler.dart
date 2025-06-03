@@ -107,12 +107,15 @@ Future<void> watchDataBeforeSend(BuildContext context,
     context: context,
     builder: (context) => CustomAboutDialogEmail(
       datos: datosFormateados,
+      //whoIs: whoIs,
+
       callback: () async {
         bool isSend = await checkAndSendEmail(
           context,
           datosFormateados: datosFormateados,
           whereSend: whoIs,
         );
+
         if (isSend) {
           updateIconAppBar().triggerNotification(context, false);
           Navigator.of(context).pop();

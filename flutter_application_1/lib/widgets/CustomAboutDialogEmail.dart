@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/generales/get_color.dart';
+import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
+import 'package:flutter_application_1/api/emailHandler.dart';
 
 class CustomAboutDialogEmail extends StatefulWidget {
   final String datos;
+  //final String whoIs;
   final VoidCallback? callback;
 
   const CustomAboutDialogEmail({
     super.key,
     required this.datos,
+    //required this.whoIs,
     this.callback,
   });
 
@@ -19,6 +23,7 @@ class _CustomAboutDialogEmailState extends State<CustomAboutDialogEmail> {
   @override
   Widget build(BuildContext context) {
     final String datos = widget.datos;
+    bool isPressed = false;
 
     return AlertDialog(
       surfaceTintColor: Colors.white,
@@ -60,27 +65,35 @@ class _CustomAboutDialogEmailState extends State<CustomAboutDialogEmail> {
               const SizedBox(
                 width: 20.0,
               ),
-              Container(
-                alignment: Alignment.center,
-                height: 35.0,
-                width: 70.0,
-                decoration: BoxDecoration(
-                  color: getColorAlmostBlue(),
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: GestureDetector(
-                  onTap: widget.callback,
-                  child: const Text(
-                    'Enviar',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.bold,
+              if (!isPressed)
+                Container(
+                  alignment: Alignment.center,
+                  height: 35.0,
+                  width: 70.0,
+                  decoration: BoxDecoration(
+                    color: getColorAlmostBlue(),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: GestureDetector(
+                    onTap: widget.callback,
+                    child: const Text(
+                      'Enviar',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15.0,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
-              ),
+              if (isPressed)
+                Container(
+                  alignment: Alignment.center,
+                  height: 35.0,
+                  width: 70.0,
+                  child: const CircularProgressIndicator(),
+                )
             ],
           ),
         ],
