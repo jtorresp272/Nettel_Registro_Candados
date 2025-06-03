@@ -130,6 +130,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
     'L': "Candado Listo",
     'M': "Mecanica Lista",
     '': "Nuevo Candado",
+    'OP': "Nuevo Candado",
   };
 
   @override
