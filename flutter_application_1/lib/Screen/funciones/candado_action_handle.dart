@@ -77,7 +77,7 @@ class CandadoActions {
       showDialog(
         context: context,
         builder: (context) =>
-            DialogScanQr(who: 'monitoreo', scannedNumber: scannedNumber),
+            DialogScanQr(who: whoIs, scannedNumber: scannedNumber),
       );
     }
   }

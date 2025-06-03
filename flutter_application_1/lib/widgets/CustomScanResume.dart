@@ -129,6 +129,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
     'I': "Candado Ingresado",
     'L': "Candado Listo",
     'M': "Mecanica Lista",
+    'OP': 'Nuevo Candado',
     '': "Nuevo Candado",
   };
 

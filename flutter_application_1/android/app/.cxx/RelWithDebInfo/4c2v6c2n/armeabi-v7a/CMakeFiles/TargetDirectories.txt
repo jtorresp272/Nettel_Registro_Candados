@@ -1,0 +1,2 @@
+C:/Users/joshu/OneDrive/Escritorio/Joshue/Aplicacion_nettel/Nettel_Registro_Candados/flutter_application_1/android/app/.cxx/RelWithDebInfo/4c2v6c2n/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/joshu/OneDrive/Escritorio/Joshue/Aplicacion_nettel/Nettel_Registro_Candados/flutter_application_1/android/app/.cxx/RelWithDebInfo/4c2v6c2n/armeabi-v7a/CMakeFiles/rebuild_cache.dir
