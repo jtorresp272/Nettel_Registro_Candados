@@ -18,7 +18,7 @@ import 'package:logger/logger.dart';
 import '../Screen/enums.dart';
 
 // Espera que termine la confirmación luego de presionar el boton guardar cambios
-bool waiting = false;
+bool waitingSendEmail = false;
 String datosMemoria = '';
 late int candadosIngresados;
 List<String> candadosPorEnviar = [];
@@ -131,7 +131,6 @@ class _CustomScanResumeState extends State<CustomScanResume>
     'M': "Mecanica Lista",
     'OP': 'Nuevo Candado',
     '': "Nuevo Candado",
-    'OP': "Nuevo Candado",
   };
 
   @override
@@ -724,7 +723,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
                 ),
                 // Boton
                 Expanded(
-                  child: !waiting
+                  child: !waitingSendEmail
                       ? Container(
                           alignment: Alignment.center,
                           child: ElevatedButton(
@@ -747,37 +746,40 @@ class _CustomScanResumeState extends State<CustomScanResume>
                                   MediaQuery.of(context).size.height * 0.1),
                             ),
                             onPressed: () async {
+                              setState(() {
+                                waitingSendEmail = true;
+                              });
                               // Acción del botón
                               if (widget.whereGo != 'puerto') {
                                 if (buttonOnPressedResponsable.contains(true) ||
                                     widget.estado ==
                                         EstadoCandados.porIngresar ||
                                     isDamage) {
-                                  setState(() {
-                                    waiting = true;
-                                  });
                                   await _saveChanges();
                                   setState(() {
-                                    waiting = false;
+                                    waitingSendEmail = false;
                                   });
                                 } else {
                                   customSnackBar(context,
                                       mensaje: 'Seleccione un responsable',
                                       colorFondo: Colors.red);
+                                  setState(() {
+                                    waitingSendEmail = false;
+                                  });
                                 }
                               } else {
                                 if (buttonOnPressedPuerto.contains(true)) {
-                                  setState(() {
-                                    waiting = true;
-                                  });
                                   await _saveChanges();
                                   setState(() {
-                                    waiting = false;
+                                    waitingSendEmail = false;
                                   });
                                 } else {
                                   customSnackBar(context,
                                       mensaje: 'Seleccione un puerto',
                                       colorFondo: Colors.red);
+                                  setState(() {
+                                    waitingSendEmail = false;
+                                  });
                                 }
                               }
                             },
@@ -977,7 +979,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
           // ignore: use_build_context_synchronously
           updateIconAppBar().triggerNotification(context, true);
           // check si hay datos en memoria
-          await _getDataDB();
+          datosMemoria = await getDataDB();
           // crear estructura para los candados en el cache
           if (datosMemoria.isNotEmpty) {
             if (widget.whereGo == 'monitoreo') {
@@ -1056,23 +1058,5 @@ class _CustomScanResumeState extends State<CustomScanResume>
     _descripcionSalidaController.dispose();
     _animationController.dispose();
     super.dispose();
-  }
-}
-
-/* Obtiene informacion de la base de datos */
-Future<void> _getDataDB() async {
-  final List<Note>? notes = await DatabaseHelper.getAllNote(2);
-  if (notes != null && notes.isNotEmpty) {
-    try {
-      final Note note = notes.firstWhere((note) => note.title == 'candados');
-      String texto = note.description;
-      datosMemoria = texto.substring(1, texto.length - 1);
-    } on StateError catch (_) {
-      datosMemoria =
-          ''; // Si notes es nulo o está vacío, establece la descripción como '0'
-    }
-  } else {
-    datosMemoria =
-        ''; // Si notes es nulo o está vacío, establece la descripción como '0'
   }
 }

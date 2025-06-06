@@ -46,13 +46,6 @@ class _TallerState extends State<Taller> {
       _tabExpandedStates; // Definicion de _tabExpandedStates para dejar seteado el ultimo estado de cada tapBar
   // Funciones para las peticiones con firebase
   String? token;
-  // Variable para enviar notificaciones
-  Uri server = Uri(
-    scheme: 'http',
-    host: 'localhost',
-    port: 4050,
-    path: '/send-notification',
-  );
 
   // Funcion para obtener el token de firebase
   Future<void> _getToken() async {

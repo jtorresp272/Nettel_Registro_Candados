@@ -1,11 +1,11 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Funciones/generales/get_color.dart';
 import 'package:flutter_application_1/Funciones/generales/obtener_datos_database.dart';
 import 'package:flutter_application_1/widgets/CustomDialog.dart';
 import 'package:flutter_application_1/widgets/CustomTheme.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_application_1/widgets/CustomSendOperativePadlock.dart';
 
 //import 'package:flutter_application_1/Funciones/class_dato_lista.dart';
 class CustomListViewBuilder extends StatefulWidget {
@@ -101,23 +101,54 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Titulo de la sección
+
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Text(
-                    '$titulo (${candadosPorLugar[lugar]!.length})',
-                    style: TextStyle(
-                      color: categoriaColor,
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
+                  child: widget.user == 'monitoreo' && titulo != 'Operativos'
+                      ? Text(
+                          '$titulo (${candadosPorLugar[lugar]!.length})',
+                          style: TextStyle(
+                            color: categoriaColor,
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '$titulo (${candadosPorLugar[lugar]!.length})',
+                              style: TextStyle(
+                                color: categoriaColor,
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.bold,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                            IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          SendOperativePadlock(
+                                            candados: candadosPorLugar['L']!,
+                                          ));
+                                },
+                                icon: Icon(
+                                  Icons.file_upload_outlined,
+                                  color: customColors.icons,
+                                  size: 25,
+                                ))
+                          ],
+                        ),
                 ),
+
                 ConstrainedBox(
                   constraints: BoxConstraints(
-                    minHeight: 0,
-                    minWidth: 0,
+                    minHeight: 20,
+                    minWidth: 100,
                     maxWidth: MediaQuery.of(context).size.width,
                     maxHeight: MediaQuery.of(context).size.height * 0.4,
                   ),
@@ -128,7 +159,6 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                       final columna = columnasDeCandados[colIndex];
                       return Container(
                         width: MediaQuery.of(context).size.width * 0.8,
-                        //padding: const EdgeInsets.all(10.0),
                         margin: const EdgeInsets.symmetric(
                           horizontal: 5.0,
                           vertical: 20.0,
@@ -210,17 +240,6 @@ class _CustomListViewBuilderState extends State<CustomListViewBuilder> {
                     },
                   ),
                 ),
-                /*
-                if (titulo != 'Electrónicas Dañadas')
-                  Divider(
-                    color: customColors.icons,
-                    height: 1.0,
-                  ),
-                
-                if (titulo != 'Electrónicas Dañadas')
-                  const SizedBox(height: 20.0)
-                  ,
-                  */
               ],
             );
           } else {
