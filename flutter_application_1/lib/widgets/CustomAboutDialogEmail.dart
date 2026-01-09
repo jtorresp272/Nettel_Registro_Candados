@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/generales/get_color.dart';
-import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
-import 'package:flutter_application_1/api/emailHandler.dart';
 
 class CustomAboutDialogEmail extends StatefulWidget {
   final String datos;
@@ -87,13 +85,6 @@ class _CustomAboutDialogEmailState extends State<CustomAboutDialogEmail> {
                     ),
                   ),
                 ),
-              if (isPressed)
-                Container(
-                  alignment: Alignment.center,
-                  height: 35.0,
-                  width: 70.0,
-                  child: const CircularProgressIndicator(),
-                )
             ],
           ),
         ],

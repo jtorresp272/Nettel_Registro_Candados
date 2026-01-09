@@ -2,6 +2,8 @@
 // https://script.google.com/macros/s/AKfycbwwLA26uBvHLJBzdZ_oJAvbwyx21mEZm7U153PcnTQz8YGzl5JYpZTsAVs43-LmA2yB-w/exec
 
 import 'dart:convert';
+import 'package:flutter_application_1/Funciones/database/data_model.dart';
+import 'package:flutter_application_1/Funciones/servicios/database_helper.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
@@ -270,5 +272,21 @@ DateTime? _parseDateString(String dateString) {
       // Si no se puede analizar la fecha, retorna null
       return null;
     }
+  }
+}
+
+/* Obtiene informacion de la base de datos */
+Future<String> getDataDB() async {
+  final List<Note>? notes = await DatabaseHelper.getAllNote(2);
+  if (notes != null && notes.isNotEmpty) {
+    try {
+      final Note note = notes.firstWhere((note) => note.title == 'candados');
+      String texto = note.description;
+      return texto.substring(1, texto.length - 1);
+    } on StateError catch (_) {
+      return ''; // Si notes es nulo o está vacío, establece la descripción como '0'
+    }
+  } else {
+    return ''; // Si notes es nulo o está vacío, establece la descripción como '0'
   }
 }
