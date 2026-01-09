@@ -43,8 +43,8 @@ class CandadoActions {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                CustomScanResume(candado: scannedCandado, estado: estado),
+            builder: (context) => CustomScanResume(
+                whereGo: whoIs, candado: scannedCandado, estado: estado),
           ),
         );
       } else if (whoIs == 'monitoreo') {
@@ -77,7 +77,7 @@ class CandadoActions {
       showDialog(
         context: context,
         builder: (context) =>
-            DialogScanQr(who: 'monitoreo', scannedNumber: scannedNumber),
+            DialogScanQr(who: whoIs, scannedNumber: scannedNumber),
       );
     }
   }

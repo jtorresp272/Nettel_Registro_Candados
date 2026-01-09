@@ -59,7 +59,7 @@ class _CustomScanResumeState extends State<CustomScanResume>
   String fechaSalida = '';
 
   List<bool> buttonOnPressedResponsable = [false, false, false, false, false];
-  List<String> name = ['Joshue', 'Oliver', 'Fabian', 'Oswaldo', 'Jordy'];
+  List<String> name = ['Joshue', 'Oliver', 'Fabian', 'Oswaldo', 'Otro'];
   List<String> puertos = [
     'DPW   ',
     'NAPORTEC',
@@ -82,44 +82,34 @@ class _CustomScanResumeState extends State<CustomScanResume>
   ];
   Map<String, List<Color>> color = {
     'V': [
-      Colors.white,
-      Colors.white,
-      Colors.white,
-      Colors.white,
       Colors.orange.shade200,
-      Colors.orange.shade300
+      Colors.orange.shade300,
+      Colors.blue.shade200,
+      Colors.blue.shade300,
     ],
     'M': [
-      Colors.white,
-      Colors.white,
-      Colors.white,
-      Colors.white,
       Colors.yellow.shade200,
-      Colors.yellow.shade300
-    ],
-    'L': [
-      Colors.white,
-      Colors.white,
-      Colors.white,
-      Colors.white,
+      Colors.yellow.shade300,
       Colors.green.shade200,
       Colors.green.shade300
     ],
+    'L': [
+      Colors.green.shade200,
+      Colors.green.shade300,
+      Colors.yellow.shade200,
+      Colors.yellow.shade300,
+    ],
     'I': [
-      Colors.white,
-      Colors.white,
-      Colors.white,
-      Colors.white,
       Colors.blue.shade200,
-      Colors.blue.shade300
+      Colors.blue.shade300,
+      Colors.yellow.shade200,
+      Colors.yellow.shade300,
     ],
     'E': [
-      Colors.white,
-      Colors.white,
-      Colors.white,
-      Colors.white,
       Colors.red.shade200,
-      Colors.red.shade300
+      Colors.red.shade300,
+      Colors.blue.shade200,
+      Colors.blue.shade300,
     ],
   };
 
@@ -213,6 +203,29 @@ class _CustomScanResumeState extends State<CustomScanResume>
                 fontWeight: FontWeight.bold,
               ),
             ),
+          ),
+        ),
+        flexibleSpace: SafeArea(
+          bottom: false,
+          child: Stack(
+            children: [
+              // Gradiente base
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: color[widget.candado.lugar]!,
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                ),
+              ),
+              // Estilo flecha
+              // Patrón de flechas
+              CustomPaint(
+                painter: ArrowPatternPainter(),
+                size: Size.infinite,
+              ),
+            ],
           ),
         ),
         leading: IconButton(
@@ -1074,4 +1087,28 @@ Future<void> _getDataDB() async {
     datosMemoria =
         ''; // Si notes es nulo o está vacío, establece la descripción como '0'
   }
+}
+
+// Clase para pintar el patron de flechas
+class ArrowPatternPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withOpacity(0.15)
+      ..strokeWidth = 10
+      ..style = PaintingStyle.stroke;
+
+    const double spacing = 40;
+
+    for (double x = -size.height; x < size.width; x += spacing) {
+      final path = Path();
+      path.moveTo(x, 0);
+      path.lineTo(x + 30, size.height / 2);
+      path.lineTo(x, size.height);
+      canvas.drawPath(path, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

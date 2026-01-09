@@ -36,6 +36,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
     return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: customColors.background,
+      surfaceTintColor: customColors.background,
       iconTheme: IconThemeData(color: customColors.icons),
       actions: [
         if (widget.area == "Taller")

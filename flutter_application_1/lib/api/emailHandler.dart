@@ -1,6 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 /* funcion para resetear la pagina Taller */
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Funciones/servicios/apiForDataBase.dart';
 import 'package:flutter_application_1/Funciones/servicios/updateIcon.dart';
@@ -86,6 +88,7 @@ Future<void> watchDataBeforeSend(BuildContext context,
   description = await getDataCandados('candados');
   if (description.isNotEmpty) {
     datosEnviar = description.split(',');
+    log('Datos a enviar: $datosEnviar');
   }
 
   if (datosEnviar.isEmpty) {
